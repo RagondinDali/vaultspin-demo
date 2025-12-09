@@ -373,6 +373,7 @@
   const CONTRACT_ABI = [
     "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
     "function tokenURI(uint256 tokenId) view returns (string)",
+    "function tokenRarity(uint256 tokenId) view returns (uint8)",
     "function mintBooster(address to, uint256 randomNumber)"
   ];
 
@@ -455,10 +456,10 @@
       return;
     }
 
-    const isAdmin = currentAccount &&
+    const isAdmin =
+      currentAccount &&
       currentAccount.toLowerCase() === ADMIN_ADDRESS.toLowerCase();
 
-    // Si ce n'est pas l'admin → démo seulement
     if (!isAdmin) {
       setStatus("🔥 Tu veux minter ? Reste à l’affût… le Vault ouvrira bientôt 🔒");
       playFakeAnimation();
@@ -497,9 +498,7 @@
               break;
             }
           }
-        } catch (e) {
-          // ignore
-        }
+        } catch (e) {}
       }
 
       if (!mintedTokenId) {
@@ -509,22 +508,27 @@
         return;
       }
 
-      setStatus(`NFT minté ! tokenId = ${mintedTokenId.toString()}. Récupération de l’image…`);
+      setStatus(`NFT minté ! tokenId = ${mintedTokenId.toString()}. Récupération de l’image & de la rareté…`);
 
+      // Récupération metadata
       const tokenUri = await contract.tokenURI(mintedTokenId);
       let jsonUrl = tokenUri;
       if (jsonUrl.startsWith("ipfs://")) {
         jsonUrl = "https://ipfs.io/ipfs/" + jsonUrl.replace("ipfs://", "");
       }
-
       const metadata = await fetch(jsonUrl).then(r => r.json());
       let imageUrl = metadata.image;
       if (imageUrl.startsWith("ipfs://")) {
         imageUrl = "https://ipfs.io/ipfs/" + imageUrl.replace("ipfs://", "");
       }
 
-      showCard(imageUrl, mintedTokenId);
-      setStatus(`NFT VaultSpin reçu (tokenId ${mintedTokenId.toString()}) !`);
+      // Récupération rareté on-chain
+      const rarityIndex = await contract.tokenRarity(mintedTokenId);
+      const rarityNames = ["Common", "Rare", "Ultra", "Legendary"];
+      const rarityLabel = rarityNames[Number(rarityIndex)] ?? "Unknown";
+
+      showCard(imageUrl, mintedTokenId, rarityLabel);
+      setStatus(`NFT VaultSpin reçu (tokenId ${mintedTokenId.toString()}) · Rarity: ${rarityLabel}`);
 
     } catch (err) {
       console.error(err);
@@ -535,7 +539,7 @@
     }
   }
 
-  function showCard(imageUrl, tokenId) {
+  function showCard(imageUrl, tokenId, rarityLabel) {
     cardRevealEl.innerHTML = `
       <div class="nft-card">
         <div class="nft-img-wrapper">
@@ -543,7 +547,7 @@
         </div>
         <div class="nft-footer">
           <span>VaultSpin · #${tokenId.toString()}</span>
-          <span>Common</span>
+          <span>${rarityLabel}</span>
         </div>
       </div>
     `;
