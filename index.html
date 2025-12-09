@@ -2,166 +2,567 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>VaultSpin · Sepolia Testnet</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <title>VaultSpin – Booster Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Ethers v6 via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
   <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+      color: #e5e7eb;
+    }
+
     body {
-      background: #0f1115;
-      color: #eee;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 40px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    #cardImage {
-      margin-top: 20px;
-      width: 250px;
-      border-radius: 12px;
-      display: none;
-      box-shadow: 0 0 12px rgba(255,255,255,0.25);
+
+    .app {
+      max-width: 900px;
+      width: 100%;
+      padding: 24px;
+      box-sizing: border-box;
     }
-    #status {
-      margin-top: 12px;
+
+    .card {
+      border-radius: 24px;
+      padding: 24px;
+      background: linear-gradient(145deg, rgba(15,23,42,0.95), rgba(6,9,20,0.98));
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+      border: 1px solid rgba(148,163,184,0.18);
+      backdrop-filter: blur(18px);
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0 0 4px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
       font-size: 14px;
-      color: #aaa;
-      min-height: 20px;
+      color: #9ca3af;
+      margin-bottom: 20px;
     }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: #e5e7eb;
+      background: radial-gradient(circle at top left, rgba(96,165,250,0.35), transparent 55%);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    .col {
+      flex: 1 1 260px;
+      min-width: 0;
+    }
+
     .btn {
-      background: #8220ff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
       border: none;
-      padding: 14px 28px;
-      border-radius: 8px;
       cursor: pointer;
-      font-size: 18px;
-      color: white;
-      margin: 10px;
-      transition: 0.2s;
-    }
-    .btn:disabled {
-      background: #333;
-      cursor: not-allowed;
-    }
-    #walletAddress {
-      margin-top: 10px;
       font-size: 14px;
-      opacity: 0.7;
+      font-weight: 500;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #f9fafb;
+      box-shadow: 0 12px 30px rgba(79,70,229,0.5);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 36px rgba(79,70,229,0.7);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(79,70,229,0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      border: 1px solid rgba(148,163,184,0.5);
+    }
+    .btn-secondary:hover {
+      background: rgba(31,41,55,0.95);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+      word-break: break-all;
+      min-height: 18px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: #e5e7eb;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .pack-area {
+      position: relative;
+      margin-top: 10px;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px dashed rgba(148,163,184,0.4);
+      background: radial-gradient(circle at top, rgba(56,189,248,0.16), rgba(15,23,42,0.95));
+      overflow: hidden;
+    }
+
+    .pack {
+      width: 180px;
+      height: 260px;
+      margin: 0 auto;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #0f172a, #111827);
+      border: 1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 22px 40px rgba(15,23,42,0.7),
+        0 0 40px rgba(129,140,248,0.4);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 11px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .pack::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(
+        from 0deg,
+        rgba(59,130,246,0.1),
+        rgba(236,72,153,0.3),
+        rgba(56,189,248,0.25),
+        rgba(59,130,246,0.1)
+      );
+      opacity: 0.8;
+      mix-blend-mode: screen;
+      animation: spinGlow 6s linear infinite;
+    }
+
+    .pack-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .pack.opening {
+      animation: packOpen 0.85s ease-out forwards;
+    }
+
+    @keyframes spinGlow {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes packOpen {
+      0% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+      30% {
+        transform: scale(1.06) translateY(-6px);
+      }
+      60% {
+        transform: scale(0.92) translateY(18px);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(0.8) translateY(40px);
+        opacity: 0;
+      }
+    }
+
+    .card-reveal {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      min-height: 260px;
+    }
+
+    .nft-card {
+      width: 200px;
+      height: 280px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, rgba(251,191,36,0.2), rgba(15,23,42,0.98));
+      border: 1px solid rgba(253,224,71,0.8);
+      box-shadow:
+        0 24px 45px rgba(0,0,0,0.75),
+        0 0 40px rgba(250,204,21,0.5);
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: 0;
+      transform: translateY(16px) scale(0.96);
+      animation: revealIn 0.6s ease-out forwards;
+    }
+
+    @keyframes revealIn {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .nft-img-wrapper {
+      flex: 1;
+      border-radius: 14px;
+      background: radial-gradient(circle, rgba(15,23,42,0.8), #020617);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nft-img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .nft-footer {
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .nft-footer span:last-child {
+      color: #f97316;
+    }
+
+    .info-block {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    code {
+      font-size: 11px;
+      background: rgba(15,23,42,0.9);
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(55,65,81,0.8);
+    }
+
+    @media (max-width: 720px) {
+      .card {
+        padding: 18px;
+        border-radius: 20px;
+      }
+      h1 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 <body>
+<div class="app">
+  <div class="card">
+    <div class="badge">VaultSpin · Sepolia Testnet</div>
+    <h1>Open Your VaultSpin Pack</h1>
+    <div class="subtitle">
+      Connecte ton wallet, clique sur <strong>Open VaultSpin Pack</strong> et reçois un vrai NFT
+      <span style="opacity:0.75;">(contrat Sepolia)</span>.
+    </div>
 
-  <h1>VaultSpin</h1>
-  <h3>Sepolia Live Demo</h3>
+    <div class="row">
+      <!-- Colonne gauche : wallet + actions -->
+      <div class="col">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="connectButton" class="btn btn-secondary">
+            Connect Wallet
+          </button>
+          <button id="spinButton" class="btn btn-primary" disabled>
+            🎰 Open VaultSpin Pack
+          </button>
+        </div>
 
-  <button id="connectBtn" class="btn">Connect Wallet</button>
-  <button id="spinBtn" class="btn" disabled>🎰 Open VaultSpin Pack</button>
+        <div id="status" class="status">Wallet non connecté.</div>
 
-  <div id="walletAddress"></div>
-  <div id="status"></div>
+        <div class="chip-row">
+          <div class="chip">Network attendu : Sepolia</div>
+          <div class="chip">Contrat : <code>0x0003...c9ED7</code></div>
+        </div>
 
-  <img id="cardImage" />
+        <div class="info-block">
+          Si tu n’as pas MetaMask : installe l’extension sur Chrome, ajoute le réseau Sepolia
+          et recharge la page.
+        </div>
+      </div>
 
-  <script>
+      <!-- Colonne droite : booster + carte -->
+      <div class="col">
+        <div class="pack-area">
+          <div id="pack" class="pack">
+            <div class="pack-inner">
+              VAULTSPIN<br/>BOOSTER PACK
+            </div>
+          </div>
+          <div id="cardReveal" class="card-reveal"></div>
+        </div>
+      </div>
+    </div>
 
-    const ADMIN_ADDRESS = "0x6B4c6D685Bb7012684eE71bcE568bE597E97E1b1";
+  </div>
+</div>
 
-    const CONTRACT_ADDRESS = "0x0003AF7D5F96cE47a54f5AF774d72049825c9ED7";
-    const CONTRACT_ABI = [
-      "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
-      "function tokenURI(uint256 tokenId) view returns (string)",
-      "function mintBooster(address to, uint256 randomNumber)"
-    ];
+<script>
+  const ADMIN_ADDRESS = "0x6B4c6D685Bb7012684eE71bcE568bE597E97E1b1";
+  const CONTRACT_ADDRESS = "0x0003AF7D5F96cE47a54f5AF774d72049825c9ED7";
 
-    let provider, signer, contract, currentAccount;
+  const CONTRACT_ABI = [
+    "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
+    "function tokenURI(uint256 tokenId) view returns (string)",
+    "function mintBooster(address to, uint256 randomNumber)"
+  ];
 
-    async function connectWallet() {
-      try {
-        if (!window.ethereum) {
-          document.getElementById("status").innerText = "MetaMask non détecté ❌";
-          return;
-        }
+  let provider;
+  if (window.ethereum) {
+    provider = new ethers.BrowserProvider(window.ethereum);
+  }
 
-        await ethereum.request({ method: "eth_requestAccounts" });
+  let signer;
+  let contract;
+  let currentAccount;
 
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
-        currentAccount = await signer.getAddress();
+  const connectButton = document.getElementById("connectButton");
+  const spinButton = document.getElementById("spinButton");
+  const statusEl = document.getElementById("status");
+  const packEl = document.getElementById("pack");
+  const cardRevealEl = document.getElementById("cardReveal");
 
-        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+  function setStatus(msg) {
+    statusEl.textContent = msg;
+  }
 
-        document.getElementById("walletAddress").innerText =
-          "Connecté : " + currentAccount.substring(0, 10) + "...";
+  async function ensureSepolia() {
+    const network = await provider.getNetwork();
+    if (network.chainId !== 11155111n) {
+      setStatus("Réseau actuel: " + network.chainId.toString() + ". Bascule sur Sepolia dans MetaMask.");
+      throw new Error("Wrong network");
+    }
+  }
 
-        document.getElementById("spinBtn").disabled = false;
-        document.getElementById("status").innerText = "Wallet connecté ✔️";
+  async function connectWallet() {
+    if (!window.ethereum) {
+      alert("MetaMask non détecté. Installe l’extension MetaMask pour continuer.");
+      return;
+    }
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
 
-      } catch (err) {
-        console.error(err);
-        document.getElementById("status").innerText = "Erreur de connexion ❌";
-      }
+      await ensureSepolia();
+
+      const net = await provider.getNetwork();
+      signer = await provider.getSigner();
+      currentAccount = await signer.getAddress();
+      contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+      setStatus(`Connecté : ${currentAccount} · Network: Sepolia (chainId ${net.chainId.toString()})`);
+      spinButton.disabled = false;
+      connectButton.textContent = "Wallet connecté";
+    } catch (err) {
+      console.error(err);
+      setStatus("Connexion annulée ou erreur. Vérifie MetaMask & Sepolia.");
+    }
+  }
+
+  function playFakeAnimation() {
+    packEl.classList.remove("opening");
+    void packEl.offsetWidth;
+    packEl.classList.add("opening");
+    cardRevealEl.innerHTML = `
+      <div class="nft-card">
+        <div class="nft-img-wrapper">
+          <div style="font-size:11px; padding:10px; text-align:center;">
+            🔒 Le Vault est verrouillé<br/>
+            <span style="font-size:10px; opacity:0.8;">
+              Tu veux minter ? Reste à l’affût… le Vault ouvrira bientôt.
+            </span>
+          </div>
+        </div>
+        <div class="nft-footer">
+          <span>VaultSpin</span>
+          <span>Locked</span>
+        </div>
+      </div>
+    `;
+  }
+
+  async function openPack() {
+    if (!contract || !signer) {
+      setStatus("Connecte ton wallet avant d’ouvrir un pack.");
+      return;
     }
 
-    async function openPack() {
-      document.getElementById("status").innerText = "";
-      document.getElementById("cardImage").style.display = "none";
+    const isAdmin = currentAccount &&
+      currentAccount.toLowerCase() === ADMIN_ADDRESS.toLowerCase();
 
-      const isAdmin = currentAccount.toLowerCase() === ADMIN_ADDRESS.toLowerCase();
+    // Si ce n'est pas l'admin → démo seulement
+    if (!isAdmin) {
+      setStatus("🔥 Tu veux minter ? Reste à l’affût… le Vault ouvrira bientôt 🔒");
+      playFakeAnimation();
+      return;
+    }
 
-      if (!isAdmin) {
-        document.getElementById("status").innerText =
-          "🔥 Tu veux minter ? Reste à l’affût… le Vault ouvrira bientôt 🔒";
-        fakeAnimation();
+    try {
+      spinButton.disabled = true;
+      spinButton.textContent = "Ouverture en cours...";
+      packEl.classList.remove("opening");
+      void packEl.offsetWidth;
+      packEl.classList.add("opening");
+      cardRevealEl.innerHTML = "";
+
+      setStatus("Transaction envoyée… confirme dans MetaMask.");
+
+      const randomNumber = Math.floor(Math.random() * 1e9);
+
+      let tx = await contract.mintBooster(currentAccount, randomNumber);
+
+      setStatus("Transaction en attente de confirmation…");
+      const receipt = await tx.wait();
+
+      const iface = new ethers.Interface(CONTRACT_ABI);
+      let mintedTokenId = null;
+
+      for (const log of receipt.logs) {
+        try {
+          const parsed = iface.parseLog(log);
+          if (parsed.name === "Transfer") {
+            const from = parsed.args.from;
+            const to = parsed.args.to;
+            const tokenId = parsed.args.tokenId;
+            if (from === ethers.ZeroAddress && to.toLowerCase() === currentAccount.toLowerCase()) {
+              mintedTokenId = tokenId;
+              break;
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      if (!mintedTokenId) {
+        setStatus("NFT minté, mais tokenId non trouvé dans les logs.");
+        spinButton.disabled = false;
+        spinButton.textContent = "🎰 Open VaultSpin Pack";
         return;
       }
 
-      try {
-        document.getElementById("status").innerText = "Transaction en cours ⏳...";
-        const randomNumber = Math.floor(Math.random() * 1e9);
+      setStatus(`NFT minté ! tokenId = ${mintedTokenId.toString()}. Récupération de l’image…`);
 
-        let tx = await contract.mintBooster(currentAccount, randomNumber);
-        let receipt = await tx.wait();
-
-        let event = receipt.events.find(e => e.event === "Transfer");
-        let tokenId = event.args.tokenId.toNumber();
-
-        document.getElementById("status").innerText =
-          "NFT obtenu ! Token #" + tokenId;
-
-        let tokenURI = await contract.tokenURI(tokenId);
-        displayCard(tokenURI);
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById("status").innerText =
-          "Erreur lors du mint ❌ Vérifie que tu es bien sur Sepolia.";
+      const tokenUri = await contract.tokenURI(mintedTokenId);
+      let jsonUrl = tokenUri;
+      if (jsonUrl.startsWith("ipfs://")) {
+        jsonUrl = "https://ipfs.io/ipfs/" + jsonUrl.replace("ipfs://", "");
       }
-    }
 
-    async function displayCard(tokenURI) {
-      try {
-        const response = await fetch(tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/"));
-        const metadata = await response.json();
-        const imageURL = metadata.image.replace("ipfs://", "https://ipfs.io/ipfs/");
-
-        const img = document.getElementById("cardImage");
-        img.src = imageURL;
-        img.style.display = "block";
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById("status").innerText = "Erreur chargement image ❌";
+      const metadata = await fetch(jsonUrl).then(r => r.json());
+      let imageUrl = metadata.image;
+      if (imageUrl.startsWith("ipfs://")) {
+        imageUrl = "https://ipfs.io/ipfs/" + imageUrl.replace("ipfs://", "");
       }
+
+      showCard(imageUrl, mintedTokenId);
+      setStatus(`NFT VaultSpin reçu (tokenId ${mintedTokenId.toString()}) !`);
+
+    } catch (err) {
+      console.error(err);
+      setStatus("Erreur pendant le mint : " + (err?.shortMessage || err?.message || "inconnue"));
+    } finally {
+      spinButton.disabled = false;
+      spinButton.textContent = "🎰 Open VaultSpin Pack";
     }
+  }
 
-    function fakeAnimation() {
-      document.getElementById("cardImage").style.display = "block";
-      document.getElementById("cardImage").src =
-        "https://media.tenor.com/dGCD3IuPnncAAAAi/lock-padlock.gif";
-    }
+  function showCard(imageUrl, tokenId) {
+    cardRevealEl.innerHTML = `
+      <div class="nft-card">
+        <div class="nft-img-wrapper">
+          <img src="${imageUrl}" alt="VaultSpin NFT" class="nft-img" />
+        </div>
+        <div class="nft-footer">
+          <span>VaultSpin · #${tokenId.toString()}</span>
+          <span>Common</span>
+        </div>
+      </div>
+    `;
+  }
 
-    document.getElementById("connectBtn").onclick = connectWallet;
-    document.getElementById("spinBtn").onclick = openPack;
+  connectButton.addEventListener("click", connectWallet);
+  spinButton.addEventListener("click", openPack);
 
-  </script>
-
+  if (window.ethereum) {
+    window.ethereum.on("accountsChanged", () => {
+      setStatus("Compte changé. Reconnecte ton wallet.");
+      spinButton.disabled = true;
+      connectButton.textContent = "Connect Wallet";
+    });
+    window.ethereum.on("chainChanged", () => {
+      setStatus("Réseau changé. Reload + repasse sur Sepolia si besoin.");
+      spinButton.disabled = true;
+    });
+  }
+</script>
 </body>
 </html>
