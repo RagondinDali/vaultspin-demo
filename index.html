@@ -370,6 +370,14 @@
   const ADMIN_ADDRESS = "0x6B4c6D685Bb7012684eE71bcE568bE597E97E1b1";
   const CONTRACT_ADDRESS = "0x0003AF7D5F96cE47a54f5AF774d72049825c9ED7";
 
+  // Images selon la rareté
+  const RARITY_IMAGES = {
+    Common: "images/venusaur_common.png",
+    Rare: "images/venusaur_rare.png",
+    Ultra: "images/venusaur_ultra.png",
+    Legendary: "images/venusaur_legendary.png"
+  };
+
   const CONTRACT_ABI = [
     "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
     "function tokenURI(uint256 tokenId) view returns (string)",
@@ -527,7 +535,10 @@
       const rarityNames = ["Common", "Rare", "Ultra", "Legendary"];
       const rarityLabel = rarityNames[Number(rarityIndex)] ?? "Unknown";
 
-      showCard(imageUrl, mintedTokenId, rarityLabel);
+      // Choix de l'image en fonction de la rareté si dispo
+      const displayImageUrl = RARITY_IMAGES[rarityLabel] || imageUrl;
+
+      showCard(displayImageUrl, mintedTokenId, rarityLabel);
       setStatus(`NFT VaultSpin reçu (tokenId ${mintedTokenId.toString()}) · Rarity: ${rarityLabel}`);
 
     } catch (err) {
