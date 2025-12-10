@@ -2,13 +2,13 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante</title>
+    <title>VaultSpin – Booster Plante (V3)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Ethers v6 UMD -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
 
-    <!-- Fichier d'animations dédié -->
+    <!-- Animations -->
     <link rel="stylesheet" href="animations.css" />
 
     <style>
@@ -213,8 +213,6 @@
         color: #c4b5fd;
       }
 
-      /* === Zone booster/carte === */
-
       .card-zone {
         width: 100%;
         height: 100%;
@@ -383,8 +381,6 @@
         }
       }
 
-      /* === Drop table === */
-
       .drop-table {
         margin-top: 12px;
         padding: 18px 20px 18px;
@@ -497,7 +493,6 @@
 
   <body>
     <div class="page">
-      <!-- PANEL GAUCHE : Wallet + actions -->
       <div class="left-panel">
         <div class="tag">VAULTSPIN · SEPOLIA TESTNET</div>
 
@@ -505,7 +500,7 @@
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
             Connecte ton wallet, clique sur <strong>Open VaultSpin Pack</strong>
-            et reçois un vrai NFT (contrat Sepolia).
+            et reçois un vrai NFT (contrat Sepolia V3).
           </p>
         </div>
 
@@ -534,7 +529,7 @@
           </div>
           <div class="pill">
             <span>Contrat :</span>
-            <span id="contract-short">0x0003…9ED7</span>
+            <span id="contract-short">0x56B8…57941</span>
           </div>
         </div>
 
@@ -547,14 +542,13 @@
           </div>
           <div
             class="collection-link"
-            onclick="alert('La page \"Ma collection\" sera une deuxième page (collection.html) qui affichera toutes tes cartes.');"
+            onclick="alert('La page \"Ma collection\" sera une deuxième page (collection.html) qui affichera toutes tes cartes. La V3 expose déjà getTokenInfo(tokenId) pour la construire.');"
           >
             → Voir ma collection (bientôt)
           </div>
         </div>
       </div>
 
-      <!-- PANEL DROIT : Booster + distribution -->
       <div class="right-panel">
         <div class="card-zone">
           <div
@@ -563,7 +557,6 @@
             data-rarity="COMMON"
           >
             <div class="card-inner">
-              <!-- Booster fermé (avant ouverture) -->
               <div
                 id="booster-closed"
                 class="booster-closed booster-mode-idle"
@@ -578,7 +571,6 @@
                 </div>
               </div>
 
-              <!-- Carte ouverte (après mint) -->
               <div id="card-opened" class="card-opened hidden">
                 <div class="card-image-wrapper">
                   <img
@@ -604,7 +596,7 @@
           </div>
         </div>
 
-        <!-- Table des drops possibles (13 cartes) -->
+        <!-- Table des drops -->
         <div class="drop-table">
           <div class="drop-title">Cartes potentiellement obtenables</div>
 
@@ -754,7 +746,6 @@
               </div>
             </div>
 
-            <!-- PLANT LEGENDARY (last) -->
             <div class="drop-item" data-rarity="LEGENDARY">
               <div class="drop-thumb">
                 <img
@@ -784,494 +775,57 @@
 
     <script>
       /********************
-       * CONFIG CONTRAT   *
+       * CONFIG CONTRAT V3 *
        ********************/
 
-const CONTRACT_ADDRESS = "0x56B842c2BF2863b2041dd72e7a0Afd0aA5357941";
+      const CONTRACT_ADDRESS =
+        "0x56B842c2BF2863b2041dd72e7a0Afd0aA5357941";
 
-const CONTRACT_ABI = [
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "owner", "type": "address" }
-    ],
-    "name": "OwnableInvalidOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
-    ],
-    "name": "OwnableUnauthorizedAccount",
-    "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true,  "internalType": "address", "name": "owner",   "type": "address" },
-      { "indexed": true,  "internalType": "address", "name": "approved","type": "address" },
-      { "indexed": true,  "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true,  "internalType": "address", "name": "owner",   "type": "address" },
-      { "indexed": true,  "internalType": "address", "name": "operator","type": "address" },
-      { "indexed": false, "internalType": "bool",    "name": "approved","type": "bool" }
-    ],
-    "name": "ApprovalForAll",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true,  "internalType": "uint256", "name": "tokenId",       "type": "uint256" },
-      { "indexed": false, "internalType": "uint8",   "name": "rarity",        "type": "uint8"    },
-      { "indexed": true,  "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
-    ],
-    "name": "CardMinted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true,  "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "physicalCardId", "type": "uint256" }
-    ],
-    "name": "CardRedeemed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true,  "internalType": "uint256", "name": "tokenId",   "type": "uint256" },
-      { "indexed": true,  "internalType": "address", "name": "requester", "type": "address" }
-    ],
-    "name": "RedeemRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true,  "internalType": "address", "name": "previousOwner", "type": "address" },
-      { "indexed": true,  "internalType": "address", "name": "newOwner",      "type": "address" }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": true,  "internalType": "address", "name": "from",    "type": "address" },
-      { "indexed": true,  "internalType": "address", "name": "to",      "type": "address" },
-      { "indexed": true,  "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-
-  /* ====== ADMIN / CONFIG ====== */
-
-  {
-    "inputs": [
-      { "internalType": "string",  "name": "uri",       "type": "string" },
-      { "internalType": "string",  "name": "name",      "type": "string" },
-      { "internalType": "uint8",   "name": "rarity",    "type": "uint8" },
-      { "internalType": "uint256", "name": "maxSupply", "type": "uint256" },
-      { "internalType": "uint32",  "name": "weight",    "type": "uint32" }
-    ],
-    "name": "addCardType",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" },
-      { "internalType": "string",  "name": "newURI",        "type": "string" }
-    ],
-    "name": "setCardTypeURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
-    ],
-    "name": "lockCardTypeURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" },
-      { "internalType": "uint32",  "name": "newWeight",     "type": "uint32" }
-    ],
-    "name": "setCardTypeWeight",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
-    ],
-    "name": "remainingSupply",
-    "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-
-  /* ====== MINT / PACKS ====== */
-
-  {
-    "inputs": [
-      { "internalType": "address", "name": "to",            "type": "address" },
-      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
-    ],
-    "name": "mintCard",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "to",           "type": "address" },
-      { "internalType": "uint256", "name": "randomNumber", "type": "uint256" }
-    ],
-    "name": "mintBooster",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "newPrice", "type": "uint256" }
-    ],
-    "name": "setPackPrice",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "randomNumber", "type": "uint256" }
-    ],
-    "name": "buyAndOpenPack",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address payable", "name": "to", "type": "address" }
-    ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-
-  /* ====== REDEEM / PHYSICAL ====== */
-
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "tokenId",        "type": "uint256" },
-      { "internalType": "uint256", "name": "warehouseCardId","type": "uint256" }
-    ],
-    "name": "linkPhysicalCard",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "requestRedeem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "confirmRedeem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-
-  /* ====== OWNERSHIP / ADMIN ====== */
-
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      { "internalType": "address", "name": "", "type": "address" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nextTokenId",
-    "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "packPrice",
-    "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-
-  /* ====== ERC721 STANDARD ====== */
-
-  {
-    "inputs": [
-      { "internalType": "address", "name": "to",      "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "approve",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "owner", "type": "address" }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      { "internalType": "string", "name": "", "type": "string" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      { "internalType": "string", "name": "", "type": "string" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "tokenURI",
-    "outputs": [
-      { "internalType": "string", "name": "", "type": "string" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "ownerOf",
-    "outputs": [
-      { "internalType": "address", "name": "", "type": "address" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "getApproved",
-    "outputs": [
-      { "internalType": "address", "name": "", "type": "address" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "owner",    "type": "address" },
-      { "internalType": "address", "name": "operator", "type": "address" }
-    ],
-    "name": "isApprovedForAll",
-    "outputs": [
-      { "internalType": "bool", "name": "", "type": "bool" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "from",    "type": "address" },
-      { "internalType": "address", "name": "to",      "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "from",    "type": "address" },
-      { "internalType": "address", "name": "to",      "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "from",    "type": "address" },
-      { "internalType": "address", "name": "to",      "type": "address" },
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "internalType": "bytes",   "name": "data",    "type": "bytes" }
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "operator", "type": "address" },
-      { "internalType": "bool",    "name": "approved", "type": "bool" }
-    ],
-    "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-
-  /* ====== PUBLIC STATE GETTERS ====== */
-
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "cardTypes",
-    "outputs": [
-      { "internalType": "string",  "name": "uri",       "type": "string" },
-      { "internalType": "string",  "name": "name",      "type": "string" },
-      { "internalType": "uint8",   "name": "rarity",    "type": "uint8" },
-      { "internalType": "uint256", "name": "maxSupply", "type": "uint256" },
-      { "internalType": "uint256", "name": "minted",    "type": "uint256" },
-      { "internalType": "uint32",  "name": "weight",    "type": "uint32" },
-      { "internalType": "bool",    "name": "uriLocked", "type": "bool" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "tokenRarity",
-    "outputs": [
-      { "internalType": "uint8", "name": "", "type": "uint8" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "tokenCardTypeIndex",
-    "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "physicalCardId",
-    "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "isRedeemed",
-    "outputs": [
-      { "internalType": "bool", "name": "", "type": "bool" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "redeemRequested",
-    "outputs": [
-      { "internalType": "bool", "name": "", "type": "bool" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-
-  /* ====== getTokenInfo HELPER ====== */
-
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-    ],
-    "name": "getTokenInfo",
-    "outputs": [
-      { "internalType": "uint256", "name": "tokenId",        "type": "uint256" },
-      { "internalType": "uint8",   "name": "rarity",         "type": "uint8" },
-      { "internalType": "uint256", "name": "cardTypeIndex",  "type": "uint256" },
-      { "internalType": "string",  "name": "cardName",       "type": "string" },
-      { "internalType": "string",  "name": "uri",            "type": "string" },
-      { "internalType": "bool",    "name": "redeemed",       "type": "bool" },
-      { "internalType": "uint256", "name": "physicalId",     "type": "uint256" },
-      { "internalType": "bool",    "name": "redeemAsked",    "type": "bool" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
-
+      // ABI minimal : CardMinted + mintBooster (onlyOwner)
+      const CONTRACT_ABI = [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint8",
+              name: "rarity",
+              type: "uint8",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "cardTypeIndex",
+              type: "uint256",
+            },
+          ],
+          name: "CardMinted",
+          type: "event",
+        },
+        {
+          inputs: [
+            { internalType: "address", name: "to", type: "address" },
+            { internalType: "uint256", name: "randomNumber", type: "uint256" },
+          ],
+          name: "mintBooster",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [{ internalType: "address", name: "", type: "address" }],
+          stateMutability: "view",
+          type: "function",
+        },
+      ];
 
       const SEPOLIA_CHAIN_ID = "0xaa36a7";
 
@@ -1279,29 +833,11 @@ const CONTRACT_ABI = [
        * FRONT – assets   *
        ********************/
 
-      // Pools d'images par rareté (on choisit aléatoirement dans le pool)
-      const RARITY_POOLS = {
-        0: [ // COMMON
-          "images/bulbasaur_common.png",
-          "images/ivysaur_common.png",
-          "images/venusaur_common.png",
-        ],
-        1: [ // RARE
-          "images/bulbasaur_rare.png",
-          "images/ivysaur_rare.png",
-          "images/venusaur_rare.png",
-        ],
-        2: [ // ULTRA
-          "images/bulbasaur_ultra.png",
-          "images/ivysaur_ultra.png",
-          "images/venusaur_ultra.png",
-        ],
-        3: [ // LEGENDARY
-          "images/bulbasaur_legendary.png",
-          "images/ivysaur_legendary.png",
-          "images/venusaur_legendary.png",
-          "images/plant_legendary.png",
-        ],
+      const RARITY_IMAGES = {
+        COMMON: "images/venusaur_common.png",
+        RARE: "images/venusaur_rare.png",
+        ULTRA: "images/venusaur_ultra.png",
+        LEGENDARY: "images/venusaur_legendary.png",
       };
 
       const RARITY_LABEL_CLASS = {
@@ -1309,6 +845,22 @@ const CONTRACT_ABI = [
         RARE: "rarity-rare",
         ULTRA: "rarity-ultra",
         LEGENDARY: "rarity-legendary",
+      };
+
+      const CARD_IMAGE_BY_INDEX = {
+        0: "images/bulbasaur_common.png",
+        1: "images/ivysaur_common.png",
+        2: "images/venusaur_common.png",
+        3: "images/bulbasaur_rare.png",
+        4: "images/ivysaur_rare.png",
+        5: "images/venusaur_rare.png",
+        6: "images/bulbasaur_ultra.png",
+        7: "images/ivysaur_ultra.png",
+        8: "images/venusaur_ultra.png",
+        9: "images/bulbasaur_legendary.png",
+        10: "images/ivysaur_legendary.png",
+        11: "images/venusaur_legendary.png",
+        12: "images/plant_legendary.png",
       };
 
       /********************
@@ -1328,10 +880,6 @@ const CONTRACT_ABI = [
       };
 
       let uiState = UI_STATE.IDLE;
-      let isCardVisible = false;
-
-      const animationQueue = [];
-      let isProcessingQueue = false;
 
       let sfxBooster = null;
       let sfxReveal = null;
@@ -1344,37 +892,6 @@ const CONTRACT_ABI = [
           el.play().catch(() => {});
         } catch (_) {}
       }
-
-      /********************
-       * QUEUE / ANIMS    *
-       ********************/
-
-      function queueAnimation(fn) {
-        animationQueue.push(fn);
-        if (!isProcessingQueue) {
-          processAnimationQueue();
-        }
-      }
-
-      async function processAnimationQueue() {
-        if (isProcessingQueue) return;
-        isProcessingQueue = true;
-
-        while (animationQueue.length > 0) {
-          const fn = animationQueue.shift();
-          try {
-            await fn();
-          } catch (e) {
-            console.error("Erreur animation/sequence:", e);
-          }
-        }
-
-        isProcessingQueue = false;
-      }
-
-      /********************
-       * UTIL UI          *
-       ********************/
 
       function setStatus(text, mode = "ok") {
         const statusText = document.getElementById("status-text");
@@ -1439,10 +956,6 @@ const CONTRACT_ABI = [
         if (modeClass) booster.classList.add(modeClass);
       }
 
-      /********************
-       * RENDER / STATES  *
-       ********************/
-
       function showOpenedCardLayout() {
         const booster = document.getElementById("booster-closed");
         const opened = document.getElementById("card-opened");
@@ -1484,18 +997,23 @@ const CONTRACT_ABI = [
           frame.setAttribute("data-rarity", "COMMON");
         }
 
-        isCardVisible = false;
         uiState = UI_STATE.IDLE;
       }
 
-      function renderCard(tokenId, rarityRaw) {
+      function renderCard(tokenId, rarityRaw, cardTypeIndexRaw) {
         const rarityNum = normalizeRarity(rarityRaw);
         const rarityKey = rarityKeyFromNum(rarityNum);
 
-        const pool = RARITY_POOLS[rarityNum] || RARITY_POOLS[0];
+        const cardIndex = Number(
+          typeof cardTypeIndexRaw === "bigint"
+            ? cardTypeIndexRaw
+            : cardTypeIndexRaw || 0
+        );
+
         const imgSrc =
-          pool[Math.floor(Math.random() * pool.length)] ||
-          "images/venusaur_common.png";
+          CARD_IMAGE_BY_INDEX[cardIndex] ??
+          RARITY_IMAGES[rarityKey] ??
+          RARITY_IMAGES["COMMON"];
 
         showOpenedCardLayout();
 
@@ -1537,7 +1055,9 @@ const CONTRACT_ABI = [
             "NFT VaultSpin reçu – tokenId " +
             tokenId +
             " • Rarity: " +
-            rarityToLabel(rarityNum);
+            rarityToLabel(rarityNum) +
+            " • cardTypeIndex: " +
+            cardIndex;
         }
 
         if (opened) {
@@ -1553,7 +1073,6 @@ const CONTRACT_ABI = [
           playSound(sfxLegendary);
         }
 
-        isCardVisible = true;
         uiState = UI_STATE.CARD_REVEALED;
       }
 
@@ -1665,6 +1184,8 @@ const CONTRACT_ABI = [
             Math.floor(Math.random() * 1e9)
           );
 
+          // Pour l’instant : on utilise mintBooster (onlyOwner).
+          // Assure-toi d’utiliser le wallet owner sur le front.
           const tx = await contract.mintBooster(
             currentAccount,
             randomNumber
@@ -1683,6 +1204,7 @@ const CONTRACT_ABI = [
 
           let tokenId = null;
           let rarityRaw = null;
+          let cardTypeIndex = null;
 
           for (const log of receipt.logs) {
             try {
@@ -1690,17 +1212,14 @@ const CONTRACT_ABI = [
               if (parsed && parsed.name === "CardMinted") {
                 tokenId = parsed.args.tokenId;
                 rarityRaw = parsed.args.rarity;
+                cardTypeIndex = parsed.args.cardTypeIndex;
                 break;
               }
-            } catch (_) {
-              // autres logs
-            }
+            } catch (_) {}
           }
 
           if (tokenId == null) {
-            throw new Error(
-              "Event CardMinted introuvable dans les logs."
-            );
+            throw new Error("Event CardMinted introuvable dans les logs.");
           }
 
           const rarityNum = normalizeRarity(
@@ -1709,7 +1228,8 @@ const CONTRACT_ABI = [
               : rarityRaw
           );
 
-          renderCard(Number(tokenId), rarityNum);
+          renderCard(Number(tokenId), rarityNum, cardTypeIndex);
+
           setStatus(
             "Pack ouvert ! Clique à nouveau pour ouvrir le prochain.",
             "ok"
@@ -1727,10 +1247,13 @@ const CONTRACT_ABI = [
       }
 
       function handleOpenPackClick() {
-        if (uiState === UI_STATE.WAITING_TX || uiState === UI_STATE.ANIM_TO_COLLECTION) {
+        if (
+          uiState === UI_STATE.WAITING_TX ||
+          uiState === UI_STATE.ANIM_TO_COLLECTION
+        ) {
           return;
         }
-        queueAnimation(runOpenPackSequence);
+        runOpenPackSequence();
       }
 
       /********************
@@ -1756,4 +1279,3 @@ const CONTRACT_ABI = [
     </script>
   </body>
 </html>
-
