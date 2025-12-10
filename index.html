@@ -456,7 +456,7 @@
         opacity: 0.8;
       }
 
-      /* Animation de transfert vers "Ma collection" */
+      /* Animation de transfert vers "Ma collection" (non utilisée pour l'instant) */
       .card-opened.transfer-to-collection {
         animation: toCollection 0.9s ease-in forwards;
       }
@@ -585,6 +585,24 @@
       .drop-item[data-rarity="LEGENDARY"]:hover .drop-thumb {
         transform: translateY(-2px) scale(1.05);
         box-shadow: 0 0 16px rgba(249, 115, 22, 0.8);
+      }
+
+      /* Booster qui se fend en deux avant de révéler la carte suivante */
+      .booster-closed.split-opening {
+        animation: boosterSplit 0.7s ease-out forwards;
+      }
+
+      @keyframes boosterSplit {
+        0% {
+          transform: scale(1);
+          clip-path: inset(0 0 0 0);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1.02);
+          clip-path: inset(0 50% 0 50%);
+          opacity: 0;
+        }
       }
 
       /* Son toggle (placeholder si tu veux plus tard) */
@@ -1640,8 +1658,6 @@
        * FRONT – assets   *
        ********************/
 
-      // Pour l'instant, on reste sur Florizarre comme visuel par rareté,
-      // le contrat n'a que 3 niveaux (0,1,2)
       const RARITY_IMAGES = {
         0: "images/venusaur_common.png",
         1: "images/venusaur_rare.png",
@@ -1667,6 +1683,7 @@
       let signer;
       let contract;
       let currentAccount = null;
+      let isCardVisible = false; // true quand une carte est affichée à l'écran
 
       // Sons
       let sfxBooster = null;
@@ -1758,7 +1775,9 @@
           opened.classList.add("hidden");
           opened.classList.remove("transfer-to-collection");
         }
-        if (booster) booster.classList.remove("hidden");
+        if (booster) {
+          booster.classList.remove("hidden");
+        }
 
         if (frame) {
           frame.classList.remove("state-opened", "opening", "revealed");
@@ -1766,8 +1785,7 @@
           frame.setAttribute("data-rarity", "COMMON");
         }
 
-        setStatus("Booster prêt. Tu peux ouvrir un nouveau pack.", "ok");
-        setButtonsState({ walletEnabled: true, openPackEnabled: true });
+        isCardVisible = false;
       }
 
       function animateTransferToCollection() {
@@ -1832,10 +1850,8 @@
           playSound(sfxLegendary);
         }
 
-        // animation vers "Ma collection"
-        setTimeout(() => {
-          animateTransferToCollection();
-        }, 1200);
+        // La carte reste affichée, on peut la regarder tranquille
+        isCardVisible = true;
       }
 
       /********************
@@ -1907,7 +1923,28 @@
         }
 
         const frame = document.getElementById("card-frame");
-        if (frame) frame.classList.add("opening");
+        const booster = document.getElementById("booster-closed");
+        const opened = document.getElementById("card-opened");
+
+        // Si une carte est déjà visible, on la cache et on remet le booster
+        if (opened && !opened.classList.contains("hidden")) {
+          opened.classList.add("hidden");
+          if (booster) booster.classList.remove("hidden");
+          isCardVisible = false;
+        }
+
+        // On prépare le frame pour une nouvelle ouverture
+        if (frame) {
+          frame.classList.remove("state-opened", "revealed");
+          frame.classList.add("state-closed", "opening");
+        }
+
+        // Booster vert qui réapparaît et se fend en deux
+        if (booster) {
+          booster.classList.remove("split-opening"); // reset éventuel
+          void booster.offsetWidth; // force un reflow pour rejouer l'anim
+          booster.classList.add("split-opening");
+        }
 
         setButtonsState({ walletEnabled: true, openPackEnabled: false });
         setStatus("Ouverture du pack… transaction en cours.", "pending");
@@ -1961,17 +1998,21 @@
               : rarityRaw
           );
 
+          // Quand la tx est confirmée, on révèle la nouvelle carte
           renderCard(Number(tokenId), rarityNum);
           setStatus(
-            "Pack ouvert ! La carte rejoint ta collection…",
+            "Pack ouvert ! La carte rejoint ta collection (virtuellement)…",
             "ok"
           );
+          // On réactive le bouton pour ouvrir un autre pack
+          setButtonsState({ walletEnabled: true, openPackEnabled: true });
+
+          if (frame) frame.classList.remove("opening");
         } catch (err) {
           console.error(err);
           setStatus("Erreur lors de l'ouverture du pack.", "error");
           setButtonsState({ walletEnabled: true, openPackEnabled: true });
-          const frame2 = document.getElementById("card-frame");
-          if (frame2) frame2.classList.remove("opening");
+          if (frame) frame.classList.remove("opening");
         }
       }
 
@@ -1997,4 +2038,3 @@
     </script>
   </body>
 </html>
-
