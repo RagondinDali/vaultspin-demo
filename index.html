@@ -197,6 +197,20 @@
         opacity: 0.7;
       }
 
+      /* Bouton "Ma collection" indicatif */
+      .collection-link {
+        margin-top: 4px;
+        font-size: 12px;
+        color: #a5b4fc;
+        cursor: pointer;
+        text-decoration: underline;
+        width: fit-content;
+      }
+
+      .collection-link:hover {
+        color: #c4b5fd;
+      }
+
       /* === Zone booster/carte === */
 
       .card-zone {
@@ -218,7 +232,7 @@
         height: 380px;
         border-radius: 24px;
         padding: 2px;
-        transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
+        transition: transform 0.25s ease-out, box-shadow 0.25s ease-out,
           background 0.2s ease-out;
       }
 
@@ -365,6 +379,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        transform-origin: center;
       }
 
       .card-image-wrapper {
@@ -440,6 +455,26 @@
 
       .token-id {
         opacity: 0.8;
+      }
+
+      /* Animation de transfert vers "Ma collection" */
+      .card-opened.transfer-to-collection {
+        animation: toCollection 0.9s ease-in forwards;
+      }
+
+      @keyframes toCollection {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        60% {
+          transform: translate(80px, -80px) scale(0.9);
+          opacity: 0.9;
+        }
+        100% {
+          transform: translate(150px, -140px) scale(0.75);
+          opacity: 0;
+        }
       }
 
       /* === Table des drops === */
@@ -573,6 +608,12 @@
           <div id="mint-info" class="caption">
             En attente d’un mint… ouvre un pack pour voir la carte ici.
           </div>
+          <div
+            class="collection-link"
+            onclick="alert('La page \"Ma collection\" sera une deuxième page (collection.html) qui affichera toutes tes cartes. Le front actuel gère déjà la logique côté booster.');"
+          >
+            → Voir ma collection (bientôt)
+          </div>
         </div>
       </div>
 
@@ -592,7 +633,7 @@
                   <div class="booster-chip">VaultSpin Pack</div>
                   <div class="booster-title">Booster Plante</div>
                   <div class="booster-subtitle">
-                    1 carte Florizarre aléatoire à révéler
+                    1 carte Florizarre / Bulbizarre / Herbizarre à révéler
                   </div>
                 </div>
               </div>
@@ -623,10 +664,110 @@
           </div>
         </div>
 
-        <!-- Table des drops possibles -->
+        <!-- Table des drops possibles (13 cartes) -->
         <div class="drop-table">
           <div class="drop-title">Contenu possible du pack</div>
 
+          <!-- BULBIZARRE -->
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img
+                src="images/bulbasaur_common.png"
+                alt="Bulbizarre Common"
+              />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Bulbizarre · Common</div>
+              <div class="drop-rate">70% de chance</div>
+            </div>
+            <div class="drop-tag common">Common</div>
+          </div>
+
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img src="images/bulbasaur_rare.png" alt="Bulbizarre Rare" />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Bulbizarre · Rare</div>
+              <div class="drop-rate">20% de chance</div>
+            </div>
+            <div class="drop-tag rare">Rare</div>
+          </div>
+
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img src="images/bulbasaur_ultra.png" alt="Bulbizarre Ultra" />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Bulbizarre · Ultra</div>
+              <div class="drop-rate">9% de chance</div>
+            </div>
+            <div class="drop-tag ultra">Ultra</div>
+          </div>
+
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img
+                src="images/bulbasaur_legendary.png"
+                alt="Bulbizarre Legendary"
+              />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Bulbizarre · Legendary</div>
+              <div class="drop-rate">1% de chance</div>
+            </div>
+            <div class="drop-tag legendary">Legendary</div>
+          </div>
+
+          <!-- HERBIZARRE -->
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img src="images/ivysaur_common.png" alt="Herbizarre Common" />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Herbizarre · Common</div>
+              <div class="drop-rate">70% de chance</div>
+            </div>
+            <div class="drop-tag common">Common</div>
+          </div>
+
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img src="images/ivysaur_rare.png" alt="Herbizarre Rare" />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Herbizarre · Rare</div>
+              <div class="drop-rate">20% de chance</div>
+            </div>
+            <div class="drop-tag rare">Rare</div>
+          </div>
+
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img src="images/ivysaur_ultra.png" alt="Herbizarre Ultra" />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Herbizarre · Ultra</div>
+              <div class="drop-rate">9% de chance</div>
+            </div>
+            <div class="drop-tag ultra">Ultra</div>
+          </div>
+
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img
+                src="images/ivysaur_legendary.png"
+                alt="Herbizarre Legendary"
+              />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Herbizarre · Legendary</div>
+              <div class="drop-rate">1% de chance</div>
+            </div>
+            <div class="drop-tag legendary">Legendary</div>
+          </div>
+
+          <!-- FLORIZARRE -->
           <div class="drop-row">
             <div class="drop-thumb">
               <img
@@ -643,10 +784,7 @@
 
           <div class="drop-row">
             <div class="drop-thumb">
-              <img
-                src="images/venusaur_rare.png"
-                alt="Florizarre Rare"
-              />
+              <img src="images/venusaur_rare.png" alt="Florizarre Rare" />
             </div>
             <div class="drop-main">
               <div class="drop-name">Florizarre · Rare</div>
@@ -657,10 +795,7 @@
 
           <div class="drop-row">
             <div class="drop-thumb">
-              <img
-                src="images/venusaur_ultra.png"
-                alt="Florizarre Ultra"
-              />
+              <img src="images/venusaur_ultra.png" alt="Florizarre Ultra" />
             </div>
             <div class="drop-main">
               <div class="drop-name">Florizarre · Ultra</div>
@@ -678,6 +813,21 @@
             </div>
             <div class="drop-main">
               <div class="drop-name">Florizarre · Legendary</div>
+              <div class="drop-rate">1% de chance</div>
+            </div>
+            <div class="drop-tag legendary">Legendary</div>
+          </div>
+
+          <!-- PLANT LEGENDARY -->
+          <div class="drop-row">
+            <div class="drop-thumb">
+              <img
+                src="images/plant_legendary.png"
+                alt="Plante Légendaire"
+              />
+            </div>
+            <div class="drop-main">
+              <div class="drop-name">Plante Légendaire</div>
               <div class="drop-rate">1% de chance</div>
             </div>
             <div class="drop-tag legendary">Legendary</div>
@@ -1451,10 +1601,11 @@
        * FRONT – assets   *
        ********************/
 
+      // Pour l'instant, on garde Florizarre comme visuel pour chaque rareté
       const RARITY_IMAGES = {
         0: "images/venusaur_common.png",
         1: "images/venusaur_rare.png",
-        2: "images/venusaur_ultra.png",
+        2: "images/venusaur_legendary.png", // on n'a pas encore "ultra" on-chain
         3: "images/venusaur_legendary.png",
         COMMON: "images/venusaur_common.png",
         RARE: "images/venusaur_rare.png",
@@ -1506,19 +1657,23 @@
       }
 
       function rarityToLabel(rarity) {
+        // Ton contrat actuel a 0=common,1=rare,2=legendary
         const num =
           typeof rarity === "number" ? rarity : parseInt(rarity || "0", 10);
         const map = {
           0: "Common",
           1: "Rare",
-          2: "Ultra",
-          3: "Legendary",
+          2: "Legendary",
         };
         return map[num] || "Common";
       }
 
       function rarityKeyFromNum(num) {
-        return ["COMMON", "RARE", "ULTRA", "LEGENDARY"][num] || "COMMON";
+        // Pour l'instant pas de ultra on-chain, on mappe 2 → LEGENDARY
+        if (num === 0) return "COMMON";
+        if (num === 1) return "RARE";
+        if (num === 2) return "LEGENDARY";
+        return "COMMON";
       }
 
       function normalizeRarity(rarity) {
@@ -1526,18 +1681,11 @@
         if (typeof rarity === "bigint") return Number(rarity);
         if (typeof rarity === "string" && /^\d+$/.test(rarity))
           return parseInt(rarity, 10);
-        const r = String(rarity || "").toUpperCase().trim();
-        const map = {
-          COMMON: 0,
-          RARE: 1,
-          ULTRA: 2,
-          LEGENDARY: 3,
-        };
-        return map[r] ?? 0;
+        return 0;
       }
 
       /********************
-       * RENDER CARTE     *
+       * RENDER / STATES  *
        ********************/
 
       function showOpenedCardLayout() {
@@ -1549,6 +1697,42 @@
         if (opened) opened.classList.remove("hidden");
         frame.classList.remove("state-closed");
         frame.classList.add("state-opened");
+      }
+
+      function resetToBoosterClosed() {
+        const booster = document.getElementById("booster-closed");
+        const opened = document.getElementById("card-opened");
+        const frame = document.getElementById("card-frame");
+
+        if (opened) {
+          opened.classList.add("hidden");
+          opened.classList.remove("transfer-to-collection");
+        }
+        if (booster) booster.classList.remove("hidden");
+
+        if (frame) {
+          frame.classList.remove("state-opened", "opening", "revealed");
+          frame.classList.add("state-closed");
+          frame.setAttribute("data-rarity", "COMMON");
+        }
+
+        setStatus("Booster prêt. Tu peux ouvrir un nouveau pack.", "ok");
+        setButtonsState({ walletEnabled: true, openPackEnabled: true });
+      }
+
+      function animateTransferToCollection() {
+        const opened = document.getElementById("card-opened");
+        if (!opened) {
+          resetToBoosterClosed();
+          return;
+        }
+
+        opened.classList.add("transfer-to-collection");
+
+        // durée de l’anim = 0.9s
+        setTimeout(() => {
+          resetToBoosterClosed();
+        }, 900);
       }
 
       function renderCard(tokenId, rarityRaw) {
@@ -1572,7 +1756,7 @@
           frame.setAttribute("data-rarity", rarityKey);
           frame.classList.remove("opening");
           frame.classList.add("revealed");
-          setTimeout(() => frame.classList.remove("revealed"), 600);
+          setTimeout(() => frame.classList.remove("revealed"), 400);
         }
 
         if (rarityLabel) {
@@ -1591,6 +1775,11 @@
             " • Rarity: " +
             rarityToLabel(rarityNum);
         }
+
+        // on lance l’anim de transfert vers "Ma collection" après un petit délai
+        setTimeout(() => {
+          animateTransferToCollection();
+        }, 1200);
       }
 
       /********************
@@ -1713,9 +1902,12 @@
               : rarityRaw
           );
 
+          // on affiche la carte puis on laisse l’anim gérer le reset + réactivation du bouton
           renderCard(Number(tokenId), rarityNum);
-          setStatus("Pack ouvert avec succès !", "ok");
-          setButtonsState({ walletEnabled: true, openPackEnabled: true });
+          setStatus(
+            "Pack ouvert ! La carte rejoint ta collection…",
+            "ok"
+          );
         } catch (err) {
           console.error(err);
           setStatus("Erreur lors de l'ouverture du pack.", "error");
