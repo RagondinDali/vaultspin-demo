@@ -431,7 +431,7 @@
         color: #f97316;
       }
 
-      /* glow colors selon rareté (pour futur Ultra/Legendary custom) */
+      /* glow colors selon rareté */
       .card-frame.state-opened[data-rarity="COMMON"] {
         background: radial-gradient(circle at top, #facc15, #4b5563 70%);
         box-shadow: 0 0 40px rgba(250, 204, 21, 0.45);
@@ -456,7 +456,7 @@
         opacity: 0.8;
       }
 
-      /* Animation de transfert vers "Ma collection" (non utilisée pour l'instant) */
+      /* Animation de transfert vers "Ma collection" */
       .card-opened.transfer-to-collection {
         animation: toCollection 0.9s ease-in forwards;
       }
@@ -587,9 +587,9 @@
         box-shadow: 0 0 16px rgba(249, 115, 22, 0.8);
       }
 
-      /* Booster qui se fend en deux avant de révéler la carte suivante */
+      /* Booster qui se fend en deux – durée plus longue (~2.2s) */
       .booster-closed.split-opening {
-        animation: boosterSplit 0.7s ease-out forwards;
+        animation: boosterSplit 2.2s ease-out forwards;
       }
 
       @keyframes boosterSplit {
@@ -602,6 +602,54 @@
           transform: scale(1.02);
           clip-path: inset(0 50% 0 50%);
           opacity: 0;
+        }
+      }
+
+      /* Effet spécial ULTRA : halo bleu */
+      .card-opened.ultra-flare {
+        animation: ultraFlare 1.1s ease-out;
+      }
+
+      @keyframes ultraFlare {
+        0% {
+          box-shadow: 0 0 0 rgba(56, 189, 248, 0);
+          filter: brightness(1);
+        }
+        30% {
+          box-shadow: 0 0 32px rgba(56, 189, 248, 0.9);
+          filter: brightness(1.4);
+        }
+        70% {
+          box-shadow: 0 0 18px rgba(56, 189, 248, 0.7);
+          filter: brightness(1.2);
+        }
+        100% {
+          box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+          filter: brightness(1.05);
+        }
+      }
+
+      /* Effet spécial LEGENDARY : burst doré prolongé */
+      .card-opened.legendary-burst {
+        animation: legendaryBurst 1.6s ease-out;
+      }
+
+      @keyframes legendaryBurst {
+        0% {
+          box-shadow: 0 0 0 rgba(250, 204, 21, 0);
+          filter: brightness(1);
+        }
+        25% {
+          box-shadow: 0 0 40px rgba(250, 204, 21, 0.9);
+          filter: brightness(1.5);
+        }
+        60% {
+          box-shadow: 0 0 26px rgba(249, 115, 22, 0.9);
+          filter: brightness(1.3);
+        }
+        100% {
+          box-shadow: 0 0 14px rgba(249, 115, 22, 0.5);
+          filter: brightness(1.05);
         }
       }
 
@@ -1683,7 +1731,7 @@
       let signer;
       let contract;
       let currentAccount = null;
-      let isCardVisible = false; // true quand une carte est affichée à l'écran
+      let isCardVisible = false; // true quand une carte est affichée
 
       // Sons
       let sfxBooster = null;
@@ -1732,6 +1780,7 @@
           0: "Common",
           1: "Rare",
           2: "Legendary",
+          3: "Ultra", // pour futur support si tu ajoutes un niveau 3
         };
         return map[num] || "Common";
       }
@@ -1740,6 +1789,7 @@
         if (num === 0) return "COMMON";
         if (num === 1) return "RARE";
         if (num === 2) return "LEGENDARY";
+        if (num === 3) return "ULTRA"; // futur
         return "COMMON";
       }
 
@@ -1773,10 +1823,10 @@
 
         if (opened) {
           opened.classList.add("hidden");
-          opened.classList.remove("transfer-to-collection");
+          opened.classList.remove("transfer-to-collection", "ultra-flare", "legendary-burst");
         }
         if (booster) {
-          booster.classList.remove("hidden");
+          booster.classList.remove("hidden", "split-opening");
         }
 
         if (frame) {
@@ -1788,24 +1838,14 @@
         isCardVisible = false;
       }
 
-      function animateTransferToCollection() {
-        const opened = document.getElementById("card-opened");
-        if (!opened) {
-          resetToBoosterClosed();
-          return;
-        }
-
-        opened.classList.add("transfer-to-collection");
-
-        setTimeout(() => {
-          resetToBoosterClosed();
-        }, 900);
-      }
-
       function renderCard(tokenId, rarityRaw) {
         const rarityNum = normalizeRarity(rarityRaw);
+        const rarityKey = rarityKeyFromNum(rarityNum);
+
         const imgSrc =
-          RARITY_IMAGES[rarityNum] || RARITY_IMAGES["COMMON"];
+          RARITY_IMAGES[rarityKey] ??
+          RARITY_IMAGES[rarityNum] ??
+          RARITY_IMAGES["COMMON"];
 
         showOpenedCardLayout();
 
@@ -1814,12 +1854,16 @@
         const rarityLabel = document.getElementById("rarity-label");
         const tokenIdLabel = document.getElementById("token-id-label");
         const mintInfo = document.getElementById("mint-info");
+        const opened = document.getElementById("card-opened");
+
+        if (opened) {
+          opened.classList.remove("ultra-flare", "legendary-burst", "transfer-to-collection");
+        }
 
         if (imgEl) imgEl.src = imgSrc;
         if (tokenIdLabel) tokenIdLabel.textContent = "#" + tokenId;
 
         if (frame) {
-          const rarityKey = rarityKeyFromNum(rarityNum);
           frame.setAttribute("data-rarity", rarityKey);
           frame.classList.remove("opening");
           frame.classList.add("revealed");
@@ -1830,8 +1874,7 @@
           const label = rarityToLabel(rarityNum);
           rarityLabel.textContent = label;
           rarityLabel.className = "card-footer-right";
-          const key = rarityKeyFromNum(rarityNum);
-          const rarityClass = RARITY_LABEL_CLASS[key];
+          const rarityClass = RARITY_LABEL_CLASS[rarityKey];
           if (rarityClass) rarityLabel.classList.add(rarityClass);
         }
 
@@ -1843,14 +1886,22 @@
             rarityToLabel(rarityNum);
         }
 
+        // Effets spéciaux selon la rareté
+        if (opened) {
+          if (rarityKey === "ULTRA") {
+            opened.classList.add("ultra-flare");
+          } else if (rarityKey === "LEGENDARY") {
+            opened.classList.add("legendary-burst");
+          }
+        }
+
         // sons de révélation
         playSound(sfxReveal);
-        if (rarityNum === 2) {
-          // légendaire (dans ton contrat actuel)
+        if (rarityKey === "LEGENDARY") {
           playSound(sfxLegendary);
         }
 
-        // La carte reste affichée, on peut la regarder tranquille
+        // La carte reste affichée
         isCardVisible = true;
       }
 
@@ -1926,30 +1977,34 @@
         const booster = document.getElementById("booster-closed");
         const opened = document.getElementById("card-opened");
 
-        // Si une carte est déjà visible, on la cache et on remet le booster
+        // On bloque le bouton pendant toute la séquence
+        setButtonsState({ walletEnabled: true, openPackEnabled: false });
+
+        // Si une carte est déjà visible, on l'envoie d'abord vers "Ma collection"
         if (opened && !opened.classList.contains("hidden")) {
-          opened.classList.add("hidden");
-          if (booster) booster.classList.remove("hidden");
-          isCardVisible = false;
+          opened.classList.remove("ultra-flare", "legendary-burst");
+          opened.classList.add("transfer-to-collection");
+          if (booster) booster.classList.add("hidden");
+
+          // On attend la fin de l'animation (~900ms)
+          await new Promise((resolve) => setTimeout(resolve, 900));
+          resetToBoosterClosed();
         }
 
-        // On prépare le frame pour une nouvelle ouverture
+        // Préparer un nouveau cycle d'ouverture
         if (frame) {
           frame.classList.remove("state-opened", "revealed");
           frame.classList.add("state-closed", "opening");
         }
 
-        // Booster vert qui réapparaît et se fend en deux
+        // Booster vert qui se fend en deux (animation plus longue)
         if (booster) {
           booster.classList.remove("split-opening"); // reset éventuel
-          void booster.offsetWidth; // force un reflow pour rejouer l'anim
+          void booster.offsetWidth; // reflow pour rejouer l'anim
           booster.classList.add("split-opening");
         }
 
-        setButtonsState({ walletEnabled: true, openPackEnabled: false });
         setStatus("Ouverture du pack… transaction en cours.", "pending");
-
-        // son d'ouverture de booster
         playSound(sfxBooster);
 
         try {
@@ -1998,16 +2053,15 @@
               : rarityRaw
           );
 
-          // Quand la tx est confirmée, on révèle la nouvelle carte
+          // Révélation de la nouvelle carte
           renderCard(Number(tokenId), rarityNum);
           setStatus(
             "Pack ouvert ! La carte rejoint ta collection (virtuellement)…",
             "ok"
           );
-          // On réactive le bouton pour ouvrir un autre pack
-          setButtonsState({ walletEnabled: true, openPackEnabled: true });
 
           if (frame) frame.classList.remove("opening");
+          setButtonsState({ walletEnabled: true, openPackEnabled: true });
         } catch (err) {
           console.error(err);
           setStatus("Erreur lors de l'ouverture du pack.", "error");
