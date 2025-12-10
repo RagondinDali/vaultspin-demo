@@ -440,7 +440,8 @@
             <span>Réseau attendu :</span> Sepolia
           </div>
           <div class="pill">
-            <span>Contrat :</span> <span id="contract-short">0x…</span>
+            <span>Contrat :</span>
+            <span id="contract-short">0x0003…9ED7</span>
           </div>
         </div>
 
@@ -495,17 +496,763 @@
 
     <script>
       /********************
-       * CONFIG CONTRAT  *
+       * CONFIG CONTRAT   *
        ********************/
 
-      // ⚠️ TODO: remplace par ton adresse de contrat réelle
-      const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000";
+      const CONTRACT_ADDRESS =
+        "0x0003AF7D5F96cE47a54f5AF774d72049825c9ED7";
 
-      // ⚠️ TODO: remplace par ton ABI réelle (function d'ouverture et event VaultSpinMinted)
       const CONTRACT_ABI = [
-        // Exemple indicatif – à remplacer :
-        // "function openVaultSpinPack() public returns (uint256 tokenId, uint8 rarity)",
-        // "event VaultSpinMinted(address indexed to, uint256 tokenId, uint8 rarity)"
+        {
+          inputs: [
+            { internalType: "address", name: "to", type: "address" },
+            { internalType: "uint256", name: "tokenId", type: "uint256" },
+          ],
+          name: "approve",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "ERC721IncorrectOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "ERC721InsufficientApproval",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "approver",
+              type: "address",
+            },
+          ],
+          name: "ERC721InvalidApprover",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+          ],
+          name: "ERC721InvalidOperator",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "ERC721InvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "receiver",
+              type: "address",
+            },
+          ],
+          name: "ERC721InvalidReceiver",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+          ],
+          name: "ERC721InvalidSender",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "ERC721NonexistentToken",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "approved",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "Approval",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "bool",
+              name: "approved",
+              type: "bool",
+            },
+          ],
+          name: "ApprovalForAll",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "_fromTokenId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "_toTokenId",
+              type: "uint256",
+            },
+          ],
+          name: "BatchMetadataUpdate",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint8",
+              name: "rarity",
+              type: "uint8",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "cardTypeIndex",
+              type: "uint256",
+            },
+          ],
+          name: "CardMinted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "physicalCardId",
+              type: "uint256",
+            },
+          ],
+          name: "CardRedeemed",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "warehouseCardId",
+              type: "uint256",
+            },
+          ],
+          name: "linkPhysicalCard",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "_tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "MetadataUpdate",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "randomNumber",
+              type: "uint256",
+            },
+          ],
+          name: "mintBooster",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "cardTypeIndex",
+              type: "uint256",
+            },
+          ],
+          name: "mintCard",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "redeemCard",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "safeTransferFrom",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "safeTransferFrom",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+            {
+              internalType: "bool",
+              name: "approved",
+              type: "bool",
+            },
+          ],
+          name: "setApprovalForAll",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "Transfer",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "transferFrom",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "balanceOf",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            { internalType: "uint256", name: "", type: "uint256" },
+          ],
+          name: "cardTypes",
+          outputs: [
+            { internalType: "string", name: "uri", type: "string" },
+            { internalType: "string", name: "name", type: "string" },
+            { internalType: "uint8", name: "rarity", type: "uint8" },
+            {
+              internalType: "uint256",
+              name: "maxSupply",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "minted",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "getApproved",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+          ],
+          name: "isApprovedForAll",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          name: "isRedeemed",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "name",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "nextTokenId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "ownerOf",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          name: "physicalCardId",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "cardTypeIndex",
+              type: "uint256",
+            },
+          ],
+          name: "remainingSupply",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes4",
+              name: "interfaceId",
+              type: "bytes4",
+            },
+          ],
+          name: "supportsInterface",
+          outputs: [
+            { internalType: "bool", name: "", type: "bool" },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "symbol",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          name: "tokenCardTypeIndex",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+          name: "tokenRarity",
+          outputs: [
+            {
+              internalType: "uint8",
+              name: "",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "tokenURI",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
       ];
 
       const SEPOLIA_CHAIN_ID = "0xaa36a7"; // 11155111
@@ -514,15 +1261,17 @@
        * FRONT – assets   *
        ********************/
 
-      // Mapping rareté → image locale
       const RARITY_IMAGES = {
+        0: "images/venusaur_common.png",
+        1: "images/venusaur_rare.png",
+        2: "images/venusaur_ultra.png",
+        3: "images/venusaur_legendary.png",
         COMMON: "images/venusaur_common.png",
         RARE: "images/venusaur_rare.png",
         ULTRA: "images/venusaur_ultra.png",
         LEGENDARY: "images/venusaur_legendary.png",
       };
 
-      // Mapping rareté → classe CSS pour le label
       const RARITY_LABEL_CLASS = {
         COMMON: "rarity-common",
         RARE: "rarity-rare",
@@ -530,7 +1279,6 @@
         LEGENDARY: "rarity-legendary",
       };
 
-      // Historique des cartes tirées (max 8)
       const openedCards = [];
 
       /********************
@@ -543,7 +1291,7 @@
       let currentAccount = null;
 
       /********************
-       * UTILITAIRES UI   *
+       * UTIL UI          *
        ********************/
 
       function setStatus(text, mode = "ok") {
@@ -552,7 +1300,6 @@
         if (!statusText || !dot) return;
 
         statusText.textContent = text;
-
         dot.classList.remove("error", "pending");
         if (mode === "error") dot.classList.add("error");
         if (mode === "pending") dot.classList.add("pending");
@@ -571,32 +1318,40 @@
       }
 
       function rarityToLabel(rarity) {
-        const r = String(rarity || "").toUpperCase();
-        if (!r) return "Common";
-        return r.charAt(0) + r.slice(1).toLowerCase();
+        const num =
+          typeof rarity === "number" ? rarity : parseInt(rarity || "0", 10);
+        const map = {
+          0: "Common",
+          1: "Rare",
+          2: "Ultra",
+          3: "Legendary",
+        };
+        return map[num] || "Common";
       }
 
       function normalizeRarity(rarity) {
-        if (typeof rarity === "number") {
-          const map = {
-            0: "COMMON",
-            1: "RARE",
-            2: "ULTRA",
-            3: "LEGENDARY",
-          };
-          return map[rarity] || "COMMON";
-        }
-        return String(rarity || "").toUpperCase().trim();
+        if (typeof rarity === "number") return rarity;
+        if (typeof rarity === "bigint") return Number(rarity);
+        if (typeof rarity === "string" && /^\d+$/.test(rarity))
+          return parseInt(rarity, 10);
+        const r = String(rarity || "").toUpperCase().trim();
+        const map = {
+          COMMON: 0,
+          RARE: 1,
+          ULTRA: 2,
+          LEGENDARY: 3,
+        };
+        return map[r] ?? 0;
       }
 
       /********************
        * RENDER CARTE     *
        ********************/
 
-      function renderCard(tokenId, rarity) {
-        const normalizedRarity = normalizeRarity(rarity);
+      function renderCard(tokenId, rarityRaw) {
+        const rarityNum = normalizeRarity(rarityRaw);
         const imageSrc =
-          RARITY_IMAGES[normalizedRarity] || RARITY_IMAGES["COMMON"];
+          RARITY_IMAGES[rarityNum] || RARITY_IMAGES["COMMON"];
 
         const cardFrame = document.getElementById("card-frame");
         const imgEl = document.getElementById("card-image");
@@ -608,17 +1363,19 @@
         if (tokenIdLabel) tokenIdLabel.textContent = "#" + tokenId;
 
         if (cardFrame) {
-          cardFrame.setAttribute("data-rarity", normalizedRarity);
+          const rarityKey = ["COMMON", "RARE", "ULTRA", "LEGENDARY"][rarityNum] || "COMMON";
+          cardFrame.setAttribute("data-rarity", rarityKey);
           cardFrame.classList.remove("opening");
           cardFrame.classList.add("revealed");
           setTimeout(() => cardFrame.classList.remove("revealed"), 600);
         }
 
         if (rarityLabel) {
-          const formatted = rarityToLabel(normalizedRarity);
-          rarityLabel.textContent = formatted;
+          const label = rarityToLabel(rarityNum);
+          rarityLabel.textContent = label;
           rarityLabel.className = "card-footer-right";
-          const rarityClass = RARITY_LABEL_CLASS[normalizedRarity];
+          const key = ["COMMON", "RARE", "ULTRA", "LEGENDARY"][rarityNum] || "COMMON";
+          const rarityClass = RARITY_LABEL_CLASS[key];
           if (rarityClass) rarityLabel.classList.add(rarityClass);
         }
 
@@ -627,15 +1384,14 @@
             "NFT VaultSpin reçu – tokenId " +
             tokenId +
             " • Rarity: " +
-            rarityToLabel(normalizedRarity);
+            rarityToLabel(rarityNum);
         }
 
-        // Ajout historique
-        addToHistory(tokenId, normalizedRarity);
+        addToHistory(tokenId, rarityNum);
       }
 
-      function addToHistory(tokenId, rarity) {
-        openedCards.unshift({ tokenId, rarity });
+      function addToHistory(tokenId, rarityNum) {
+        openedCards.unshift({ tokenId, rarity: rarityNum });
         if (openedCards.length > 8) openedCards.pop();
         renderHistory();
       }
@@ -652,10 +1408,9 @@
         }
 
         openedCards.forEach((card) => {
-          const normalized = normalizeRarity(card.rarity);
           const imgSrc =
-            RARITY_IMAGES[normalized] || RARITY_IMAGES["COMMON"];
-          const rarityLabel = rarityToLabel(normalized);
+            RARITY_IMAGES[card.rarity] || RARITY_IMAGES["COMMON"];
+          const rarityLabel = rarityToLabel(card.rarity);
           const rarityClass = rarityLabel.toLowerCase();
 
           const div = document.createElement("div");
@@ -701,13 +1456,11 @@
             signer
           );
 
-          // Affichage adresse contrat
           const contractShort = document.getElementById("contract-short");
           if (contractShort) {
             contractShort.textContent = shortAddress(CONTRACT_ADDRESS);
           }
 
-          // Vérif réseau
           const network = await provider.getNetwork();
           if (
             network &&
@@ -738,7 +1491,7 @@
        ********************/
 
       async function handleOpenPack() {
-        if (!contract) {
+        if (!contract || !currentAccount) {
           setStatus("Connecte ton wallet d'abord.", "error");
           return;
         }
@@ -751,8 +1504,13 @@
         setStatus("Ouverture du pack… transaction en cours.", "pending");
 
         try {
-          // ⚠️ TODO: adapte le nom de la fonction à TON contrat (exemple: openVaultSpinPack)
-          const tx = await contract.openVaultSpinPack();
+          // randomNumber "fake" côté front pour la démo
+          const randomNumber = ethers.toBigInt(
+            Math.floor(Math.random() * 1e9)
+          );
+
+          const tx = await contract.mintBooster(currentAccount, randomNumber);
+
           const txCaption = document.getElementById("tx-caption");
           if (txCaption) {
             txCaption.textContent =
@@ -761,51 +1519,44 @@
 
           const receipt = await tx.wait();
 
-          // Récupérer tokenId + rarity via event
           let tokenId = null;
           let rarityRaw = null;
 
-          try {
-            for (const log of receipt.logs) {
-              try {
-                const parsed = contract.interface.parseLog(log);
-                // ⚠️ TODO: adapte le nom d'event à TON ABI (ex: VaultSpinMinted)
-                if (parsed && parsed.name === "VaultSpinMinted") {
-                  tokenId = parsed.args.tokenId;
-                  rarityRaw = parsed.args.rarity;
-                  break;
-                }
-              } catch (e) {
-                // ignore log not from this contract
+          // On cherche l'event CardMinted dans les logs
+          for (const log of receipt.logs) {
+            try {
+              const parsed = contract.interface.parseLog(log);
+              if (parsed && parsed.name === "CardMinted") {
+                tokenId = parsed.args.tokenId;
+                rarityRaw = parsed.args.rarity;
+                break;
               }
+            } catch (e) {
+              // log qui ne concerne pas ce contrat → on ignore
             }
-          } catch (e) {
-            console.warn("Impossible de parser les logs:", e);
           }
 
           if (tokenId == null) {
-            // Fallback : si ta fonction renvoie directement les valeurs
-            // (ex: function openVaultSpinPack() returns (uint256 tokenId, uint8 rarity))
-            // Ethers v6 n'expose pas directement les valeurs de retour, donc il faut l'event.
             throw new Error(
-              "Event VaultSpinMinted introuvable dans les logs. Vérifie ton ABI / nom d'event."
+              "Event CardMinted introuvable dans les logs. Vérifie que mintBooster émet bien cet event."
             );
           }
 
-          const rarityNorm = normalizeRarity(
+          const rarityNum = normalizeRarity(
             rarityRaw && rarityRaw.toString
               ? rarityRaw.toString()
               : rarityRaw
           );
 
-          renderCard(Number(tokenId), rarityNorm);
+          renderCard(Number(tokenId), rarityNum);
           setStatus("Pack ouvert avec succès !", "ok");
           setButtonsState({ walletEnabled: true, openPackEnabled: true });
         } catch (err) {
           console.error(err);
           setStatus("Erreur lors de l'ouverture du pack.", "error");
           setButtonsState({ walletEnabled: true, openPackEnabled: true });
-          if (cardFrame) cardFrame.classList.remove("opening");
+          const cardFrame2 = document.getElementById("card-frame");
+          if (cardFrame2) cardFrame2.classList.remove("opening");
         }
       }
 
@@ -813,9 +1564,6 @@
        * HOOK GLOBAL      *
        ********************/
 
-      // Fonction d'entrée publique que tu peux appeler depuis une autre dapp
-      // si tu veux juste réutiliser la partie UI :
-      // window.onVaultSpinMinted(15, "RARE");
       function onVaultSpinMinted(tokenIdFromContract, rarityFromContract) {
         renderCard(tokenIdFromContract, rarityFromContract);
       }
@@ -827,8 +1575,7 @@
        ********************/
 
       document.addEventListener("DOMContentLoaded", () => {
-        // Carte par défaut
-        renderCard("–", "COMMON");
+        renderCard("–", 0); // placeholder Common
 
         setButtonsState({ walletEnabled: true, openPackEnabled: false });
 
