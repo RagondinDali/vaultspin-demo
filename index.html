@@ -793,26 +793,10 @@
       const CONTRACT_ABI = [
         {
           "inputs": [
-            {
-              "internalType": "string",
-              "name": "uri",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "internalType": "uint8",
-              "name": "rarity",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maxSupply",
-              "type": "uint256"
-            }
+            { "internalType": "string", "name": "uri", "type": "string" },
+            { "internalType": "string", "name": "name", "type": "string" },
+            { "internalType": "uint8", "name": "rarity", "type": "uint8" },
+            { "internalType": "uint256", "name": "maxSupply", "type": "uint256" }
           ],
           "name": "addCardType",
           "outputs": [],
@@ -821,16 +805,8 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "approve",
           "outputs": [],
@@ -844,125 +820,73 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "sender", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+            { "internalType": "address", "name": "owner", "type": "address" }
           ],
           "name": "ERC721IncorrectOwner",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "address", "name": "operator", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "ERC721InsufficientApproval",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "approver",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "approver", "type": "address" }
           ],
           "name": "ERC721InvalidApprover",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "operator", "type": "address" }
           ],
           "name": "ERC721InvalidOperator",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "owner", "type": "address" }
           ],
           "name": "ERC721InvalidOwner",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "receiver",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "receiver", "type": "address" }
           ],
           "name": "ERC721InvalidReceiver",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "sender", "type": "address" }
           ],
           "name": "ERC721InvalidSender",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "ERC721NonexistentToken",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "owner", "type": "address" }
           ],
           "name": "OwnableInvalidOwner",
           "type": "error"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "account", "type": "address" }
           ],
           "name": "OwnableUnauthorizedAccount",
           "type": "error"
@@ -970,24 +894,9 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "approved",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "approved", "type": "address" },
+            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "Approval",
           "type": "event"
@@ -995,24 +904,9 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "bool",
-              "name": "approved",
-              "type": "bool"
-            }
+            { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "operator", "type": "address" },
+            { "indexed": false, "internalType": "bool", "name": "approved", "type": "bool" }
           ],
           "name": "ApprovalForAll",
           "type": "event"
@@ -1020,18 +914,8 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "_fromTokenId",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "_toTokenId",
-              "type": "uint256"
-            }
+            { "indexed": false, "internalType": "uint256", "name": "_fromTokenId", "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "_toTokenId", "type": "uint256" }
           ],
           "name": "BatchMetadataUpdate",
           "type": "event"
@@ -1039,24 +923,9 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint8",
-              "name": "rarity",
-              "type": "uint8"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "cardTypeIndex",
-              "type": "uint256"
-            }
+            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+            { "indexed": false, "internalType": "uint8", "name": "rarity", "type": "uint8" },
+            { "indexed": true, "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
           ],
           "name": "CardMinted",
           "type": "event"
@@ -1064,34 +933,16 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "physicalCardId",
-              "type": "uint256"
-            }
+            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "physicalCardId", "type": "uint256" }
           ],
           "name": "CardRedeemed",
           "type": "event"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "warehouseCardId",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+            { "internalType": "uint256", "name": "warehouseCardId", "type": "uint256" }
           ],
           "name": "linkPhysicalCard",
           "outputs": [],
@@ -1101,28 +952,15 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "_tokenId",
-              "type": "uint256"
-            }
+            { "indexed": false, "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
           ],
           "name": "MetadataUpdate",
           "type": "event"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "randomNumber",
-              "type": "uint256"
-            }
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "randomNumber", "type": "uint256" }
           ],
           "name": "mintBooster",
           "outputs": [],
@@ -1131,16 +969,8 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "cardTypeIndex",
-              "type": "uint256"
-            }
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
           ],
           "name": "mintCard",
           "outputs": [],
@@ -1150,29 +980,15 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
+            { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
           ],
           "name": "OwnershipTransferred",
           "type": "event"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "redeemCard",
           "outputs": [],
@@ -1188,21 +1004,9 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "address", "name": "from", "type": "address" },
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "safeTransferFrom",
           "outputs": [],
@@ -1211,26 +1015,10 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bytes",
-              "name": "data",
-              "type": "bytes"
-            }
+            { "internalType": "address", "name": "from", "type": "address" },
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+            { "internalType": "bytes", "name": "data", "type": "bytes" }
           ],
           "name": "safeTransferFrom",
           "outputs": [],
@@ -1239,16 +1027,8 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            },
-            {
-              "internalType": "bool",
-              "name": "approved",
-              "type": "bool"
-            }
+            { "internalType": "address", "name": "operator", "type": "address" },
+            { "internalType": "bool", "name": "approved", "type": "bool" }
           ],
           "name": "setApprovalForAll",
           "outputs": [],
@@ -1257,11 +1037,7 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "uint16[4]",
-              "name": "newWeights",
-              "type": "uint16[4]"
-            }
+            { "internalType": "uint16[4]", "name": "newWeights", "type": "uint16[4]" }
           ],
           "name": "setRarityWeights",
           "outputs": [],
@@ -1271,45 +1047,18 @@
         {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
+            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "Transfer",
           "type": "event"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "from",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "to",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "address", "name": "from", "type": "address" },
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "transferFrom",
           "outputs": [],
@@ -1318,11 +1067,7 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "newOwner", "type": "address" }
           ],
           "name": "transferOwnership",
           "outputs": [],
@@ -1331,120 +1076,60 @@
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "owner", "type": "address" }
           ],
           "name": "balanceOf",
           "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "name": "cardTypes",
           "outputs": [
-            {
-              "internalType": "string",
-              "name": "uri",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "internalType": "uint8",
-              "name": "rarity",
-              "type": "uint8"
-            },
-            {
-              "internalType": "uint256",
-              "name": "maxSupply",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "minted",
-              "type": "uint256"
-            }
+            { "internalType": "string", "name": "uri", "type": "string" },
+            { "internalType": "string", "name": "name", "type": "string" },
+            { "internalType": "uint8", "name": "rarity", "type": "uint8" },
+            { "internalType": "uint256", "name": "maxSupply", "type": "uint256" },
+            { "internalType": "uint256", "name": "minted", "type": "uint256" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "getApproved",
           "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "", "type": "address" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "owner", "type": "address" },
+            { "internalType": "address", "name": "operator", "type": "address" }
           ],
           "name": "isApprovedForAll",
           "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
+            { "internalType": "bool", "name": "", "type": "bool" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "name": "isRedeemed",
           "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
+            { "internalType": "bool", "name": "", "type": "bool" }
           ],
           "stateMutability": "view",
           "type": "function"
@@ -1453,11 +1138,7 @@
           "inputs": [],
           "name": "name",
           "outputs": [
-            {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
-            }
+            { "internalType": "string", "name": "", "type": "string" }
           ],
           "stateMutability": "view",
           "type": "function"
@@ -1466,11 +1147,7 @@
           "inputs": [],
           "name": "nextTokenId",
           "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "stateMutability": "view",
           "type": "function"
@@ -1479,106 +1156,62 @@
           "inputs": [],
           "name": "owner",
           "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "", "type": "address" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "ownerOf",
           "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
+            { "internalType": "address", "name": "", "type": "address" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "name": "physicalCardId",
           "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "name": "rarityWeights",
           "outputs": [
-            {
-              "internalType": "uint16",
-              "name": "",
-              "type": "uint16"
-            }
+            { "internalType": "uint16", "name": "", "type": "uint16" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "cardTypeIndex",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
           ],
           "name": "remainingSupply",
           "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "interfaceId",
-              "type": "bytes4"
-            }
+            { "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }
           ],
           "name": "supportsInterface",
           "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
+            { "internalType": "bool", "name": "", "type": "bool" }
           ],
           "stateMutability": "view",
           "type": "function"
@@ -1587,68 +1220,40 @@
           "inputs": [],
           "name": "symbol",
           "outputs": [
-            {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
-            }
+            { "internalType": "string", "name": "", "type": "string" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "name": "tokenCardTypeIndex",
           "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "", "type": "uint256" }
           ],
           "name": "tokenRarity",
           "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "",
-              "type": "uint8"
-            }
+            { "internalType": "uint8", "name": "", "type": "uint8" }
           ],
           "stateMutability": "view",
           "type": "function"
         },
         {
           "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
           ],
           "name": "tokenURI",
           "outputs": [
-            {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
-            }
+            { "internalType": "string", "name": "", "type": "string" }
           ],
           "stateMutability": "view",
           "type": "function"
@@ -1672,6 +1277,26 @@
         LEGENDARY: "images/venusaur_legendary.png",
       };
 
+      // 13 cardTypes = 13 images précises (ordre = ordre des _addCardType du contrat)
+      const CARDTYPE_IMAGES = {
+        0: "images/bulbasaur_common.png",     // Bulbizarre Common
+        1: "images/ivysaur_common.png",       // Herbizarre Common
+        2: "images/venusaur_common.png",      // Florizarre Common
+
+        3: "images/bulbasaur_rare.png",       // Bulbizarre Rare
+        4: "images/ivysaur_rare.png",         // Herbizarre Rare
+        5: "images/venusaur_rare.png",        // Florizarre Rare
+
+        6: "images/bulbasaur_ultra.png",      // Bulbizarre Ultra
+        7: "images/ivysaur_ultra.png",        // Herbizarre Ultra
+        8: "images/venusaur_ultra.png",       // Florizarre Ultra
+
+        9:  "images/bulbasaur_legendary.png", // Bulbizarre Legendary
+        10: "images/ivysaur_legendary.png",   // Herbizarre Legendary
+        11: "images/venusaur_legendary.png",  // Florizarre Legendary
+        12: "images/plant_legendary.png",     // Plante Legendary
+      };
+
       const RARITY_LABEL_CLASS = {
         COMMON: "rarity-common",
         RARE: "rarity-rare",
@@ -1689,20 +1314,18 @@
       let currentAccount = null;
 
       const UI_STATE = {
-        IDLE: "idle", // booster fermé, prêt à ouvrir
-        WAITING_TX: "waiting_tx", // tx en attente
-        CARD_REVEALED: "card_revealed", // carte visible
-        ANIM_TO_COLLECTION: "anim_to_collection", // carte qui part vers collection
+        IDLE: "idle",
+        WAITING_TX: "waiting_tx",
+        CARD_REVEALED: "card_revealed",
+        ANIM_TO_COLLECTION: "anim_to_collection",
       };
 
       let uiState = UI_STATE.IDLE;
       let isCardVisible = false;
 
-      // File d'attente d'animations
       const animationQueue = [];
       let isProcessingQueue = false;
 
-      // Sons
       let sfxBooster = null;
       let sfxReveal = null;
       let sfxLegendary = null;
@@ -1733,7 +1356,6 @@
         while (animationQueue.length > 0) {
           const fn = animationQueue.shift();
           try {
-            // chaque fn est async
             await fn();
           } catch (e) {
             console.error("Erreur animation/sequence:", e);
@@ -1859,14 +1481,21 @@
         uiState = UI_STATE.IDLE;
       }
 
-      function renderCard(tokenId, rarityRaw) {
+      function renderCard(tokenId, rarityRaw, cardTypeIndexRaw) {
         const rarityNum = normalizeRarity(rarityRaw);
         const rarityKey = rarityKeyFromNum(rarityNum);
 
-        const imgSrc =
-          RARITY_IMAGES[rarityKey] ??
-          RARITY_IMAGES[rarityNum] ??
-          RARITY_IMAGES["COMMON"];
+        const cardTypeIndex =
+          cardTypeIndexRaw !== undefined && cardTypeIndexRaw !== null
+            ? Number(cardTypeIndexRaw)
+            : null;
+
+        let imgSrc =
+          cardTypeIndex !== null && Object.prototype.hasOwnProperty.call(CARDTYPE_IMAGES, cardTypeIndex)
+            ? CARDTYPE_IMAGES[cardTypeIndex]
+            : (RARITY_IMAGES[rarityKey] ??
+               RARITY_IMAGES[rarityNum] ??
+               RARITY_IMAGES["COMMON"]);
 
         showOpenedCardLayout();
 
@@ -1911,7 +1540,6 @@
             rarityToLabel(rarityNum);
         }
 
-        // Effets spéciaux ULTRA / LEGENDARY
         if (opened) {
           if (rarityKey === "ULTRA") {
             opened.classList.add("ultra-flare");
@@ -1920,7 +1548,6 @@
           }
         }
 
-        // sons de révélation
         playSound(sfxReveal);
         if (rarityKey === "LEGENDARY") {
           playSound(sfxLegendary);
@@ -2002,10 +1629,8 @@
         const booster = document.getElementById("booster-closed");
         const opened = document.getElementById("card-opened");
 
-        // On désactive le bouton pendant toute la séquence
         setButtonsState({ walletEnabled: true, openPackEnabled: false });
 
-        // Si une carte est visible, on la fait partir vers "Ma collection"
         if (uiState === UI_STATE.CARD_REVEALED && opened) {
           uiState = UI_STATE.ANIM_TO_COLLECTION;
           opened.classList.remove("ultra-flare", "legendary-burst");
@@ -2020,7 +1645,6 @@
           resetToBoosterClosed();
         }
 
-        // Nouveau cycle d'ouverture
         uiState = UI_STATE.WAITING_TX;
 
         if (frame) {
@@ -2052,7 +1676,6 @@
               "Transaction envoyée : " + tx.hash.slice(0, 18) + "…";
           }
 
-          // On attend au moins 2.2s pour laisser l'anim de split vivre sa meilleure vie
           const [receipt] = await Promise.all([
             tx.wait(),
             new Promise((resolve) => setTimeout(resolve, 2200)),
@@ -2060,6 +1683,7 @@
 
           let tokenId = null;
           let rarityRaw = null;
+          let cardTypeIndexRaw = null;
 
           for (const log of receipt.logs) {
             try {
@@ -2067,10 +1691,11 @@
               if (parsed && parsed.name === "CardMinted") {
                 tokenId = parsed.args.tokenId;
                 rarityRaw = parsed.args.rarity;
+                cardTypeIndexRaw = parsed.args.cardTypeIndex;
                 break;
               }
             } catch (_) {
-              // logs d'autres contrats -> ignore
+              // autres logs
             }
           }
 
@@ -2086,8 +1711,7 @@
               : rarityRaw
           );
 
-          // Révélation de la carte
-          renderCard(Number(tokenId), rarityNum);
+          renderCard(Number(tokenId), rarityNum, cardTypeIndexRaw);
           setStatus(
             "Pack ouvert ! Clique à nouveau pour ouvrir le prochain.",
             "ok"
@@ -2105,7 +1729,6 @@
       }
 
       function handleOpenPackClick() {
-        // Si on est déjà en attente de tx ou anim, on laisse la queue gérer
         if (uiState === UI_STATE.WAITING_TX || uiState === UI_STATE.ANIM_TO_COLLECTION) {
           return;
         }
@@ -2126,12 +1749,10 @@
         if (openPackBtn)
           openPackBtn.addEventListener("click", handleOpenPackClick);
 
-        // sons
         sfxBooster = document.getElementById("sfx-booster");
         sfxReveal = document.getElementById("sfx-reveal");
         sfxLegendary = document.getElementById("sfx-legendary");
 
-        // état visuel initial
         setBoosterMode("booster-mode-idle");
       });
     </script>
