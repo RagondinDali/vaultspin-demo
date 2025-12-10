@@ -547,7 +547,7 @@
           </div>
           <div
             class="collection-link"
-            onclick="alert('La page \"Ma collection\" sera une deuxième page (collection.html) qui affichera toutes tes cartes. Le front actuel gère déjà la logique côté booster.');"
+            onclick="alert('La page \"Ma collection\" sera une deuxième page (collection.html) qui affichera toutes tes cartes.');"
           >
             → Voir ma collection (bientôt)
           </div>
@@ -773,7 +773,7 @@
       </div>
     </div>
 
-    <!-- Sons (à mettre dans /sounds) -->
+    <!-- Sons -->
     <audio id="sfx-booster" src="sounds/booster_open.mp3" preload="auto"></audio>
     <audio id="sfx-reveal" src="sounds/card_reveal.mp3" preload="auto"></audio>
     <audio
@@ -1266,41 +1266,29 @@
        * FRONT – assets   *
        ********************/
 
-            const RARITY_IMAGES = {
-        0: "images/venusaur_common.png",
-        1: "images/venusaur_rare.png",
-        2: "images/venusaur_ultra.png",
-        3: "images/venusaur_legendary.png",
-        COMMON: "images/venusaur_common.png",
-        RARE: "images/venusaur_rare.png",
-        ULTRA: "images/venusaur_ultra.png",
-        LEGENDARY: "images/venusaur_legendary.png",
-      };
-
-      // Images par espèce ET par rareté
-      // rareté : 0 = Common, 1 = Rare, 2 = Ultra, 3 = Legendary
-      const IMAGE_BY_SPECIES_AND_RARITY = {
-        BULBIZARRE: {
-          0: "images/bulbasaur_common.png",     // 70%
-          1: "images/bulbasaur_rare.png",       // 20%
-          2: "images/bulbasaur_ultra.png",      // 9%
-          3: "images/bulbasaur_legendary.png",  // 1%
-        },
-        HERBIZARRE: {
-          0: "images/ivysaur_common.png",
-          1: "images/ivysaur_rare.png",
-          2: "images/ivysaur_ultra.png",
-          3: "images/ivysaur_legendary.png",
-        },
-        FLORIZARRE: {
-          0: "images/venusaur_common.png",
-          1: "images/venusaur_rare.png",
-          2: "images/venusaur_ultra.png",
-          3: "images/venusaur_legendary.png",
-        },
-        PLANTE: {
-          3: "images/plant_legendary.png",      // seulement Legendary 1%
-        },
+      // Pools d'images par rareté (on choisit aléatoirement dans le pool)
+      const RARITY_POOLS = {
+        0: [ // COMMON
+          "images/bulbasaur_common.png",
+          "images/ivysaur_common.png",
+          "images/venusaur_common.png",
+        ],
+        1: [ // RARE
+          "images/bulbasaur_rare.png",
+          "images/ivysaur_rare.png",
+          "images/venusaur_rare.png",
+        ],
+        2: [ // ULTRA
+          "images/bulbasaur_ultra.png",
+          "images/ivysaur_ultra.png",
+          "images/venusaur_ultra.png",
+        ],
+        3: [ // LEGENDARY
+          "images/bulbasaur_legendary.png",
+          "images/ivysaur_legendary.png",
+          "images/venusaur_legendary.png",
+          "images/plant_legendary.png",
+        ],
       };
 
       const RARITY_LABEL_CLASS = {
@@ -1438,19 +1426,6 @@
         if (modeClass) booster.classList.add(modeClass);
       }
 
-        function getSpeciesKey(cardName) {
-        if (!cardName) return "BULBIZARRE";
-        const n = cardName.toLowerCase();
-
-        if (n.includes("bulbizarre")) return "BULBIZARRE";
-        if (n.includes("herbizarre")) return "HERBIZARRE";
-        if (n.includes("florizarre")) return "FLORIZARRE";
-        if (n.includes("plante")) return "PLANTE";
-
-        // fallback
-        return "BULBIZARRE";
-      }
-
       /********************
        * RENDER / STATES  *
        ********************/
@@ -1500,28 +1475,14 @@
         uiState = UI_STATE.IDLE;
       }
 
-      function renderCard(tokenId, rarityRaw, cardName) {
+      function renderCard(tokenId, rarityRaw) {
         const rarityNum = normalizeRarity(rarityRaw);
         const rarityKey = rarityKeyFromNum(rarityNum);
-        const speciesKey = getSpeciesKey(cardName);
 
-        // 1️⃣ On essaie d'abord de trouver l'image exacte (espèce + rareté)
-        let imgSrc;
-        if (
-          IMAGE_BY_SPECIES_AND_RARITY[speciesKey] &&
-          Object.prototype.hasOwnProperty.call(
-            IMAGE_BY_SPECIES_AND_RARITY[speciesKey],
-            rarityNum
-          )
-        ) {
-          imgSrc = IMAGE_BY_SPECIES_AND_RARITY[speciesKey][rarityNum];
-        } else {
-          // 2️⃣ fallback : visuel générique par rareté (sécurité)
-          imgSrc =
-            RARITY_IMAGES[rarityKey] ??
-            RARITY_IMAGES[rarityNum] ??
-            RARITY_IMAGES["COMMON"];
-        }
+        const pool = RARITY_POOLS[rarityNum] || RARITY_POOLS[0];
+        const imgSrc =
+          pool[Math.floor(Math.random() * pool.length)] ||
+          "images/venusaur_common.png";
 
         showOpenedCardLayout();
 
@@ -1562,8 +1523,6 @@
           mintInfo.textContent =
             "NFT VaultSpin reçu – tokenId " +
             tokenId +
-            " • " +
-            cardName +
             " • Rarity: " +
             rarityToLabel(rarityNum);
         }
@@ -1709,42 +1668,35 @@
             new Promise((resolve) => setTimeout(resolve, 2200)),
           ]);
 
-                    let tokenId = null;
-          let rarityRawFromEvent = null;
-          let cardTypeIndexRaw = null;
+          let tokenId = null;
+          let rarityRaw = null;
 
           for (const log of receipt.logs) {
             try {
               const parsed = contract.interface.parseLog(log);
               if (parsed && parsed.name === "CardMinted") {
                 tokenId = parsed.args.tokenId;
-                rarityRawFromEvent = parsed.args.rarity;
-                cardTypeIndexRaw = parsed.args.cardTypeIndex;
+                rarityRaw = parsed.args.rarity;
                 break;
               }
             } catch (_) {
-              // autres logs -> ignore
+              // autres logs
             }
           }
 
-          if (tokenId == null || cardTypeIndexRaw == null) {
+          if (tokenId == null) {
             throw new Error(
-              "Event CardMinted introuvable ou cardTypeIndex manquant dans les logs."
+              "Event CardMinted introuvable dans les logs."
             );
           }
 
-          // On fait confiance à la vérité on-chain : cardTypes[cardTypeIndex]
-          const cardTypeIndex = Number(cardTypeIndexRaw);
-          const cardType = await contract.cardTypes(cardTypeIndex);
-
           const rarityNum = normalizeRarity(
-            cardType.rarity && cardType.rarity.toString
-              ? cardType.rarity.toString()
-              : cardType.rarity
+            rarityRaw && rarityRaw.toString
+              ? rarityRaw.toString()
+              : rarityRaw
           );
-          const cardName = cardType.name;
 
-          renderCard(Number(tokenId), rarityNum, cardName);
+          renderCard(Number(tokenId), rarityNum);
           setStatus(
             "Pack ouvert ! Clique à nouveau pour ouvrir le prochain.",
             "ok"
@@ -1791,4 +1743,3 @@
     </script>
   </body>
 </html>
-
