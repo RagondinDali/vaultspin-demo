@@ -787,478 +787,491 @@
        * CONFIG CONTRAT   *
        ********************/
 
-      const CONTRACT_ADDRESS =
-        "0x0003AF7D5F96cE47a54f5AF774d72049825c9ED7";
+const CONTRACT_ADDRESS = "0x56B842c2BF2863b2041dd72e7a0Afd0aA5357941";
 
-      const CONTRACT_ABI = [
-        {
-          "inputs": [
-            { "internalType": "string", "name": "uri", "type": "string" },
-            { "internalType": "string", "name": "name", "type": "string" },
-            { "internalType": "uint8", "name": "rarity", "type": "uint8" },
-            { "internalType": "uint256", "name": "maxSupply", "type": "uint256" }
-          ],
-          "name": "addCardType",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "to", "type": "address" },
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "approve",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "stateMutability": "nonpayable",
-          "type": "constructor"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "sender", "type": "address" },
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-            { "internalType": "address", "name": "owner", "type": "address" }
-          ],
-          "name": "ERC721IncorrectOwner",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "operator", "type": "address" },
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "ERC721InsufficientApproval",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "approver", "type": "address" }
-          ],
-          "name": "ERC721InvalidApprover",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "operator", "type": "address" }
-          ],
-          "name": "ERC721InvalidOperator",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "owner", "type": "address" }
-          ],
-          "name": "ERC721InvalidOwner",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "receiver", "type": "address" }
-          ],
-          "name": "ERC721InvalidReceiver",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "sender", "type": "address" }
-          ],
-          "name": "ERC721InvalidSender",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "ERC721NonexistentToken",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "owner", "type": "address" }
-          ],
-          "name": "OwnableInvalidOwner",
-          "type": "error"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "account", "type": "address" }
-          ],
-          "name": "OwnableUnauthorizedAccount",
-          "type": "error"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-            { "indexed": true, "internalType": "address", "name": "approved", "type": "address" },
-            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "Approval",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-            { "indexed": true, "internalType": "address", "name": "operator", "type": "address" },
-            { "indexed": false, "internalType": "bool", "name": "approved", "type": "bool" }
-          ],
-          "name": "ApprovalForAll",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": false, "internalType": "uint256", "name": "_fromTokenId", "type": "uint256" },
-            { "indexed": false, "internalType": "uint256", "name": "_toTokenId", "type": "uint256" }
-          ],
-          "name": "BatchMetadataUpdate",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-            { "indexed": false, "internalType": "uint8", "name": "rarity", "type": "uint8" },
-            { "indexed": true, "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
-          ],
-          "name": "CardMinted",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-            { "indexed": false, "internalType": "uint256", "name": "physicalCardId", "type": "uint256" }
-          ],
-          "name": "CardRedeemed",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-            { "internalType": "uint256", "name": "warehouseCardId", "type": "uint256" }
-          ],
-          "name": "linkPhysicalCard",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": false, "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
-          ],
-          "name": "MetadataUpdate",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "to", "type": "address" },
-            { "internalType": "uint256", "name": "randomNumber", "type": "uint256" }
-          ],
-          "name": "mintBooster",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "to", "type": "address" },
-            { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
-          ],
-          "name": "mintCard",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
-            { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "redeemCard",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "renounceOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "from", "type": "address" },
-            { "internalType": "address", "name": "to", "type": "address" },
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "safeTransferFrom",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "from", "type": "address" },
-            { "internalType": "address", "name": "to", "type": "address" },
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-            { "internalType": "bytes", "name": "data", "type": "bytes" }
-          ],
-          "name": "safeTransferFrom",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "operator", "type": "address" },
-            { "internalType": "bool", "name": "approved", "type": "bool" }
-          ],
-          "name": "setApprovalForAll",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint16[4]", "name": "newWeights", "type": "uint16[4]" }
-          ],
-          "name": "setRarityWeights",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
-            { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
-            { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "Transfer",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "from", "type": "address" },
-            { "internalType": "address", "name": "to", "type": "address" },
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "transferFrom",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "newOwner", "type": "address" }
-          ],
-          "name": "transferOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "owner", "type": "address" }
-          ],
-          "name": "balanceOf",
-          "outputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "name": "cardTypes",
-          "outputs": [
-            { "internalType": "string", "name": "uri", "type": "string" },
-            { "internalType": "string", "name": "name", "type": "string" },
-            { "internalType": "uint8", "name": "rarity", "type": "uint8" },
-            { "internalType": "uint256", "name": "maxSupply", "type": "uint256" },
-            { "internalType": "uint256", "name": "minted", "type": "uint256" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "getApproved",
-          "outputs": [
-            { "internalType": "address", "name": "", "type": "address" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "address", "name": "owner", "type": "address" },
-            { "internalType": "address", "name": "operator", "type": "address" }
-          ],
-          "name": "isApprovedForAll",
-          "outputs": [
-            { "internalType": "bool", "name": "", "type": "bool" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "name": "isRedeemed",
-          "outputs": [
-            { "internalType": "bool", "name": "", "type": "bool" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "name",
-          "outputs": [
-            { "internalType": "string", "name": "", "type": "string" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "nextTokenId",
-          "outputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "owner",
-          "outputs": [
-            { "internalType": "address", "name": "", "type": "address" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "ownerOf",
-          "outputs": [
-            { "internalType": "address", "name": "", "type": "address" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "name": "physicalCardId",
-          "outputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "name": "rarityWeights",
-          "outputs": [
-            { "internalType": "uint16", "name": "", "type": "uint16" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
-          ],
-          "name": "remainingSupply",
-          "outputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }
-          ],
-          "name": "supportsInterface",
-          "outputs": [
-            { "internalType": "bool", "name": "", "type": "bool" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "symbol",
-          "outputs": [
-            { "internalType": "string", "name": "", "type": "string" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "name": "tokenCardTypeIndex",
-          "outputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" }
-          ],
-          "name": "tokenRarity",
-          "outputs": [
-            { "internalType": "uint8", "name": "", "type": "uint8" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-          ],
-          "name": "tokenURI",
-          "outputs": [
-            { "internalType": "string", "name": "", "type": "string" }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        }
-      ];
+const CONTRACT_ABI = [
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "owner", "type": "address" }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true,  "internalType": "address", "name": "owner",   "type": "address" },
+      { "indexed": true,  "internalType": "address", "name": "approved","type": "address" },
+      { "indexed": true,  "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true,  "internalType": "address", "name": "owner",   "type": "address" },
+      { "indexed": true,  "internalType": "address", "name": "operator","type": "address" },
+      { "indexed": false, "internalType": "bool",    "name": "approved","type": "bool" }
+    ],
+    "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true,  "internalType": "uint256", "name": "tokenId",       "type": "uint256" },
+      { "indexed": false, "internalType": "uint8",   "name": "rarity",        "type": "uint8"    },
+      { "indexed": true,  "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
+    ],
+    "name": "CardMinted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true,  "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "physicalCardId", "type": "uint256" }
+    ],
+    "name": "CardRedeemed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true,  "internalType": "uint256", "name": "tokenId",   "type": "uint256" },
+      { "indexed": true,  "internalType": "address", "name": "requester", "type": "address" }
+    ],
+    "name": "RedeemRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true,  "internalType": "address", "name": "previousOwner", "type": "address" },
+      { "indexed": true,  "internalType": "address", "name": "newOwner",      "type": "address" }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true,  "internalType": "address", "name": "from",    "type": "address" },
+      { "indexed": true,  "internalType": "address", "name": "to",      "type": "address" },
+      { "indexed": true,  "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+
+  /* ====== ADMIN / CONFIG ====== */
+
+  {
+    "inputs": [
+      { "internalType": "string",  "name": "uri",       "type": "string" },
+      { "internalType": "string",  "name": "name",      "type": "string" },
+      { "internalType": "uint8",   "name": "rarity",    "type": "uint8" },
+      { "internalType": "uint256", "name": "maxSupply", "type": "uint256" },
+      { "internalType": "uint32",  "name": "weight",    "type": "uint32" }
+    ],
+    "name": "addCardType",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" },
+      { "internalType": "string",  "name": "newURI",        "type": "string" }
+    ],
+    "name": "setCardTypeURI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
+    ],
+    "name": "lockCardTypeURI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" },
+      { "internalType": "uint32",  "name": "newWeight",     "type": "uint32" }
+    ],
+    "name": "setCardTypeWeight",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
+    ],
+    "name": "remainingSupply",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  /* ====== MINT / PACKS ====== */
+
+  {
+    "inputs": [
+      { "internalType": "address", "name": "to",            "type": "address" },
+      { "internalType": "uint256", "name": "cardTypeIndex", "type": "uint256" }
+    ],
+    "name": "mintCard",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "to",           "type": "address" },
+      { "internalType": "uint256", "name": "randomNumber", "type": "uint256" }
+    ],
+    "name": "mintBooster",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "newPrice", "type": "uint256" }
+    ],
+    "name": "setPackPrice",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "randomNumber", "type": "uint256" }
+    ],
+    "name": "buyAndOpenPack",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address payable", "name": "to", "type": "address" }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+
+  /* ====== REDEEM / PHYSICAL ====== */
+
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId",        "type": "uint256" },
+      { "internalType": "uint256", "name": "warehouseCardId","type": "uint256" }
+    ],
+    "name": "linkPhysicalCard",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "requestRedeem",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "confirmRedeem",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+
+  /* ====== OWNERSHIP / ADMIN ====== */
+
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextTokenId",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "packPrice",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  /* ====== ERC721 STANDARD ====== */
+
+  {
+    "inputs": [
+      { "internalType": "address", "name": "to",      "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "approve",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "owner", "type": "address" }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      { "internalType": "string", "name": "", "type": "string" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      { "internalType": "string", "name": "", "type": "string" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "tokenURI",
+    "outputs": [
+      { "internalType": "string", "name": "", "type": "string" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "ownerOf",
+    "outputs": [
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "getApproved",
+    "outputs": [
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "owner",    "type": "address" },
+      { "internalType": "address", "name": "operator", "type": "address" }
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      { "internalType": "bool", "name": "", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from",    "type": "address" },
+      { "internalType": "address", "name": "to",      "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "transferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from",    "type": "address" },
+      { "internalType": "address", "name": "to",      "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "from",    "type": "address" },
+      { "internalType": "address", "name": "to",      "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "internalType": "bytes",   "name": "data",    "type": "bytes" }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "operator", "type": "address" },
+      { "internalType": "bool",    "name": "approved", "type": "bool" }
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+
+  /* ====== PUBLIC STATE GETTERS ====== */
+
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "cardTypes",
+    "outputs": [
+      { "internalType": "string",  "name": "uri",       "type": "string" },
+      { "internalType": "string",  "name": "name",      "type": "string" },
+      { "internalType": "uint8",   "name": "rarity",    "type": "uint8" },
+      { "internalType": "uint256", "name": "maxSupply", "type": "uint256" },
+      { "internalType": "uint256", "name": "minted",    "type": "uint256" },
+      { "internalType": "uint32",  "name": "weight",    "type": "uint32" },
+      { "internalType": "bool",    "name": "uriLocked", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "tokenRarity",
+    "outputs": [
+      { "internalType": "uint8", "name": "", "type": "uint8" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "tokenCardTypeIndex",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "physicalCardId",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "isRedeemed",
+    "outputs": [
+      { "internalType": "bool", "name": "", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "redeemRequested",
+    "outputs": [
+      { "internalType": "bool", "name": "", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  /* ====== getTokenInfo HELPER ====== */
+
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "getTokenInfo",
+    "outputs": [
+      { "internalType": "uint256", "name": "tokenId",        "type": "uint256" },
+      { "internalType": "uint8",   "name": "rarity",         "type": "uint8" },
+      { "internalType": "uint256", "name": "cardTypeIndex",  "type": "uint256" },
+      { "internalType": "string",  "name": "cardName",       "type": "string" },
+      { "internalType": "string",  "name": "uri",            "type": "string" },
+      { "internalType": "bool",    "name": "redeemed",       "type": "bool" },
+      { "internalType": "uint256", "name": "physicalId",     "type": "uint256" },
+      { "internalType": "bool",    "name": "redeemAsked",    "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
+
 
       const SEPOLIA_CHAIN_ID = "0xaa36a7";
 
@@ -1743,3 +1756,4 @@
     </script>
   </body>
 </html>
+
