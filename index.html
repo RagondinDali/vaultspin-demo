@@ -540,9 +540,9 @@
           <div id="mint-info" class="caption">
             En attente d’un mint… ouvre un pack pour voir la carte ici.
           </div>
-      <a class="collection-link" href="collection.html">
-         → Voir ma collection
-         </a>
+          <a class="collection-link" href="collection.html">
+            → Voir ma collection
+          </a>
         </div>
       </div>
 
@@ -1143,7 +1143,8 @@
           );
           setButtonsState({ walletEnabled: true, openPackEnabled: true });
         } catch (err) {
-          console.error(err);
+          console.error("Erreur connexion wallet :", err);
+          alert(err.message || "Erreur connexion wallet");
           setStatus("Erreur connexion wallet.", "error");
         }
       }
@@ -1232,14 +1233,20 @@
 
           for (const log of receipt.logs) {
             try {
-              const parsed = contract.interface.parseLog(log);
+              // Important : ne passer que topics + data à parseLog (ethers v6)
+              const parsed = contract.interface.parseLog({
+                topics: log.topics,
+                data: log.data,
+              });
               if (parsed && parsed.name === "CardMinted") {
                 tokenId = parsed.args.tokenId;
                 rarityRaw = parsed.args.rarity;
                 cardTypeIndex = parsed.args.cardTypeIndex;
                 break;
               }
-            } catch (_) {}
+            } catch (e) {
+              // on ignore les logs qui ne correspondent pas
+            }
           }
 
           if (tokenId == null) {
@@ -1260,13 +1267,19 @@
           if (frame) frame.classList.remove("opening");
           setButtonsState({ walletEnabled: true, openPackEnabled: true });
         } catch (err) {
-          console.error(err);
+          console.error("Erreur lors de l'ouverture du pack :", err);
+          alert(
+            err.reason ||
+              err.info?.error?.message ||
+              err.message ||
+              "Erreur lors de l'ouverture du pack"
+          );
           setStatus("Erreur lors de l'ouverture du pack.", "error");
           if (frame) frame.classList.remove("opening");
           uiState = UI_STATE.IDLE;
           setButtonsState({ walletEnabled: true, openPackEnabled: true });
         }
-      } // fin runOpenPackSequence
+      }
 
       function handleOpenPackClick() {
         if (
@@ -1301,4 +1314,3 @@
     </script>
   </body>
 </html>
-
