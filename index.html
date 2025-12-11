@@ -29,7 +29,7 @@
       .page {
         width: 100%;
         max-width: 1200px;
-        padding: 32px 16px 40px;
+        padding: 80px 16px 40px; /* 80px pour laisser la place au top-bar fixé */
         display: flex;
         flex-direction: column;
         gap: 24px;
@@ -469,10 +469,101 @@
         transform: translateY(-2px) scale(1.05);
         box-shadow: 0 0 16px rgba(249, 115, 22, 0.8);
       }
+
+      /* Top bar : logo + lien collection + wallet visuel */
+      .top-bar {
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+        pointer-events: none;
+        z-index: 20;
+      }
+
+      .top-left,
+      .top-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        pointer-events: auto;
+      }
+
+      .top-logo {
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+
+      .top-link {
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        color: #e5e7eb;
+        text-decoration: none;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      .top-link:hover {
+        border-color: #a5b4fc;
+        box-shadow: 0 0 10px rgba(129, 140, 248, 0.5);
+      }
+
+      .wallet-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 6px 12px;
+        background: radial-gradient(circle at top, #020617, #020617 70%);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+      }
+
+      .wallet-label {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+
+      .wallet-main {
+        font-size: 12px;
+        font-weight: 600;
+        color: #f9fafb;
+      }
+
+      .wallet-sub {
+        font-size: 10px;
+        color: #9ca3af;
+      }
     </style>
   </head>
 
   <body>
+    <!-- Top bar (logo + ma collection + wallet visuel) -->
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="top-logo">VAULTSPIN · PACKS HYBRIDES</div>
+      </div>
+      <div class="top-right">
+        <a class="top-link" href="collection.html">Ma collection</a>
+        <div class="wallet-pill">
+          <span class="wallet-label">Mon wallet</span>
+          <span class="wallet-main">25,00&nbsp;€</span>
+          <span class="wallet-sub">≈ 0,0042 ETH</span>
+        </div>
+      </div>
+    </div>
+
     <div class="page">
       <div class="left-panel">
         <div class="tag">VAULTSPIN · SEPOLIA (DÉMO OFF-CHAIN)</div>
@@ -752,7 +843,7 @@
 
     <script>
       /********************
-       * MODE DEMO (PUBLIC)
+       * MODE DÉMO PUBLIC
        ********************/
 
       const CARD_IMAGE_BY_INDEX = {
@@ -802,7 +893,7 @@
         12: 3,
       };
 
-      // poids pour tirage pondéré (approx de ta config)
+      // poids pour tirage pondéré (approx proche de ta config)
       const CARD_WEIGHT_BY_INDEX = {
         0: 7000,
         1: 7000,
@@ -1034,7 +1125,7 @@
 
         setButtonsState({ openPackEnabled: false });
 
-        // Si une carte est déjà affichée, on joue l’anim vers la collection
+        // Si une carte est déjà affichée, on joue l’anim vers la “collection”
         if (uiState === UI_STATE.CARD_REVEALED && opened) {
           uiState = UI_STATE.ANIM_TO_COLLECTION;
           opened.classList.remove("ultra-flare", "legendary-burst");
@@ -1067,7 +1158,7 @@
         );
         playSound(sfxBooster);
 
-        // petit délai pour le "feeling transaction"
+        // petit délai pour le feeling “transaction”
         await new Promise((resolve) => setTimeout(resolve, 1200));
 
         const cardTypeIndex = pickWeightedCardIndex();
