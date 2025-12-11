@@ -2,11 +2,8 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V4)</title>
+    <title>VaultSpin – Booster Plante (V4 – Démo)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Ethers v6 UMD -->
-    <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
 
     <!-- Animations -->
     <link rel="stylesheet" href="animations.css" />
@@ -21,7 +18,7 @@
       body {
         min-height: 100vh;
         display: flex;
-        align-items: stretch;
+        align-items: center;
         justify-content: center;
         background: radial-gradient(circle at top, #101827, #020617 60%);
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -29,258 +26,10 @@
         color: #e5e7eb;
       }
 
-      .app-shell {
-        width: 100%;
-        max-width: 1200px;
-        padding: 24px 16px 40px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      /* TOPBAR / WALLET */
-
-      .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 18px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        background: radial-gradient(circle at top left, #020617, #020617 70%);
-      }
-
-      .topbar-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .topbar-logo {
-        width: 28px;
-        height: 28px;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, #22c55e, #16a34a 70%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-      }
-
-      .topbar-title {
-        font-size: 14px;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: #e5e7eb;
-      }
-
-      .topbar-subtitle {
-        font-size: 11px;
-        color: #9ca3af;
-      }
-
-      .topbar-right {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .topbar-link {
-        font-size: 12px;
-        color: #a5b4fc;
-        text-decoration: none;
-        border-radius: 999px;
-        padding: 6px 12px;
-        border: 1px solid rgba(129, 140, 248, 0.4);
-        background: rgba(15, 23, 42, 0.7);
-      }
-
-      .topbar-link:hover {
-        color: #e0e7ff;
-        border-color: #c4b5fd;
-      }
-
-      .wallet-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.6);
-        padding: 6px 14px;
-        background: radial-gradient(circle at top, #020617, #020617 70%);
-        cursor: pointer;
-        font-size: 11px;
-      }
-
-      .wallet-label {
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        color: #9ca3af;
-        font-size: 10px;
-      }
-
-      .wallet-balance-eur {
-        font-size: 13px;
-        font-weight: 500;
-        color: #f9fafb;
-      }
-
-      .wallet-balance-crypto {
-        font-size: 11px;
-        color: #9ca3af;
-      }
-
-      .wallet-icon {
-        width: 18px;
-        height: 18px;
-        border-radius: 999px;
-        background: radial-gradient(circle at top, #a855f7, #4f46e5 70%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-      }
-
-      .wallet-pill:hover {
-        border-color: #a855f7;
-        box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
-      }
-
-      /* WALLET MODAL */
-
-      .wallet-modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.75);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 40;
-      }
-
-      .wallet-modal {
-        width: 100%;
-        max-width: 380px;
-        border-radius: 24px;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        background: radial-gradient(circle at top, #020617, #020617 75%);
-        padding: 18px 18px 20px;
-        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
-      }
-
-      .wallet-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 10px;
-      }
-
-      .wallet-modal-title {
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-      }
-
-      .wallet-modal-subtitle {
-        font-size: 12px;
-        color: #9ca3af;
-        margin-top: 2px;
-      }
-
-      .wallet-modal-close {
-        background: transparent;
-        border: none;
-        color: #9ca3af;
-        cursor: pointer;
-        font-size: 16px;
-      }
-
-      .wallet-balance-box {
-        margin: 8px 0 10px;
-        padding: 10px 10px;
-        border-radius: 16px;
-        border: 1px solid rgba(148, 163, 184, 0.5);
-        background: radial-gradient(circle at top, #020617, #020617 75%);
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        font-size: 12px;
-      }
-
-      .wallet-balance-line {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .wallet-balance-label {
-        color: #9ca3af;
-      }
-
-      .wallet-tabs {
-        display: flex;
-        gap: 6px;
-        margin-top: 6px;
-        margin-bottom: 10px;
-      }
-
-      .wallet-tab {
-        flex: 1;
-        font-size: 11px;
-        border-radius: 999px;
-        border: 1px solid #374151;
-        padding: 6px 8px;
-        text-align: center;
-        cursor: pointer;
-        background: rgba(15, 23, 42, 0.9);
-      }
-
-      .wallet-tab.active {
-        border-color: #a855f7;
-        background: radial-gradient(circle at top, #4f46e5, #7c3aed 70%);
-        color: #f9fafb;
-      }
-
-      .wallet-amount-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 10px;
-      }
-
-      .wallet-amount-btn {
-        flex: 1;
-        min-width: 70px;
-        border-radius: 999px;
-        border: 1px solid #4b5563;
-        padding: 6px 8px;
-        font-size: 11px;
-        cursor: pointer;
-        background: rgba(15, 23, 42, 0.9);
-      }
-
-      .wallet-amount-btn:hover {
-        border-color: #22c55e;
-      }
-
-      .wallet-info-text {
-        font-size: 11px;
-        color: #9ca3af;
-      }
-
-      .wallet-info-highlight {
-        color: #a5b4fc;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      /* PAGE LAYOUT PRINCIPAL */
-
       .page {
         width: 100%;
+        max-width: 1200px;
+        padding: 32px 16px 40px;
         display: flex;
         flex-direction: column;
         gap: 24px;
@@ -344,8 +93,7 @@
         background: radial-gradient(circle at top, #111827, #020617 70%);
       }
 
-      .btn-primary,
-      .btn-secondary {
+      .btn-primary {
         border-radius: 999px;
         padding: 10px 18px;
         font-size: 13px;
@@ -358,9 +106,6 @@
         align-items: center;
         gap: 8px;
         white-space: nowrap;
-      }
-
-      .btn-primary {
         background: radial-gradient(circle at top left, #a855f7, #4f46e5);
         color: #f9fafb;
         box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
@@ -375,18 +120,6 @@
         opacity: 0.5;
         cursor: default;
         box-shadow: none;
-      }
-
-      .btn-secondary {
-        border: 1px solid #4b5563;
-        background: rgba(15, 23, 42, 0.9);
-        color: #e5e7eb;
-      }
-
-      .btn-secondary:hover {
-        border-color: #facc15;
-        box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
-        transform: translateY(-1px);
       }
 
       .btn-row {
@@ -519,6 +252,10 @@
         height: 100%;
         border-radius: 22px;
         overflow: hidden;
+      }
+
+      .hidden {
+        display: none;
       }
 
       .card-opened {
@@ -736,409 +473,267 @@
   </head>
 
   <body>
-    <div class="app-shell">
-      <!-- TOPBAR -->
-      <header class="topbar">
-        <div class="topbar-left">
-          <div class="topbar-logo">🌿</div>
-          <div>
-            <div class="topbar-title">VaultSpin</div>
-            <div class="topbar-subtitle">
-              Packs hybrides · Web3 & cartes physiques
-            </div>
-          </div>
+    <div class="page">
+      <div class="left-panel">
+        <div class="tag">VAULTSPIN · SEPOLIA (DÉMO OFF-CHAIN)</div>
+
+        <div>
+          <h1>Open your VaultSpin Pack</h1>
+          <p class="subtitle">
+            Clique sur <strong>Open VaultSpin Pack</strong> pour ouvrir un
+            booster. Cette version démo n’utilise pas de wallet&nbsp;: aucun
+            NFT réel n’est minté, tout se passe côté front.
+          </p>
         </div>
-        <div class="topbar-right">
-          <a href="collection.html" class="topbar-link">Ma collection</a>
-          <button id="wallet-toggle-btn" class="wallet-pill">
-            <div class="wallet-icon">◎</div>
-            <div>
-              <div class="wallet-label">Mon wallet</div>
-              <div class="wallet-balance-eur" id="wallet-balance-eur">
-                0,00 €
-              </div>
-              <div class="wallet-balance-crypto" id="wallet-balance-crypto">
-                ≈ 0.0000 ETH
-              </div>
-            </div>
+
+        <div class="btn-row">
+          <button id="open-pack-btn" class="btn-primary">
+            Open VaultSpin Pack — 3,99&nbsp;€
           </button>
         </div>
-      </header>
 
-      <!-- WALLET MODAL (DESIGN ONLY, NO REAL PAYMENT) -->
-      <div id="wallet-modal-backdrop" class="wallet-modal-backdrop hidden">
-        <div class="wallet-modal">
-          <div class="wallet-modal-header">
-            <div>
-              <div class="wallet-modal-title">Mon wallet VaultSpin</div>
-              <div class="wallet-modal-subtitle">
-                Alimente ton solde en carte bancaire ou en crypto. Les packs
-                s’affichent toujours en € pour simplifier l’expérience.
-              </div>
-            </div>
-            <button id="wallet-modal-close" class="wallet-modal-close">
-              ✕
-            </button>
-          </div>
+        <div id="status-line" class="status-line">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text"
+            >Mode démo : ouvre des packs sans wallet.</span
+          >
+        </div>
+        <p class="caption" id="tx-caption">
+          Dans la version finale, le prix sera débité de ton wallet VaultSpin
+          (CB ou crypto convertie en €).
+        </p>
 
-          <div class="wallet-balance-box">
-            <div class="wallet-balance-line">
-              <span class="wallet-balance-label">Solde disponible</span>
-              <span id="wallet-balance-eur-modal">0,00 €</span>
-            </div>
-            <div class="wallet-balance-line">
-              <span class="wallet-balance-label">Équivalent crypto</span>
-              <span id="wallet-balance-crypto-modal">≈ 0.0000 ETH</span>
-            </div>
+        <div class="network-pill-row">
+          <div class="pill">
+            <span>Réseau technique :</span> Sepolia (contrat V4)
           </div>
+          <div class="pill">
+            <span>Statut :</span> Démo front-only (aucune transaction)
+          </div>
+        </div>
 
-          <div class="wallet-tabs">
-            <button
-              id="wallet-tab-fiat"
-              class="wallet-tab active"
-              type="button"
-            >
-              Carte bancaire / Fiat
-            </button>
-            <button
-              id="wallet-tab-crypto"
-              class="wallet-tab"
-              type="button"
-            >
-              Dépôt crypto
-            </button>
+        <div style="margin-top: 14px">
+          <div class="drop-title" style="text-align: left">
+            Dernier “NFT” reçu (démo)
           </div>
-
-          <div id="wallet-panel-fiat">
-            <div class="wallet-amount-buttons">
-              <button class="wallet-amount-btn" type="button" data-eur="10">
-                + 10 €
-              </button>
-              <button class="wallet-amount-btn" type="button" data-eur="20">
-                + 20 €
-              </button>
-              <button class="wallet-amount-btn" type="button" data-eur="50">
-                + 50 €
-              </button>
-            </div>
-            <p class="wallet-info-text">
-              Dans la version finale, ce bouton ouvrira un
-              <span class="wallet-info-highlight">checkout Stripe / CB</span> et
-              créditera ton solde en temps réel.
-            </p>
+          <div id="mint-info" class="caption">
+            En attente d’une ouverture… clique sur le bouton pour voir la carte
+            ici.
           </div>
-
-          <div id="wallet-panel-crypto" class="hidden">
-            <p class="wallet-info-text" style="margin-bottom: 8px">
-              Dans la version finale, tu pourras déposer de l’ETH ou d’autres
-              crypto. VaultSpin convertira en €
-              <span class="wallet-info-highlight">
-                pour que le prix du booster reste toujours affiché en FIAT
-              </span>
-              (ex: 3,99 €).
-            </p>
-            <p class="wallet-info-text">
-              Ici, on affichera une adresse de dépôt ou un QR code lié à ton
-              compte VaultSpin, puis la valeur en € une fois la transaction
-              confirmée.
-            </p>
-          </div>
+          <a class="collection-link" href="collection.html">
+            → Voir ma collection (version dev on-chain)
+          </a>
         </div>
       </div>
 
-      <!-- PAGE PRINCIPALE -->
-      <div class="page">
-        <div class="left-panel">
-          <div class="tag">VAULTSPIN · SEPOLIA TESTNET</div>
+      <div class="right-panel">
+        <div class="card-zone">
+          <div
+            id="card-frame"
+            class="card-frame state-closed"
+            data-rarity="COMMON"
+          >
+            <div class="card-inner">
+              <div
+                id="booster-closed"
+                class="booster-closed booster-mode-idle"
+              >
+                <div class="booster-label">
+                  <div class="booster-leaf-icon">🌿</div>
+                  <div class="booster-chip">VaultSpin Pack</div>
+                  <div class="booster-title">Booster Plante</div>
+                  <div class="booster-subtitle">
+                    1 carte Bulbizarre / Herbizarre / Florizarre à révéler
+                  </div>
+                </div>
+              </div>
 
-          <div>
-            <h1>Open your VaultSpin Pack</h1>
-            <p class="subtitle">
-              Clique sur <strong>Open VaultSpin Pack</strong> pour ouvrir un
-              booster. Dans la version finale, le prix sera débité de ton
-              wallet VaultSpin (CB ou crypto convertie en €).
-            </p>
-          </div>
-
-          <div class="btn-row">
-            <button id="wallet-btn" class="btn-secondary">
-              Connecter wallet (mode dev)
-            </button>
-
-            <button id="open-pack-btn" class="btn-primary" disabled>
-              Open VaultSpin Pack — 3,99 €
-            </button>
-          </div>
-
-          <div id="status-line" class="status-line">
-            <span class="status-dot" id="status-dot"></span>
-            <span id="status-text">Wallet non connecté.</span>
-          </div>
-          <p class="caption" id="tx-caption">
-            Cette démo ouvre un pack gratuitement. Dans la version finale, le
-            prix 3,99 € sera débité de ton solde VaultSpin, qu’il provienne de
-            CB ou de crypto.
-          </p>
-
-          <div class="network-pill-row">
-            <div class="pill">
-              <span>Réseau attendu :</span> Sepolia
+              <div id="card-opened" class="card-opened hidden">
+                <div class="card-image-wrapper">
+                  <img
+                    id="card-image"
+                    src="images/venusaur_common.png"
+                    alt="VaultSpin NFT"
+                  />
+                </div>
+                <div class="card-footer">
+                  <div class="card-footer-left">
+                    <div>VAULTSPIN (DÉMO)</div>
+                    <div class="token-id" id="token-id-label">#–</div>
+                  </div>
+                  <div
+                    class="card-footer-right rarity-common"
+                    id="rarity-label"
+                  >
+                    Common
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="pill">
-              <span>Contrat :</span>
-              <span id="contract-short">0x6279…34D</span>
-            </div>
-          </div>
-
-          <div style="margin-top: 14px">
-            <div class="drop-title" style="text-align: left">
-              Dernier NFT reçu
-            </div>
-            <div id="mint-info" class="caption">
-              En attente d’un mint… ouvre un pack pour voir la carte ici.
-            </div>
-            <a class="collection-link" href="collection.html">
-              → Voir ma collection
-            </a>
           </div>
         </div>
 
-        <div class="right-panel">
-          <div class="card-zone">
-            <div
-              id="card-frame"
-              class="card-frame state-closed"
-              data-rarity="COMMON"
-            >
-              <div class="card-inner">
-                <div
-                  id="booster-closed"
-                  class="booster-closed booster-mode-idle"
-                >
-                  <div class="booster-label">
-                    <div class="booster-leaf-icon">🌿</div>
-                    <div class="booster-chip">VaultSpin Pack</div>
-                    <div class="booster-title">Booster Plante</div>
-                    <div class="booster-subtitle">
-                      1 carte Bulbizarre / Herbizarre / Florizarre à révéler
-                    </div>
-                  </div>
-                </div>
+        <!-- Table des drops -->
+        <div class="drop-table">
+          <div class="drop-title">Cartes potentiellement obtenables</div>
 
-                <div id="card-opened" class="card-opened hidden">
-                  <div class="card-image-wrapper">
-                    <img
-                      id="card-image"
-                      src="images/venusaur_common.png"
-                      alt="VaultSpin NFT"
-                    />
-                  </div>
-                  <div class="card-footer">
-                    <div class="card-footer-left">
-                      <div>VAULTSPIN</div>
-                      <div class="token-id" id="token-id-label">#–</div>
-                    </div>
-                    <div
-                      class="card-footer-right rarity-common"
-                      id="rarity-label"
-                    >
-                      Common
-                    </div>
-                  </div>
-                </div>
+          <div class="drop-grid">
+            <!-- COMMON -->
+            <div class="drop-item" data-rarity="COMMON">
+              <div class="drop-thumb">
+                <img src="images/bulbasaur_common.png" alt="Bulbizarre Common" />
+              </div>
+              <div class="drop-name">Bulbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">70% de chance</span>
+                <span class="drop-tag common">Common</span>
               </div>
             </div>
-          </div>
 
-          <!-- Table des drops -->
-          <div class="drop-table">
-            <div class="drop-title">Cartes potentiellement obtenables</div>
-
-            <div class="drop-grid">
-              <!-- COMMON -->
-              <div class="drop-item" data-rarity="COMMON">
-                <div class="drop-thumb">
-                  <img
-                    src="images/bulbasaur_common.png"
-                    alt="Bulbizarre Common"
-                  />
-                </div>
-                <div class="drop-name">Bulbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">70% de chance</span>
-                  <span class="drop-tag common">Common</span>
-                </div>
+            <div class="drop-item" data-rarity="COMMON">
+              <div class="drop-thumb">
+                <img src="images/ivysaur_common.png" alt="Herbizarre Common" />
               </div>
-
-              <div class="drop-item" data-rarity="COMMON">
-                <div class="drop-thumb">
-                  <img
-                    src="images/ivysaur_common.png"
-                    alt="Herbizarre Common"
-                  />
-                </div>
-                <div class="drop-name">Herbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">70% de chance</span>
-                  <span class="drop-tag common">Common</span>
-                </div>
+              <div class="drop-name">Herbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">70% de chance</span>
+                <span class="drop-tag common">Common</span>
               </div>
+            </div>
 
-              <div class="drop-item" data-rarity="COMMON">
-                <div class="drop-thumb">
-                  <img
-                    src="images/venusaur_common.png"
-                    alt="Florizarre Common"
-                  />
-                </div>
-                <div class="drop-name">Florizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">70% de chance</span>
-                  <span class="drop-tag common">Common</span>
-                </div>
+            <div class="drop-item" data-rarity="COMMON">
+              <div class="drop-thumb">
+                <img src="images/venusaur_common.png" alt="Florizarre Common" />
               </div>
-
-              <!-- RARE -->
-              <div class="drop-item" data-rarity="RARE">
-                <div class="drop-thumb">
-                  <img
-                    src="images/bulbasaur_rare.png"
-                    alt="Bulbizarre Rare"
-                  />
-                </div>
-                <div class="drop-name">Bulbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">20% de chance</span>
-                  <span class="drop-tag rare">Rare</span>
-                </div>
+              <div class="drop-name">Florizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">70% de chance</span>
+                <span class="drop-tag common">Common</span>
               </div>
+            </div>
 
-              <div class="drop-item" data-rarity="RARE">
-                <div class="drop-thumb">
-                  <img
-                    src="images/ivysaur_rare.png"
-                    alt="Herbizarre Rare"
-                  />
-                </div>
-                <div class="drop-name">Herbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">20% de chance</span>
-                  <span class="drop-tag rare">Rare</span>
-                </div>
+            <!-- RARE -->
+            <div class="drop-item" data-rarity="RARE">
+              <div class="drop-thumb">
+                <img src="images/bulbasaur_rare.png" alt="Bulbizarre Rare" />
               </div>
-
-              <div class="drop-item" data-rarity="RARE">
-                <div class="drop-thumb">
-                  <img
-                    src="images/venusaur_rare.png"
-                    alt="Florizarre Rare"
-                  />
-                </div>
-                <div class="drop-name">Florizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">20% de chance</span>
-                  <span class="drop-tag rare">Rare</span>
-                </div>
+              <div class="drop-name">Bulbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">20% de chance</span>
+                <span class="drop-tag rare">Rare</span>
               </div>
+            </div>
 
-              <!-- ULTRA -->
-              <div class="drop-item" data-rarity="ULTRA">
-                <div class="drop-thumb">
-                  <img
-                    src="images/bulbasaur_ultra.png"
-                    alt="Bulbizarre Ultra"
-                  />
-                </div>
-                <div class="drop-name">Bulbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">9% de chance</span>
-                  <span class="drop-tag ultra">Ultra</span>
-                </div>
+            <div class="drop-item" data-rarity="RARE">
+              <div class="drop-thumb">
+                <img src="images/ivysaur_rare.png" alt="Herbizarre Rare" />
               </div>
-
-              <div class="drop-item" data-rarity="ULTRA">
-                <div class="drop-thumb">
-                  <img
-                    src="images/ivysaur_ultra.png"
-                    alt="Herbizarre Ultra"
-                  />
-                </div>
-                <div class="drop-name">Herbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">9% de chance</span>
-                  <span class="drop-tag ultra">Ultra</span>
-                </div>
+              <div class="drop-name">Herbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">20% de chance</span>
+                <span class="drop-tag rare">Rare</span>
               </div>
+            </div>
 
-              <div class="drop-item" data-rarity="ULTRA">
-                <div class="drop-thumb">
-                  <img
-                    src="images/venusaur_ultra.png"
-                    alt="Florizarre Ultra"
-                  />
-                </div>
-                <div class="drop-name">Florizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">9% de chance</span>
-                  <span class="drop-tag ultra">Ultra</span>
-                </div>
+            <div class="drop-item" data-rarity="RARE">
+              <div class="drop-thumb">
+                <img src="images/venusaur_rare.png" alt="Florizarre Rare" />
               </div>
-
-              <!-- LEGENDARY -->
-              <div class="drop-item" data-rarity="LEGENDARY">
-                <div class="drop-thumb">
-                  <img
-                    src="images/bulbasaur_legendary.png"
-                    alt="Bulbizarre Legendary"
-                  />
-                </div>
-                <div class="drop-name">Bulbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">1% de chance</span>
-                  <span class="drop-tag legendary">Legendary</span>
-                </div>
+              <div class="drop-name">Florizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">20% de chance</span>
+                <span class="drop-tag rare">Rare</span>
               </div>
+            </div>
 
-              <div class="drop-item" data-rarity="LEGENDARY">
-                <div class="drop-thumb">
-                  <img
-                    src="images/ivysaur_legendary.png"
-                    alt="Herbizarre Legendary"
-                  />
-                </div>
-                <div class="drop-name">Herbizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">1% de chance</span>
-                  <span class="drop-tag legendary">Legendary</span>
-                </div>
+            <!-- ULTRA -->
+            <div class="drop-item" data-rarity="ULTRA">
+              <div class="drop-thumb">
+                <img src="images/bulbasaur_ultra.png" alt="Bulbizarre Ultra" />
               </div>
-
-              <div class="drop-item" data-rarity="LEGENDARY">
-                <div class="drop-thumb">
-                  <img
-                    src="images/venusaur_legendary.png"
-                    alt="Florizarre Legendary"
-                  />
-                </div>
-                <div class="drop-name">Florizarre</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">1% de chance</span>
-                  <span class="drop-tag legendary">Legendary</span>
-                </div>
+              <div class="drop-name">Bulbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">9% de chance</span>
+                <span class="drop-tag ultra">Ultra</span>
               </div>
+            </div>
 
-              <div class="drop-item" data-rarity="LEGENDARY">
-                <div class="drop-thumb">
-                  <img
-                    src="images/plant_legendary.png"
-                    alt="Plante Légendaire"
-                  />
-                </div>
-                <div class="drop-name">Plante</div>
-                <div class="drop-meta">
-                  <span class="drop-rate">1% de chance</span>
-                  <span class="drop-tag legendary">Legendary</span>
-                </div>
+            <div class="drop-item" data-rarity="ULTRA">
+              <div class="drop-thumb">
+                <img src="images/ivysaur_ultra.png" alt="Herbizarre Ultra" />
+              </div>
+              <div class="drop-name">Herbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">9% de chance</span>
+                <span class="drop-tag ultra">Ultra</span>
+              </div>
+            </div>
+
+            <div class="drop-item" data-rarity="ULTRA">
+              <div class="drop-thumb">
+                <img src="images/venusaur_ultra.png" alt="Florizarre Ultra" />
+              </div>
+              <div class="drop-name">Florizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">9% de chance</span>
+                <span class="drop-tag ultra">Ultra</span>
+              </div>
+            </div>
+
+            <!-- LEGENDARY -->
+            <div class="drop-item" data-rarity="LEGENDARY">
+              <div class="drop-thumb">
+                <img
+                  src="images/bulbasaur_legendary.png"
+                  alt="Bulbizarre Legendary"
+                />
+              </div>
+              <div class="drop-name">Bulbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">1% de chance</span>
+                <span class="drop-tag legendary">Legendary</span>
+              </div>
+            </div>
+
+            <div class="drop-item" data-rarity="LEGENDARY">
+              <div class="drop-thumb">
+                <img
+                  src="images/ivysaur_legendary.png"
+                  alt="Herbizarre Legendary"
+                />
+              </div>
+              <div class="drop-name">Herbizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">1% de chance</span>
+                <span class="drop-tag legendary">Legendary</span>
+              </div>
+            </div>
+
+            <div class="drop-item" data-rarity="LEGENDARY">
+              <div class="drop-thumb">
+                <img
+                  src="images/venusaur_legendary.png"
+                  alt="Florizarre Legendary"
+                />
+              </div>
+              <div class="drop-name">Florizarre</div>
+              <div class="drop-meta">
+                <span class="drop-rate">1% de chance</span>
+                <span class="drop-tag legendary">Legendary</span>
+              </div>
+            </div>
+
+            <div class="drop-item" data-rarity="LEGENDARY">
+              <div class="drop-thumb">
+                <img
+                  src="images/plant_legendary.png"
+                  alt="Plante Légendaire"
+                />
+              </div>
+              <div class="drop-name">Plante</div>
+              <div class="drop-meta">
+                <span class="drop-rate">1% de chance</span>
+                <span class="drop-tag legendary">Legendary</span>
               </div>
             </div>
           </div>
@@ -1157,95 +752,9 @@
 
     <script>
       /********************
-       * CONFIG CONTRAT V4 *
+       * MODE DEMO (PUBLIC)
        ********************/
 
-      const CONTRACT_ADDRESS =
-        "0x6279B83Fd6093c5cAf2989cc428197D7A7d7342D";
-
-      // ABI minimal : CardMinted + mintBooster + buyAndOpenPack + owner + packPrice
-      const CONTRACT_ABI = [
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint8",
-              name: "rarity",
-              type: "uint8",
-            },
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "cardTypeIndex",
-              type: "uint256",
-            },
-          ],
-          name: "CardMinted",
-          type: "event",
-        },
-        {
-          inputs: [
-            { internalType: "address", name: "to", type: "address" },
-            { internalType: "uint256", name: "randomNumber", type: "uint256" },
-          ],
-          name: "mintBooster",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            { internalType: "uint256", name: "randomNumber", type: "uint256" },
-          ],
-          name: "buyAndOpenPack",
-          outputs: [],
-          stateMutability: "payable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [{ internalType: "address", name: "", type: "address" }],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "packPrice",
-          outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-          stateMutability: "view",
-          type: "function",
-        },
-      ];
-
-      const SEPOLIA_CHAIN_ID = "0xaa36a7";
-
-      /********************
-       * FRONT – assets   *
-       ********************/
-
-      const RARITY_IMAGES = {
-        COMMON: "images/venusaur_common.png",
-        RARE: "images/venusaur_rare.png",
-        ULTRA: "images/venusaur_ultra.png",
-        LEGENDARY: "images/venusaur_legendary.png",
-      };
-
-      const RARITY_LABEL_CLASS = {
-        COMMON: "rarity-common",
-        RARE: "rarity-rare",
-        ULTRA: "rarity-ultra",
-        LEGENDARY: "rarity-legendary",
-      };
-
-      // Mapping 0–12 <=> cardTypeIndex du smart contract
       const CARD_IMAGE_BY_INDEX = {
         0: "images/bulbasaur_common.png",
         1: "images/ivysaur_common.png",
@@ -1262,14 +771,53 @@
         12: "images/plant_legendary.png",
       };
 
-      /********************
-       * ÉTAT WEB3 & UI   *
-       ********************/
+      const RARITY_IMAGES = {
+        COMMON: "images/venusaur_common.png",
+        RARE: "images/venusaur_rare.png",
+        ULTRA: "images/venusaur_ultra.png",
+        LEGENDARY: "images/venusaur_legendary.png",
+      };
 
-      let provider;
-      let signer;
-      let contract;
-      let currentAccount = null;
+      const RARITY_LABEL_CLASS = {
+        COMMON: "rarity-common",
+        RARE: "rarity-rare",
+        ULTRA: "rarity-ultra",
+        LEGENDARY: "rarity-legendary",
+      };
+
+      // rarity par cardTypeIndex (comme dans ton contrat)
+      const CARD_RARITY_BY_INDEX = {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 1,
+        4: 1,
+        5: 1,
+        6: 2,
+        7: 2,
+        8: 2,
+        9: 3,
+        10: 3,
+        11: 3,
+        12: 3,
+      };
+
+      // poids pour tirage pondéré (approx de ta config)
+      const CARD_WEIGHT_BY_INDEX = {
+        0: 7000,
+        1: 7000,
+        2: 7000,
+        3: 2000,
+        4: 2000,
+        5: 2000,
+        6: 900,
+        7: 900,
+        8: 900,
+        9: 100,
+        10: 100,
+        11: 100,
+        12: 100,
+      };
 
       const UI_STATE = {
         IDLE: "idle",
@@ -1283,6 +831,8 @@
       let sfxBooster = null;
       let sfxReveal = null;
       let sfxLegendary = null;
+
+      let localDemoTokenId = 1;
 
       function playSound(el) {
         if (!el) return;
@@ -1303,21 +853,12 @@
         if (mode === "pending") dot.classList.add("pending");
       }
 
-      function setButtonsState({ walletEnabled = true, openPackEnabled = true }) {
-        const walletBtn = document.getElementById("wallet-btn");
+      function setButtonsState({ openPackEnabled }) {
         const openBtn = document.getElementById("open-pack-btn");
-        if (walletBtn) walletBtn.disabled = !walletEnabled;
         if (openBtn) openBtn.disabled = !openPackEnabled;
       }
 
-      function shortAddress(addr) {
-        if (!addr) return "0x…";
-        return addr.slice(0, 6) + "…" + addr.slice(-4);
-      }
-
-      function rarityToLabel(rarity) {
-        const num =
-          typeof rarity === "number" ? rarity : parseInt(rarity || "0", 10);
+      function rarityToLabel(num) {
         const map = {
           0: "Common",
           1: "Rare",
@@ -1337,7 +878,6 @@
 
       function normalizeRarity(rarity) {
         if (typeof rarity === "number") return rarity;
-        if (typeof rarity === "bigint") return Number(rarity);
         if (typeof rarity === "string" && /^\d+$/.test(rarity))
           return parseInt(rarity, 10);
         return 0;
@@ -1399,15 +939,27 @@
         uiState = UI_STATE.IDLE;
       }
 
+      function pickWeightedCardIndex() {
+        let total = 0;
+        for (const key in CARD_WEIGHT_BY_INDEX) {
+          total += CARD_WEIGHT_BY_INDEX[key];
+        }
+        const roll = Math.floor(Math.random() * total);
+        let cumulative = 0;
+        for (const key in CARD_WEIGHT_BY_INDEX) {
+          cumulative += CARD_WEIGHT_BY_INDEX[key];
+          if (roll < cumulative) {
+            return parseInt(key, 10);
+          }
+        }
+        return 0;
+      }
+
       function renderCard(tokenId, rarityRaw, cardTypeIndexRaw) {
         const rarityNum = normalizeRarity(rarityRaw);
         const rarityKey = rarityKeyFromNum(rarityNum);
 
-        const cardIndex = Number(
-          typeof cardTypeIndexRaw === "bigint"
-            ? cardTypeIndexRaw
-            : cardTypeIndexRaw || 0
-        );
+        const cardIndex = Number(cardTypeIndexRaw || 0);
 
         const imgSrc =
           CARD_IMAGE_BY_INDEX[cardIndex] ??
@@ -1451,7 +1003,7 @@
 
         if (mintInfo) {
           mintInfo.textContent =
-            "NFT VaultSpin reçu – tokenId " +
+            "Carte révélée (démo) – faux tokenId " +
             tokenId +
             " • Rarity: " +
             rarityToLabel(rarityNum) +
@@ -1475,80 +1027,12 @@
         uiState = UI_STATE.CARD_REVEALED;
       }
 
-      /********************
-       * WEB3 – WALLET    *
-       ********************/
-
-      async function initProvider() {
-        if (!window.ethereum) {
-          setStatus("MetaMask non détecté.", "error");
-          setButtonsState({ walletEnabled: false, openPackEnabled: false });
-          return;
-        }
-        provider = new ethers.BrowserProvider(window.ethereum);
-      }
-
-      async function connectWallet() {
-        try {
-          await initProvider();
-          if (!provider) return;
-
-          const accounts = await provider.send("eth_requestAccounts", []);
-          currentAccount = accounts[0];
-
-          signer = await provider.getSigner();
-          contract = new ethers.Contract(
-            CONTRACT_ADDRESS,
-            CONTRACT_ABI,
-            signer
-          );
-
-          const contractShort = document.getElementById("contract-short");
-          if (contractShort) {
-            contractShort.textContent = shortAddress(CONTRACT_ADDRESS);
-          }
-
-          const network = await provider.getNetwork();
-          if (
-            network &&
-            network.chainId &&
-            "0x" + network.chainId.toString(16) !== SEPOLIA_CHAIN_ID
-          ) {
-            setStatus(
-              "Mauvais réseau. Merci de te connecter sur Sepolia.",
-              "error"
-            );
-            setButtonsState({ walletEnabled: true, openPackEnabled: false });
-            return;
-          }
-
-          setStatus(
-            "Wallet connecté : " + shortAddress(currentAccount),
-            "ok"
-          );
-          setButtonsState({ walletEnabled: true, openPackEnabled: true });
-        } catch (err) {
-          console.error("Erreur connexion wallet :", err);
-          alert(err.message || "Erreur connexion wallet");
-          setStatus("Erreur connexion wallet.", "error");
-        }
-      }
-
-      /********************
-       * SEQUENCE PACK    *
-       ********************/
-
       async function runOpenPackSequence() {
-        if (!contract || !currentAccount) {
-          setStatus("Connecte ton wallet d'abord (mode dev).", "error");
-          return;
-        }
-
         const frame = document.getElementById("card-frame");
         const booster = document.getElementById("booster-closed");
         const opened = document.getElementById("card-opened");
 
-        setButtonsState({ walletEnabled: true, openPackEnabled: false });
+        setButtonsState({ openPackEnabled: false });
 
         // Si une carte est déjà affichée, on joue l’anim vers la collection
         if (uiState === UI_STATE.CARD_REVEALED && opened) {
@@ -1577,94 +1061,31 @@
           setBoosterMode("booster-mode-split");
         }
 
-        setStatus("Ouverture du pack… transaction en cours.", "pending");
+        setStatus(
+          "Ouverture du pack en mode démo (aucune transaction réelle).",
+          "pending"
+        );
         playSound(sfxBooster);
 
-        try {
-          const randomNumber = ethers.toBigInt(
-            Math.floor(Math.random() * 1e9)
-          );
+        // petit délai pour le "feeling transaction"
+        await new Promise((resolve) => setTimeout(resolve, 1200));
 
-          // Vérifier si on est owner
-          const ownerAddr = (await contract.owner()).toLowerCase();
-          const isOwner =
-            currentAccount && currentAccount.toLowerCase() === ownerAddr;
+        const cardTypeIndex = pickWeightedCardIndex();
+        const rarityNum =
+          CARD_RARITY_BY_INDEX[cardTypeIndex] !== undefined
+            ? CARD_RARITY_BY_INDEX[cardTypeIndex]
+            : 0;
 
-          let tx;
+        const fakeTokenId = localDemoTokenId++;
+        renderCard(fakeTokenId, rarityNum, cardTypeIndex);
 
-          if (isOwner) {
-            // Mode admin : mintBooster direct
-            tx = await contract.mintBooster(currentAccount, randomNumber);
-          } else {
-            // Mode joueur : fonction payable buyAndOpenPack
-            const price = await contract.packPrice();
-            // Pour la démo : le pack peut être payé normalement on-chain
-            tx = await contract.buyAndOpenPack(randomNumber, { value: price });
-          }
-
-          const txCaption = document.getElementById("tx-caption");
-          if (txCaption) {
-            txCaption.textContent =
-              "Transaction envoyée : " + tx.hash.slice(0, 18) + "…";
-          }
-
-          const [receipt] = await Promise.all([
-            tx.wait(),
-            new Promise((resolve) => setTimeout(resolve, 2200)),
-          ]);
-
-          let tokenId = null;
-          let rarityRaw = null;
-          let cardTypeIndex = null;
-
-          for (const log of receipt.logs) {
-            try {
-              const parsed = contract.interface.parseLog({
-                topics: log.topics,
-                data: log.data,
-              });
-              if (parsed && parsed.name === "CardMinted") {
-                tokenId = parsed.args.tokenId;
-                rarityRaw = parsed.args.rarity;
-                cardTypeIndex = parsed.args.cardTypeIndex;
-                break;
-              }
-            } catch (e) {
-              // on ignore
-            }
-          }
-
-          if (tokenId == null) {
-            throw new Error("Event CardMinted introuvable dans les logs.");
-          }
-
-          const rarityNum = normalizeRarity(
-            rarityRaw && rarityRaw.toString ? rarityRaw.toString() : rarityRaw
-          );
-
-          renderCard(Number(tokenId), rarityNum, cardTypeIndex);
-
-          setStatus(
-            "Pack ouvert ! Clique à nouveau pour ouvrir le prochain.",
-            "ok"
-          );
-
-          if (frame) frame.classList.remove("opening");
-          setButtonsState({ walletEnabled: true, openPackEnabled: true });
-        } catch (err) {
-          console.error("Erreur lors de l'ouverture du pack :", err);
-          alert(
-            err.reason ||
-              err.info?.error?.message ||
-              err.message ||
-              "Erreur lors de l'ouverture du pack"
-          );
-          setStatus("Erreur lors de l'ouverture du pack.", "error");
-          const frame = document.getElementById("card-frame");
-          if (frame) frame.classList.remove("opening");
-          uiState = UI_STATE.IDLE;
-          setButtonsState({ walletEnabled: true, openPackEnabled: true });
-        }
+        setStatus(
+          "Pack ouvert (mode démo) – aucun NFT réel minté.",
+          "ok"
+        );
+        if (frame) frame.classList.remove("opening");
+        setButtonsState({ openPackEnabled: true });
+        uiState = UI_STATE.CARD_REVEALED;
       }
 
       function handleOpenPackClick() {
@@ -1677,113 +1098,10 @@
         runOpenPackSequence();
       }
 
-      /********************
-       * WALLET UI (FAKE SOLDE)
-       ********************/
-
-      const FAKE_WALLET = {
-        eur: 25.0,
-        eth: 0.0042,
-      };
-
-      function formatEur(amount) {
-        return amount.toLocaleString("fr-FR", {
-          style: "currency",
-          currency: "EUR",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-      }
-
-      function formatEth(amount) {
-        return "≈ " + amount.toFixed(4) + " ETH";
-      }
-
-      function updateWalletDisplay() {
-        const eur = formatEur(FAKE_WALLET.eur);
-        const eth = formatEth(FAKE_WALLET.eth);
-
-        const eurTop = document.getElementById("wallet-balance-eur");
-        const ethTop = document.getElementById("wallet-balance-crypto");
-        const eurModal = document.getElementById("wallet-balance-eur-modal");
-        const ethModal = document.getElementById("wallet-balance-crypto-modal");
-
-        if (eurTop) eurTop.textContent = eur;
-        if (ethTop) ethTop.textContent = eth;
-        if (eurModal) eurModal.textContent = eur;
-        if (ethModal) ethModal.textContent = eth;
-      }
-
-      function initWalletModal() {
-        const toggleBtn = document.getElementById("wallet-toggle-btn");
-        const backdrop = document.getElementById("wallet-modal-backdrop");
-        const closeBtn = document.getElementById("wallet-modal-close");
-
-        const tabFiat = document.getElementById("wallet-tab-fiat");
-        const tabCrypto = document.getElementById("wallet-tab-crypto");
-        const panelFiat = document.getElementById("wallet-panel-fiat");
-        const panelCrypto = document.getElementById("wallet-panel-crypto");
-
-        function openModal() {
-          if (backdrop) backdrop.classList.remove("hidden");
-        }
-
-        function closeModal() {
-          if (backdrop) backdrop.classList.add("hidden");
-        }
-
-        if (toggleBtn) toggleBtn.addEventListener("click", openModal);
-        if (closeBtn) closeBtn.addEventListener("click", closeModal);
-        if (backdrop) {
-          backdrop.addEventListener("click", (e) => {
-            if (e.target === backdrop) closeModal();
-          });
-        }
-
-        if (tabFiat && tabCrypto && panelFiat && panelCrypto) {
-          tabFiat.addEventListener("click", () => {
-            tabFiat.classList.add("active");
-            tabCrypto.classList.remove("active");
-            panelFiat.classList.remove("hidden");
-            panelCrypto.classList.add("hidden");
-          });
-
-          tabCrypto.addEventListener("click", () => {
-            tabCrypto.classList.add("active");
-            tabFiat.classList.remove("active");
-            panelCrypto.classList.remove("hidden");
-            panelFiat.classList.add("hidden");
-          });
-        }
-
-        // Fake "ajout de fonds" juste visuel
-        const amountButtons = document.querySelectorAll(".wallet-amount-btn");
-        amountButtons.forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const eurValue = parseFloat(btn.getAttribute("data-eur") || "0");
-            if (!isNaN(eurValue)) {
-              FAKE_WALLET.eur += eurValue;
-              // on fake aussi un équivalent ETH (taux bidon juste visuel)
-              FAKE_WALLET.eth += eurValue / 2500;
-              updateWalletDisplay();
-            }
-          });
-        });
-
-        updateWalletDisplay();
-      }
-
-      /********************
-       * INIT DOM         *
-       ********************/
-
       document.addEventListener("DOMContentLoaded", () => {
-        setButtonsState({ walletEnabled: true, openPackEnabled: false });
+        setButtonsState({ openPackEnabled: true });
 
-        const walletBtn = document.getElementById("wallet-btn");
         const openPackBtn = document.getElementById("open-pack-btn");
-
-        if (walletBtn) walletBtn.addEventListener("click", connectWallet);
         if (openPackBtn)
           openPackBtn.addEventListener("click", handleOpenPackClick);
 
@@ -1792,8 +1110,6 @@
         sfxLegendary = document.getElementById("sfx-legendary");
 
         setBoosterMode("booster-mode-idle");
-
-        initWalletModal();
       });
     </script>
   </body>
