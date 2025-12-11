@@ -2,144 +2,181 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Admin Panel V4</title>
+    <title>VaultSpin – Admin Panel V5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
 
     <style>
+      :root {
+        --bg1: #101827;
+        --bg2: #020617;
+        --card: rgba(15, 23, 42, 0.55);
+        --border: rgba(148, 163, 184, 0.22);
+        --border2: rgba(148, 163, 184, 0.14);
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --danger: #f97373;
+        --ok: #22c55e;
+        --warn: #facc15;
+        --violet1: #a855f7;
+        --violet2: #4f46e5;
+        --shadow: 0 0 18px rgba(168, 85, 247, 0.35);
+      }
+
+      * { box-sizing: border-box; }
       body {
         min-height: 100vh;
-        background: radial-gradient(circle at top, #101827, #020617 60%);
-        font-family: system-ui, sans-serif;
-        color: #e5e7eb;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 24px;
+        margin: 0;
+        background: radial-gradient(circle at top, var(--bg1), var(--bg2) 60%);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color: var(--text);
       }
-      .panel {
-        width: 100%;
-        max-width: 1280px;
-        background: radial-gradient(circle at top, #020617, #020617 70%);
-        border-radius: 24px;
-        border: 1px solid rgba(148, 163, 184, 0.25);
-        padding: 22px;
+
+      .wrap {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 18px 16px 28px;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        backdrop-filter: blur(10px);
+        background: rgba(2, 6, 23, 0.55);
+        border: 1px solid var(--border2);
+        border-radius: 18px;
+        padding: 12px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .brand {
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 2px;
       }
-      .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      h1 {
-        font-size: 16px;
+      .brand .title {
+        font-size: 12px;
+        letter-spacing: 0.22em;
         text-transform: uppercase;
-        letter-spacing: 0.14em;
-        margin: 0;
+        color: #cbd5e1;
       }
-      .row {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
+      .brand .sub {
+        font-size: 11px;
+        color: var(--muted);
       }
+
+      .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
       .btn {
         border-radius: 999px;
-        padding: 12px 16px;
+        padding: 10px 14px;
         font-size: 12px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        border: none;
+        border: 0;
         cursor: pointer;
-        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
         color: #fff;
-        box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
-        transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+        background: radial-gradient(circle at top left, var(--violet1), var(--violet2));
+        box-shadow: var(--shadow);
+        transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, opacity 0.12s ease-out;
+        white-space: nowrap;
       }
-      .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 0 22px rgba(168, 85, 247, 0.7);
-      }
-      .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        box-shadow: none;
-        transform: none;
-      }
+      .btn:hover { transform: translateY(-1px); box-shadow: 0 0 22px rgba(168, 85, 247, 0.55); }
+      .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
       .btn.secondary {
-        background: rgba(15, 23, 42, 0.7);
-        border: 1px solid #374151;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.35);
         box-shadow: none;
       }
-      .btn.small {
-        padding: 8px 12px;
-        font-size: 11px;
-        letter-spacing: 0.12em;
+      .btn.danger {
+        background: radial-gradient(circle at top left, #fb7185, #ef4444);
+        box-shadow: 0 0 18px rgba(239, 68, 68, 0.25);
       }
+      .btn.small { padding: 7px 10px; font-size: 11px; letter-spacing: 0.12em; }
 
-      .status {
-        font-size: 13px;
-        padding: 10px 14px;
-        border-radius: 12px;
-        background: rgba(15, 23, 42, 0.7);
-        border: 1px solid #374151;
-        white-space: pre-line;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        gap: 12px;
-      }
-      .card {
-        grid-column: span 12;
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 7px 10px;
         background: rgba(15, 23, 42, 0.55);
         border: 1px solid rgba(148, 163, 184, 0.25);
-        border-radius: 16px;
+        font-size: 12px;
+        color: #cbd5e1;
+      }
+
+      .dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; background: var(--muted); }
+      .dot.ok { background: var(--ok); }
+      .dot.warn { background: var(--warn); }
+      .dot.bad { background: var(--danger); }
+
+      .grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 12px;
+      }
+      @media (max-width: 980px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
         padding: 14px;
       }
-      @media (min-width: 900px) {
-        .card.third {
-          grid-column: span 4;
-        }
-        .card.half {
-          grid-column: span 6;
-        }
-      }
+
       .card h2 {
         margin: 0 0 10px 0;
         font-size: 12px;
         letter-spacing: 0.16em;
         text-transform: uppercase;
-        color: #9ca3af;
+        color: var(--muted);
+      }
+
+      .status {
+        margin-top: 12px;
+        background: rgba(2, 6, 23, 0.45);
+        border: 1px solid var(--border2);
+        border-radius: 14px;
+        padding: 10px 12px;
+        font-size: 13px;
+        white-space: pre-line;
       }
 
       .kv {
         display: grid;
-        grid-template-columns: 160px 1fr;
+        grid-template-columns: 150px 1fr;
         gap: 8px 12px;
         font-size: 13px;
         align-items: start;
       }
-      .kv .k { color: #9ca3af; }
-      .kv .v { color: #e5e7eb; word-break: break-word; }
+      .kv .k { color: var(--muted); }
+      .kv .v { color: var(--text); word-break: break-word; }
 
       input[type="text"], select {
         border-radius: 12px;
-        padding: 10px 12px;
-        border: 1px solid #374151;
-        background: rgba(2, 6, 23, 0.6);
-        color: #e5e7eb;
+        padding: 9px 10px;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        background: rgba(2, 6, 23, 0.45);
+        color: var(--text);
         outline: none;
         font-size: 13px;
       }
-      input[type="text"] { min-width: 260px; }
-      select { min-width: 220px; }
+      input[type="text"] { min-width: 220px; width: 100%; }
+      .filters {
+        display: grid;
+        grid-template-columns: 1fr 240px;
+        gap: 10px;
+        align-items: center;
+      }
+      @media (max-width: 720px) { .filters { grid-template-columns: 1fr; } }
 
       label.chk {
         display: inline-flex;
@@ -148,45 +185,25 @@
         font-size: 12px;
         color: #cbd5e1;
         background: rgba(2, 6, 23, 0.35);
-        border: 1px solid rgba(148, 163, 184, 0.2);
+        border: 1px solid rgba(148, 163, 184, 0.18);
         padding: 8px 10px;
         border-radius: 999px;
+        user-select: none;
       }
-      label.chk input { transform: translateY(1px); }
 
-      code {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-        font-size: 12px;
-      }
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border-radius: 999px;
-        padding: 6px 10px;
-        background: rgba(15, 23, 42, 0.65);
-        border: 1px solid rgba(148, 163, 184, 0.25);
-        font-size: 12px;
-      }
-      .link {
-        color: #a5b4fc;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-      .link:hover { color: #c4b5fd; }
-      .small { font-size: 11px; color: #9ca3af; }
-      .danger { color: #f97373; font-weight: 600; }
+      .small { font-size: 11px; color: var(--muted); }
+      .dangerTxt { color: var(--danger); font-weight: 700; }
 
-      .table-wrap {
+      .tableWrap {
         overflow: auto;
         border-radius: 14px;
-        border: 1px solid rgba(148, 163, 184, 0.25);
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background: rgba(2, 6, 23, 0.25);
       }
       table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 1240px;
-        background: rgba(2, 6, 23, 0.35);
+        min-width: 1160px;
       }
       th, td {
         padding: 10px 12px;
@@ -195,17 +212,21 @@
         font-size: 13px;
       }
       th {
-        text-align: left;
-        color: #9ca3af;
-        font-size: 12px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        background: rgba(15, 23, 42, 0.55);
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 2;
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--muted);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 12px;
+        text-align: left;
       }
       tr.soldout { opacity: 0.55; }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+        font-size: 12px;
+      }
 
       .rarity-common { color: #facc15; font-weight: 800; }
       .rarity-rare { color: #38bdf8; font-weight: 800; }
@@ -217,33 +238,59 @@
         align-items: center;
         border-radius: 999px;
         padding: 5px 10px;
-        border: 1px solid rgba(148, 163, 184, 0.25);
-        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(2, 6, 23, 0.35);
         font-size: 12px;
         gap: 8px;
       }
-      .badge.ok { border-color: rgba(34, 197, 94, 0.45); }
-      .badge.ok .dot { background: #22c55e; }
-      .badge.sold { border-color: rgba(249, 115, 115, 0.45); }
-      .badge.sold .dot { background: #f97373; }
-      .badge.lock { border-color: rgba(250, 204, 21, 0.45); }
-      .badge.lock .dot { background: #facc15; }
-      .dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; }
+      .badge.ok { border-color: rgba(34, 197, 94, 0.35); }
+      .badge.ok .dot { background: var(--ok); }
+      .badge.warn { border-color: rgba(250, 204, 21, 0.35); }
+      .badge.warn .dot { background: var(--warn); }
+      .badge.bad { border-color: rgba(249, 115, 115, 0.35); }
+      .badge.bad .dot { background: var(--danger); }
 
-      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; }
-
-      .muted { opacity: 0.8; }
+      .log {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .logBox {
+        max-height: 360px;
+        overflow: auto;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(2, 6, 23, 0.35);
+        padding: 10px;
+      }
+      .logItem {
+        border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+        padding: 8px 0;
+        font-size: 12px;
+      }
+      .logItem:last-child { border-bottom: 0; }
+      .logHdr { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .lvl { font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; font-size: 11px; }
+      .lvl.info { color: #93c5fd; }
+      .lvl.ok { color: #86efac; }
+      .lvl.warn { color: #fde68a; }
+      .lvl.err { color: #fca5a5; }
+      .logMsg { color: #e5e7eb; margin-top: 4px; white-space: pre-line; }
     </style>
   </head>
 
   <body>
-    <div class="panel">
-      <div class="top">
-        <h1>VaultSpin Admin · V4</h1>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <div class="title">VaultSpin Admin · V5</div>
+          <div class="sub">Ops panel sécurisé (Sepolia) · mint réel uniquement en mode Danger</div>
+        </div>
+
         <div class="row">
+          <span class="pill" id="health-pill"><span class="dot warn"></span><span>Health: unknown</span></span>
           <button class="btn secondary" id="refresh-btn" disabled>Refresh</button>
-          <button class="btn" id="mint-booster-btn" disabled>Mint Booster</button>
-          <button class="btn" id="export-btn" disabled>Export JSON</button>
+          <button class="btn" id="export-btn" disabled>Export CardTypes</button>
           <button class="btn" id="connect-btn">Connecter MetaMask</button>
         </div>
       </div>
@@ -251,106 +298,58 @@
       <div class="status" id="status">Wallet non connecté.</div>
 
       <div class="grid">
-        <div class="card third">
-          <h2>Contrat</h2>
-          <div class="kv">
-            <div class="k">Adresse</div>
-            <div class="v">
-              <span class="pill">
-                <code id="contract-addr">–</code>
-                <button class="btn secondary small" id="copy-contract" disabled>Copy</button>
-              </span>
-              <div class="small" style="margin-top: 6px;">
-                <a class="link" id="contract-link" target="_blank" rel="noreferrer">Etherscan</a>
-              </div>
-            </div>
-
-            <div class="k">Réseau</div>
-            <div class="v" id="net-label">–</div>
-
-            <div class="k">Owner</div>
-            <div class="v"><code id="owner-addr">–</code></div>
-
-            <div class="k">Wallet</div>
-            <div class="v"><code id="account-addr">–</code></div>
-
-            <div class="k">Admin</div>
-            <div class="v" id="admin-ok">–</div>
-          </div>
-
-          <div class="small danger" style="margin-top: 10px;">
-            ⚠️ Admin = mint réel on-chain. Ne publie pas cette page.
-          </div>
-        </div>
-
-        <div class="card third">
-          <h2>Stats</h2>
-          <div class="kv">
-            <div class="k">nextTokenId</div>
-            <div class="v" id="next-token">–</div>
-
-            <div class="k">Total minted</div>
-            <div class="v" id="total-minted">–</div>
-
-            <div class="k">Total remaining</div>
-            <div class="v" id="total-remaining">–</div>
-
-            <div class="k">Rarities</div>
-            <div class="v" id="rarity-stats">–</div>
-
-            <div class="k">Dernier mint</div>
-            <div class="v" id="last-mint">–</div>
-
-            <div class="k">Dernière tx</div>
-            <div class="v">
-              <span class="pill">
-                <code id="last-tx">–</code>
-                <button class="btn secondary small" id="copy-tx" disabled>Copy</button>
-              </span>
-              <div class="small" style="margin-top: 6px;">
-                <a class="link" id="tx-link" target="_blank" rel="noreferrer">Ouvrir</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card third">
-          <h2>Filtres & Tri</h2>
-          <div class="row">
-            <input id="search" type="text" placeholder="Search (name / uri / index)…" />
-            <select id="sort">
-              <option value="index_asc">Sort: Index ↑</option>
-              <option value="index_desc">Sort: Index ↓</option>
-              <option value="rarity_asc">Sort: Rarity ↑</option>
-              <option value="rarity_desc">Sort: Rarity ↓</option>
-              <option value="remaining_desc">Sort: Remaining ↓</option>
-              <option value="remaining_asc">Sort: Remaining ↑</option>
-              <option value="weight_desc">Sort: Weight ↓</option>
-              <option value="weight_asc">Sort: Weight ↑</option>
-              <option value="minted_desc">Sort: Minted ↓</option>
-              <option value="minted_asc">Sort: Minted ↑</option>
-            </select>
-          </div>
-
-          <div class="row" style="margin-top: 10px;">
-            <label class="chk"><input id="only-available" type="checkbox" />Only available</label>
-            <label class="chk"><input id="hide-soldout" type="checkbox" />Hide sold out</label>
-            <label class="chk"><input id="hide-weight0" type="checkbox" />Hide weight=0</label>
-          </div>
-
-          <div class="row" style="margin-top: 10px;">
-            <label class="chk"><input id="disable-soldout-mint" type="checkbox" checked />Disable sold-out mint</label>
-            <label class="chk"><input id="fast-refresh" type="checkbox" />Fast refresh (no events)</label>
-          </div>
-
-          <div class="small" style="margin-top: 10px;">
-            “Fast refresh” évite l’event listener (utile si MetaMask bug / double events).
-          </div>
-        </div>
-
+        <!-- LEFT: MAIN -->
         <div class="card">
-          <h2>CardTypes (0 → 12) · Mint xN + Export</h2>
-          <div class="table-wrap">
+          <h2>Actions & Inventory</h2>
+
+          <div class="row" style="justify-content: space-between; gap: 12px;">
+            <div class="row">
+              <button class="btn" id="mint-booster-btn" disabled>Mint Booster</button>
+              <button class="btn secondary" id="export-log-btn">Export Log</button>
+              <button class="btn secondary" id="clear-log-btn">Clear Log</button>
+            </div>
+
+            <div class="row">
+              <label class="chk" title="Obligatoire pour activer les mints">
+                <input id="danger-mode" type="checkbox" />
+                Danger Mode (enable mint)
+              </label>
+
+              <label class="chk" title="Désactive les boutons mint si remaining=0">
+                <input id="disable-soldout" type="checkbox" checked />
+                Disable sold-out mint
+              </label>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 12px;">
+            <h2>Filtres</h2>
+            <div class="filters">
+              <input id="search" type="text" placeholder="Search (name / uri / index)..." />
+              <select id="sort">
+                <option value="index_asc">Sort: Index ↑</option>
+                <option value="index_desc">Sort: Index ↓</option>
+                <option value="rarity_asc">Sort: Rarity ↑</option>
+                <option value="rarity_desc">Sort: Rarity ↓</option>
+                <option value="remaining_desc">Sort: Remaining ↓</option>
+                <option value="remaining_asc">Sort: Remaining ↑</option>
+                <option value="weight_desc">Sort: Weight ↓</option>
+                <option value="weight_asc">Sort: Weight ↑</option>
+              </select>
+            </div>
+
+            <div class="row" style="margin-top: 10px;">
+              <label class="chk"><input id="only-available" type="checkbox" />Only available</label>
+              <label class="chk"><input id="hide-soldout" type="checkbox" />Hide sold out</label>
+              <label class="chk"><input id="hide-weight0" type="checkbox" />Hide weight=0</label>
+            </div>
+
+            <div class="small" style="margin-top: 10px;">
+              Les mints sont **désactivés** tant que Danger Mode est OFF.
+            </div>
+          </div>
+
+          <div class="tableWrap" style="margin-top: 12px;">
             <table>
               <thead>
                 <tr>
@@ -368,26 +367,74 @@
                 </tr>
               </thead>
               <tbody id="ct-body">
-                <tr><td colspan="11" class="small">Connecte le wallet puis Refresh.</td></tr>
+                <tr><td colspan="11" class="small">Connecte MetaMask, puis Refresh.</td></tr>
               </tbody>
             </table>
           </div>
+        </div>
 
-          <div class="small" style="margin-top: 10px;">
-            Mint xN = fait N transactions successives (rate-limit anti spam). Si tu veux du batching on-chain, il faudra une fonction batch dans le contrat.
+        <!-- RIGHT: HEALTH + LOG -->
+        <div class="card">
+          <h2>Health Check</h2>
+          <div class="kv">
+            <div class="k">Réseau</div><div class="v" id="hc-network">–</div>
+            <div class="k">Owner match</div><div class="v" id="hc-owner">–</div>
+            <div class="k">CardTypes init</div><div class="v" id="hc-init">–</div>
+            <div class="k">Total remaining</div><div class="v" id="hc-remaining">–</div>
+            <div class="k">Readable types</div><div class="v" id="hc-readable">–</div>
+            <div class="k">Notes</div><div class="v" id="hc-notes">–</div>
+          </div>
+
+          <div class="card" style="margin-top: 12px;">
+            <h2>Contrat & Session</h2>
+            <div class="kv">
+              <div class="k">Contract</div>
+              <div class="v"><code id="contract-addr">–</code></div>
+              <div class="k">Owner</div>
+              <div class="v"><code id="owner-addr">–</code></div>
+              <div class="k">Wallet</div>
+              <div class="v"><code id="account-addr">–</code></div>
+              <div class="k">nextTokenId</div>
+              <div class="v" id="next-token">–</div>
+              <div class="k">Dernière tx</div>
+              <div class="v">
+                <code id="last-tx">–</code>
+                <div class="small" style="margin-top: 6px;">
+                  <a class="link" id="tx-link" target="_blank" rel="noreferrer">Ouvrir</a>
+                  ·
+                  <span class="link" id="copy-tx">Copy</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 12px;">
+            <h2>Log</h2>
+            <div class="log">
+              <div class="logBox" id="log-box"></div>
+              <div class="small">
+                Le log est sauvegardé en local (localStorage). Idéal pour debug quand MetaMask “probablement échoue”.
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- tiny footer -->
+      <div class="small" style="margin-top: 12px; opacity: 0.9;">
+        <span class="dangerTxt">⚠️</span> Admin panel = actions on-chain (owner-only). Ne publie pas ce fichier.
       </div>
     </div>
 
     <script>
-      // CONFIG
+      /********************
+       * CONFIG
+       ********************/
       const CONTRACT_ADDRESS = "0x6279B83Fd6093c5cAf2989cc428197D7A7d7342D";
       const SEPOLIA_CHAIN_ID = 11155111n;
       const EXPECTED_CARDTYPES = 13;
       const ETHERSCAN_SEPOLIA_BASE = "https://sepolia.etherscan.io";
 
-      // ABI
       const CONTRACT_ABI = [
         {
           anonymous: false,
@@ -420,61 +467,72 @@
         { inputs: [{ name: "to", type: "address" }, { name: "cardTypeIndex", type: "uint256" }], name: "mintCard", outputs: [], stateMutability: "nonpayable", type: "function" },
       ];
 
-      // STATE
+      /********************
+       * STATE
+       ********************/
       let provider, signer, contract;
       let currentAccount = null;
       let isAdmin = false;
       let eventAttached = false;
 
-      // DATA cache
       let cardTypesCache = [];
-
-      // Simple rate-limit: 1 tx at a time + minimal delay
       let txLock = false;
-      const TX_COOLDOWN_MS = 450;
 
-      // UI refs
+      /********************
+       * UI refs
+       ********************/
       const statusEl = document.getElementById("status");
       const connectBtn = document.getElementById("connect-btn");
       const refreshBtn = document.getElementById("refresh-btn");
-      const mintBoosterBtn = document.getElementById("mint-booster-btn");
       const exportBtn = document.getElementById("export-btn");
 
-      const contractAddrEl = document.getElementById("contract-addr");
-      const contractLinkEl = document.getElementById("contract-link");
-      const copyContractBtn = document.getElementById("copy-contract");
-
-      const netLabelEl = document.getElementById("net-label");
-      const ownerAddrEl = document.getElementById("owner-addr");
-      const accountAddrEl = document.getElementById("account-addr");
-      const adminOkEl = document.getElementById("admin-ok");
-
-      const nextTokenEl = document.getElementById("next-token");
-      const totalMintedEl = document.getElementById("total-minted");
-      const totalRemainingEl = document.getElementById("total-remaining");
-      const rarityStatsEl = document.getElementById("rarity-stats");
-
-      const lastMintEl = document.getElementById("last-mint");
-      const lastTxEl = document.getElementById("last-tx");
-      const copyTxBtn = document.getElementById("copy-tx");
-      const txLinkEl = document.getElementById("tx-link");
+      const mintBoosterBtn = document.getElementById("mint-booster-btn");
+      const dangerModeEl = document.getElementById("danger-mode");
+      const disableSoldoutEl = document.getElementById("disable-soldout");
 
       const searchEl = document.getElementById("search");
       const sortEl = document.getElementById("sort");
       const onlyAvailableEl = document.getElementById("only-available");
       const hideSoldoutEl = document.getElementById("hide-soldout");
       const hideWeight0El = document.getElementById("hide-weight0");
-      const disableSoldoutMintEl = document.getElementById("disable-soldout-mint");
-      const fastRefreshEl = document.getElementById("fast-refresh");
 
       const ctBody = document.getElementById("ct-body");
 
-      // Helpers
+      const contractAddrEl = document.getElementById("contract-addr");
+      const ownerAddrEl = document.getElementById("owner-addr");
+      const accountAddrEl = document.getElementById("account-addr");
+      const nextTokenEl = document.getElementById("next-token");
+
+      const lastTxEl = document.getElementById("last-tx");
+      const txLinkEl = document.getElementById("tx-link");
+      const copyTxEl = document.getElementById("copy-tx");
+
+      // health
+      const healthPill = document.getElementById("health-pill");
+      const hcNetwork = document.getElementById("hc-network");
+      const hcOwner = document.getElementById("hc-owner");
+      const hcInit = document.getElementById("hc-init");
+      const hcRemaining = document.getElementById("hc-remaining");
+      const hcReadable = document.getElementById("hc-readable");
+      const hcNotes = document.getElementById("hc-notes");
+
+      // log
+      const logBox = document.getElementById("log-box");
+      const exportLogBtn = document.getElementById("export-log-btn");
+      const clearLogBtn = document.getElementById("clear-log-btn");
+
+      /********************
+       * Utils
+       ********************/
       function setStatus(txt) { statusEl.textContent = txt; }
 
-      function shortAddr(a) {
-        if (!a) return "–";
-        return a.slice(0, 6) + "…" + a.slice(-4);
+      function escapeHtml(s) {
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
 
       function rarityLabel(n) {
@@ -486,51 +544,34 @@
         return { text: String(v), cls: "" };
       }
 
-      function escapeHtml(s) {
-        return String(s)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
       function uriShort(uri) {
         if (!uri) return "";
         return uri.length > 44 ? uri.slice(0, 22) + "…" + uri.slice(-16) : uri;
       }
 
       function statusBadge({ remaining, locked }) {
-        if (remaining <= 0n) return `<span class="badge sold"><span class="dot"></span>SOLD OUT</span>`;
-        if (locked) return `<span class="badge lock"><span class="dot"></span>LOCKED</span>`;
+        if (remaining <= 0n) return `<span class="badge bad"><span class="dot"></span>SOLD OUT</span>`;
+        if (locked) return `<span class="badge warn"><span class="dot"></span>LOCKED</span>`;
         return `<span class="badge ok"><span class="dot"></span>OK</span>`;
-      }
-
-      function setAdminEnabled(enabled) {
-        refreshBtn.disabled = !enabled;
-        mintBoosterBtn.disabled = !enabled;
-        exportBtn.disabled = !enabled;
-        copyContractBtn.disabled = !enabled;
       }
 
       function setLastTx(hash) {
         if (!hash) {
           lastTxEl.textContent = "–";
-          copyTxBtn.disabled = true;
           txLinkEl.href = "#";
           return;
         }
         lastTxEl.textContent = hash;
-        copyTxBtn.disabled = false;
         txLinkEl.href = `${ETHERSCAN_SEPOLIA_BASE}/tx/${hash}`;
       }
 
       async function copyToClipboard(text) {
         try {
           await navigator.clipboard.writeText(text);
+          log("ok", "Clipboard", "Copié ✅");
           setStatus("Copié ✅");
-        } catch (e) {
-          console.error(e);
+        } catch {
+          log("warn", "Clipboard", "Copie impossible (permissions navigateur).");
           setStatus("Impossible de copier (permissions navigateur).");
         }
       }
@@ -544,23 +585,87 @@
         }
       }
 
-      function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
-
-      function canSendTx() {
-        if (txLock) return false;
-        txLock = true;
-        return true;
-      }
-      async function releaseTxLock() {
-        await sleep(TX_COOLDOWN_MS);
-        txLock = false;
+      function nowStamp() {
+        const d = new Date();
+        return d.toISOString().replace("T", " ").slice(0, 19);
       }
 
-      // Connect
+      /********************
+       * Log (persist localStorage)
+       ********************/
+      const LOG_KEY = "vaultspin_admin_v5_log";
+      function loadLog() {
+        try { return JSON.parse(localStorage.getItem(LOG_KEY) || "[]"); }
+        catch { return []; }
+      }
+      function saveLog(arr) {
+        localStorage.setItem(LOG_KEY, JSON.stringify(arr.slice(-300))); // keep last 300
+      }
+      function log(level, title, message) {
+        const arr = loadLog();
+        arr.push({ t: nowStamp(), level, title, message });
+        saveLog(arr);
+        renderLog();
+      }
+      function renderLog() {
+        const arr = loadLog();
+        if (arr.length === 0) {
+          logBox.innerHTML = `<div class="small">Aucun log pour l’instant.</div>`;
+          return;
+        }
+        const html = arr.slice().reverse().map((x) => {
+          const lvlClass = x.level === "err" ? "err" : x.level === "warn" ? "warn" : x.level === "ok" ? "ok" : "info";
+          return `
+            <div class="logItem">
+              <div class="logHdr">
+                <div><span class="lvl ${lvlClass}">${escapeHtml(x.level)}</span> · <span class="muted">${escapeHtml(x.title)}</span></div>
+                <div class="muted">${escapeHtml(x.t)}</div>
+              </div>
+              <div class="logMsg">${escapeHtml(x.message)}</div>
+            </div>
+          `;
+        }).join("");
+        logBox.innerHTML = html;
+      }
+
+      /********************
+       * Danger Mode gating
+       ********************/
+      const DANGER_KEY = "vaultspin_admin_v5_danger";
+      function loadDanger() {
+        const v = localStorage.getItem(DANGER_KEY);
+        return v === "1";
+      }
+      function setDanger(on) {
+        localStorage.setItem(DANGER_KEY, on ? "1" : "0");
+      }
+      function isMintEnabled() {
+        return Boolean(isAdmin && dangerModeEl.checked);
+      }
+
+      function updateMintButtonsState() {
+        const enabled = isMintEnabled() && !txLock;
+        mintBoosterBtn.disabled = !enabled;
+        // row buttons are updated on render
+      }
+
+      /********************
+       * Health Pill
+       ********************/
+      function setHealthPill(kind, text) {
+        // kind: ok | warn | bad
+        const dotClass = kind === "ok" ? "ok" : kind === "bad" ? "bad" : "warn";
+        healthPill.innerHTML = `<span class="dot ${dotClass}"></span><span>${escapeHtml(text)}</span>`;
+      }
+
+      /********************
+       * Connect / refresh
+       ********************/
       async function connectWallet() {
         try {
           if (!window.ethereum) {
             setStatus("MetaMask non détecté.");
+            log("err", "MetaMask", "MetaMask non détecté.");
             return;
           }
 
@@ -568,9 +673,10 @@
           const net = await provider.getNetwork();
 
           if (net.chainId !== SEPOLIA_CHAIN_ID) {
-            netLabelEl.textContent = `Mauvais réseau (chainId: ${net.chainId})`;
-            setStatus("Passe sur Sepolia dans MetaMask, puis reconnecte.");
-            setAdminEnabled(false);
+            setStatus("Mauvais réseau : passe sur Sepolia.");
+            log("warn", "Network", `Mauvais réseau (chainId ${net.chainId}).`);
+            hcNetwork.textContent = `BAD (chainId ${net.chainId})`;
+            setHealthPill("bad", "Wrong network");
             return;
           }
 
@@ -584,30 +690,38 @@
           isAdmin = currentAccount.toLowerCase() === owner.toLowerCase();
 
           contractAddrEl.textContent = CONTRACT_ADDRESS;
-          contractLinkEl.href = `${ETHERSCAN_SEPOLIA_BASE}/address/${CONTRACT_ADDRESS}`;
-          netLabelEl.textContent = `Sepolia ✅ (chainId: ${net.chainId})`;
           ownerAddrEl.textContent = owner;
           accountAddrEl.textContent = currentAccount;
-          adminOkEl.textContent = isAdmin ? "✅ oui" : "❌ non";
+
+          hcNetwork.textContent = "OK (Sepolia)";
+          hcOwner.textContent = isAdmin ? "OK (owner match)" : "BAD (not owner)";
 
           if (!isAdmin) {
-            setStatus(
-              "Connecté : " + shortAddr(currentAccount) +
-              "\nNON OWNER du contrat.\nOwner attendu : " + shortAddr(owner)
-            );
-            setAdminEnabled(false);
+            setStatus("Connecté mais NON OWNER du contrat.");
+            log("err", "Auth", "Wallet connecté ≠ owner() du contrat. Mint impossible.");
+            setHealthPill("bad", "Not owner");
+            refreshBtn.disabled = true;
+            exportBtn.disabled = true;
+            mintBoosterBtn.disabled = true;
             return;
           }
 
-          setStatus("Admin connecté : " + shortAddr(currentAccount));
-          setAdminEnabled(true);
+          setStatus("Admin connecté ✅");
+          log("ok", "Auth", "Admin connecté (owner match).");
 
-          if (!fastRefreshEl.checked) attachEventListener();
+          refreshBtn.disabled = false;
+          exportBtn.disabled = false;
+
+          if (!eventAttached) attachEventListener();
+
           await refreshAll();
         } catch (e) {
           console.error(e);
           setStatus("Erreur connexion: " + (e.shortMessage || e.message));
-          setAdminEnabled(false);
+          log("err", "Connect", e.shortMessage || e.message || "Erreur");
+          setHealthPill("bad", "Connect error");
+        } finally {
+          updateMintButtonsState();
         }
       }
 
@@ -615,92 +729,63 @@
         if (!contract || eventAttached) return;
 
         contract.on("CardMinted", (tokenId, rarity, cardTypeIndex, ev) => {
-          const r = rarityLabel(rarity);
-          lastMintEl.innerHTML =
-            `tokenId #${tokenId.toString()} · ` +
-            `<span class="${r.cls}">${r.text}</span>` +
-            ` · cardTypeIndex ${cardTypeIndex.toString()}`;
-
-          const txHash = ev?.log?.transactionHash;
-          if (txHash) setLastTx(txHash);
-
-          // Refresh best effort
+          const txHash = ev?.log?.transactionHash || "";
+          setLastTx(txHash);
+          log("ok", "Event CardMinted", `tokenId #${tokenId.toString()} · rarity ${Number(rarity)} · cardTypeIndex ${cardTypeIndex.toString()}\nTx: ${txHash}`);
           refreshAll().catch(() => {});
         });
 
         eventAttached = true;
       }
 
-      // Load cardTypes cache
       async function loadCardTypes() {
         const arr = [];
+        let readable = 0;
+        let reverts = 0;
+
         for (let i = 0; i < EXPECTED_CARDTYPES; i++) {
-          const ct = await contract.cardTypes(BigInt(i));
-          const uri = ct[0];
-          const name = ct[1];
-          const rarity = Number(ct[2]);
-          const maxSupply = BigInt(ct[3].toString());
-          const minted = BigInt(ct[4].toString());
-          const weight = Number(ct[5]);
-          const locked = Boolean(ct[6]);
-          const remaining = maxSupply - minted;
+          try {
+            const ct = await contract.cardTypes(BigInt(i));
+            readable++;
 
-          arr.push({
-            index: i,
-            uri, name, rarity,
-            maxSupply, minted, remaining,
-            weight, locked
-          });
-        }
-        cardTypesCache = arr;
-      }
+            const uri = ct[0];
+            const name = ct[1];
+            const rarity = Number(ct[2]);
+            const maxSupply = BigInt(ct[3].toString());
+            const minted = BigInt(ct[4].toString());
+            const weight = Number(ct[5]);
+            const locked = Boolean(ct[6]);
+            const remaining = maxSupply - minted;
 
-      // Stats
-      function computeStats(list) {
-        let totalMinted = 0n;
-        let totalRemaining = 0n;
-        const byR = { 0: { m:0n, r:0n }, 1: { m:0n, r:0n }, 2: { m:0n, r:0n }, 3: { m:0n, r:0n } };
-
-        for (const x of list) {
-          totalMinted += x.minted;
-          totalRemaining += x.remaining;
-          if (byR[x.rarity]) {
-            byR[x.rarity].m += x.minted;
-            byR[x.rarity].r += x.remaining;
+            arr.push({ index: i, uri, name, rarity, maxSupply, minted, remaining, weight, locked });
+          } catch (e) {
+            reverts++;
+            arr.push({ index: i, _revert: true, err: e.shortMessage || e.message || "revert" });
           }
         }
 
-        totalMintedEl.textContent = totalMinted.toString();
-        totalRemainingEl.textContent = totalRemaining.toString();
-
-        const fmt = (r, label) => `${label}: ${byR[r].m.toString()} minted / ${byR[r].r.toString()} rem`;
-        rarityStatsEl.textContent =
-          fmt(0,"C") + " · " + fmt(1,"R") + " · " + fmt(2,"U") + " · " + fmt(3,"L");
+        return { arr, readable, reverts };
       }
 
-      // Filters + sort
-      function applyViewTransform() {
+      function applyTransform(list) {
         const q = (searchEl.value || "").trim().toLowerCase();
         const onlyAvail = onlyAvailableEl.checked;
         const hideSold = hideSoldoutEl.checked;
         const hideW0 = hideWeight0El.checked;
 
-        let list = [...cardTypesCache];
+        let out = list.filter((x) => !x._revert);
 
         if (q) {
-          list = list.filter((x) => {
-            const hay = `${x.index} ${x.name} ${x.uri}`.toLowerCase();
-            return hay.includes(q);
-          });
+          out = out.filter((x) => `${x.index} ${x.name} ${x.uri}`.toLowerCase().includes(q));
         }
-        if (onlyAvail) list = list.filter((x) => x.remaining > 0n);
-        if (hideSold) list = list.filter((x) => x.remaining > 0n);
-        if (hideW0) list = list.filter((x) => x.weight > 0);
+        if (onlyAvail) out = out.filter((x) => x.remaining > 0n);
+        if (hideSold) out = out.filter((x) => x.remaining > 0n);
+        if (hideW0) out = out.filter((x) => x.weight > 0);
 
         const key = sortEl.value;
         const cmpNum = (a,b) => (a<b ? -1 : a>b ? 1 : 0);
 
-        list.sort((a,b) => {
+        out.sort((a,b) => {
           switch (key) {
             case "index_desc": return b.index - a.index;
             case "rarity_asc": return a.rarity - b.rarity || a.index - b.index;
@@ -709,24 +794,32 @@
             case "remaining_asc": return cmpNum(a.remaining, b.remaining) || a.index - b.index;
             case "weight_desc": return b.weight - a.weight || a.index - b.index;
             case "weight_asc": return a.weight - b.weight || a.index - b.index;
-            case "minted_desc": return cmpNum(b.minted, a.minted) || a.index - b.index;
-            case "minted_asc": return cmpNum(a.minted, b.minted) || a.index - b.index;
             default: return a.index - b.index;
           }
         });
 
-        computeStats(list);
-        renderTable(list);
+        return out;
       }
 
-      function renderTable(list) {
-        const disableSoldoutMint = disableSoldoutMintEl.checked;
+      function renderTable(fullList) {
+        const disableSoldoutMint = disableSoldoutEl.checked;
+        const mintEnabled = isMintEnabled() && !txLock;
 
-        const rows = list.map((x) => {
+        // Show reverts too (as rows) to spot init issues
+        const rows = fullList.map((x) => {
+          if (x._revert) {
+            return `
+              <tr class="soldout">
+                <td><code>${x.index}</code></td>
+                <td colspan="10" class="small">Revert/inexistant : ${escapeHtml(x.err || "")}</td>
+              </tr>
+            `;
+          }
+
           const r = rarityLabel(x.rarity);
           const soldout = x.remaining <= 0n;
           const trClass = soldout ? "soldout" : "";
-          const mintDisabled = soldout && disableSoldoutMint;
+          const mintDisabled = !mintEnabled || (soldout && disableSoldoutMint);
 
           return `
             <tr class="${trClass}">
@@ -744,7 +837,6 @@
                   <button class="btn small secondary" data-action="mintn" data-n="1" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x1</button>
                   <button class="btn small secondary" data-action="mintn" data-n="3" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x3</button>
                   <button class="btn small secondary" data-action="mintn" data-n="5" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x5</button>
-                  <button class="btn small secondary" data-action="mintn" data-n="10" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x10</button>
                 </div>
               </td>
               <td>
@@ -759,7 +851,7 @@
 
         ctBody.innerHTML = rows.join("") || `<tr><td colspan="11" class="small">Aucun résultat.</td></tr>`;
 
-        // bind events
+        // bind
         ctBody.querySelectorAll("button[data-action='copy-uri']").forEach((btn) => {
           btn.addEventListener("click", async (ev) => {
             const uri = ev.currentTarget.getAttribute("data-uri") || "";
@@ -784,138 +876,209 @@
         });
       }
 
-      // Refresh
       async function refreshAll() {
         if (!contract) return;
+
         setStatus("Refresh…");
+        log("info", "Refresh", "Chargement nextTokenId + cardTypes…");
+
         const next = await contract.nextTokenId();
         nextTokenEl.textContent = next.toString();
 
-        await loadCardTypes();
-        applyViewTransform();
+        const { arr, readable, reverts } = await loadCardTypes();
+        cardTypesCache = arr;
+
+        // Health check
+        await runHealthCheck({ readable, reverts, list: arr });
+
+        // Apply filters to a *view*, but render full list (incl reverts) so we debug init issues.
+        // UX: on affiche les reverts en bas si filtres actifs.
+        // Simple: on rend la liste filtrée + on append les reverts.
+        const okList = applyTransform(arr);
+        const revertList = arr.filter((x) => x._revert);
+        const displayList = [...okList, ...revertList];
+
+        renderTable(displayList);
+
         setStatus("OK ✅");
+        log("ok", "Refresh", `OK. readable=${readable}, reverts=${reverts}`);
+        updateMintButtonsState();
       }
 
-      // TX actions
+      async function runHealthCheck({ readable, reverts, list }) {
+        // init check: try read cardTypes(0) without revert + expected count readable
+        const initOk = readable > 0 && readable >= Math.min(3, EXPECTED_CARDTYPES);
+        const totalRemaining = list
+          .filter((x) => !x._revert)
+          .reduce((acc, x) => acc + (x.remaining || 0n), 0n);
+
+        hcInit.textContent = initOk ? "OK" : "BAD (cardTypes not initialized?)";
+        hcRemaining.textContent = totalRemaining.toString();
+        hcReadable.textContent = `${readable}/${EXPECTED_CARDTYPES} (reverts: ${reverts})`;
+
+        const notes = [];
+        if (!initOk) notes.push("cardTypes semblent non initialisés sur cette adresse.");
+        if (totalRemaining <= 0n) notes.push("No cards left (stock total = 0) → mintBooster va revert.");
+        if (reverts > 0) notes.push("Certains index revert → vérifie addCardType() / expected count.");
+        hcNotes.textContent = notes.length ? notes.join(" ") : "OK";
+
+        // pill
+        if (!isAdmin) {
+          setHealthPill("bad", "Not owner");
+        } else if (!initOk) {
+          setHealthPill("bad", "CardTypes not initialized");
+        } else if (totalRemaining <= 0n) {
+          setHealthPill("warn", "No cards left");
+        } else if (reverts > 0) {
+          setHealthPill("warn", "Partial read (some reverts)");
+        } else {
+          setHealthPill("ok", "Healthy");
+        }
+      }
+
+      /********************
+       * TX actions
+       ********************/
+      function lockTx() {
+        if (txLock) return false;
+        txLock = true;
+        updateMintButtonsState();
+        return true;
+      }
+      function unlockTx() {
+        txLock = false;
+        updateMintButtonsState();
+      }
+
+      async function ensureDangerMode() {
+        if (!dangerModeEl.checked) {
+          setStatus("Active Danger Mode pour minter.");
+          log("warn", "Danger Mode", "Mint bloqué : Danger Mode OFF.");
+          return false;
+        }
+        return true;
+      }
+
       async function mintBooster() {
         if (!contract || !currentAccount) return;
-        if (!canSendTx()) return setStatus("Tx en cours…");
+        if (!isAdmin) return;
+        if (!await ensureDangerMode()) return;
+        if (!lockTx()) return;
 
-        mintBoosterBtn.disabled = true;
         try {
           const randomNumber = BigInt(Math.floor(Math.random() * 1e9) + 1);
 
           setStatus("Simulation mintBooster…");
-          await safeStaticCall(
-            contract.mintBooster.staticCall(currentAccount, randomNumber),
-            "mintBooster.staticCall"
-          );
+          log("info", "MintBooster", "staticCall simulation…");
+          await safeStaticCall(contract.mintBooster.staticCall(currentAccount, randomNumber), "mintBooster.staticCall");
 
           setStatus("Signature MetaMask (mintBooster)…");
           const tx = await contract.mintBooster(currentAccount, randomNumber);
           setLastTx(tx.hash);
+          log("info", "MintBooster", `Tx sent: ${tx.hash}`);
 
           setStatus("Tx envoyée…\n" + tx.hash + "\nAttente confirmation…");
           await tx.wait();
 
+          log("ok", "MintBooster", `Confirmed: ${tx.hash}`);
           setStatus("MintBooster confirmé ✔️\nTx: " + tx.hash);
           await refreshAll();
         } catch (e) {
           console.error(e);
+          log("err", "MintBooster", e.message || e.shortMessage || "Erreur");
           setStatus("MintBooster revert: " + (e.message || e.shortMessage || "Erreur"));
         } finally {
-          mintBoosterBtn.disabled = false;
-          await releaseTxLock();
+          unlockTx();
         }
       }
 
       async function mintCardOnce(idx, btnEl) {
         if (!contract || !currentAccount) return;
-        if (!Number.isFinite(idx) || idx < 0 || idx >= EXPECTED_CARDTYPES) return;
-
-        if (!canSendTx()) return setStatus("Tx en cours…");
+        if (!isAdmin) return;
+        if (!await ensureDangerMode()) return;
+        if (!lockTx()) return;
 
         const prev = btnEl.textContent;
         btnEl.disabled = true;
         btnEl.textContent = "…";
 
         try {
-          setStatus("Simulation mintCard(index=" + idx + ")…");
-          await safeStaticCall(
-            contract.mintCard.staticCall(currentAccount, BigInt(idx)),
-            "mintCard.staticCall"
-          );
+          setStatus(`Simulation mintCard(index=${idx})…`);
+          log("info", "MintCard", `staticCall index=${idx}`);
+          await safeStaticCall(contract.mintCard.staticCall(currentAccount, BigInt(idx)), "mintCard.staticCall");
 
-          setStatus("Signature MetaMask (mintCard index=" + idx + ")…");
+          setStatus(`Signature MetaMask (mintCard index=${idx})…`);
           const tx = await contract.mintCard(currentAccount, BigInt(idx));
           setLastTx(tx.hash);
+          log("info", "MintCard", `Tx sent index=${idx}: ${tx.hash}`);
 
           setStatus("Tx envoyée…\n" + tx.hash + "\nAttente confirmation…");
           await tx.wait();
 
-          setStatus("MintCard confirmé ✔️ (index " + idx + ")\nTx: " + tx.hash);
+          log("ok", "MintCard", `Confirmed index=${idx}: ${tx.hash}`);
+          setStatus(`MintCard confirmé ✔️ (index ${idx})\nTx: ${tx.hash}`);
           await refreshAll();
         } catch (e) {
           console.error(e);
-          setStatus("MintCard revert (index " + idx + "): " + (e.message || e.shortMessage || "Erreur"));
+          log("err", "MintCard", `index=${idx}\n${e.message || e.shortMessage || "Erreur"}`);
+          setStatus("MintCard revert: " + (e.message || e.shortMessage || "Erreur"));
         } finally {
           btnEl.textContent = prev;
           btnEl.disabled = false;
-          await releaseTxLock();
+          unlockTx();
         }
       }
 
       async function mintCardMany(idx, n, btnEl) {
         if (!contract || !currentAccount) return;
-        if (!Number.isFinite(idx) || idx < 0 || idx >= EXPECTED_CARDTYPES) return;
-        if (!Number.isFinite(n) || n < 1) return;
-
-        // lock once for the whole batch
-        if (!canSendTx()) return setStatus("Tx en cours…");
+        if (!isAdmin) return;
+        if (!await ensureDangerMode()) return;
+        if (!lockTx()) return;
 
         const prev = btnEl.textContent;
         btnEl.disabled = true;
         btnEl.textContent = "…";
 
         try {
+          log("warn", "Batch Mint", `Batch mint index=${idx} x${n} (multi-tx)`);
           for (let i = 0; i < n; i++) {
             setStatus(`Batch mint ${i + 1}/${n} · simulation…`);
-            await safeStaticCall(
-              contract.mintCard.staticCall(currentAccount, BigInt(idx)),
-              "mintCard.staticCall"
-            );
+            await safeStaticCall(contract.mintCard.staticCall(currentAccount, BigInt(idx)), "mintCard.staticCall");
 
-            setStatus(`Batch mint ${i + 1}/${n} · signature MetaMask…`);
+            setStatus(`Batch mint ${i + 1}/${n} · signature…`);
             const tx = await contract.mintCard(currentAccount, BigInt(idx));
             setLastTx(tx.hash);
+            log("info", "Batch Mint", `Tx ${i + 1}/${n}: ${tx.hash}`);
 
-            setStatus(`Batch mint ${i + 1}/${n} · tx envoyée\n${tx.hash}\nAttente confirmation…`);
+            setStatus(`Tx ${i + 1}/${n} envoyée…\n${tx.hash}\nAttente confirmation…`);
             await tx.wait();
-
-            // petit cooldown entre tx (UX + mempool)
-            await sleep(250);
           }
 
+          log("ok", "Batch Mint", `Done index=${idx} x${n}`);
           setStatus(`Batch mint terminé ✔️ (index ${idx} x${n})`);
           await refreshAll();
         } catch (e) {
           console.error(e);
+          log("err", "Batch Mint", `index=${idx} x${n}\n${e.message || e.shortMessage || "Erreur"}`);
           setStatus("Batch mint stoppé: " + (e.message || e.shortMessage || "Erreur"));
-          // refresh quand même pour refléter ce qui a réussi
           await refreshAll().catch(() => {});
         } finally {
           btnEl.textContent = prev;
           btnEl.disabled = false;
-          await releaseTxLock();
+          unlockTx();
         }
       }
 
-      // Export JSON
-      async function exportJson() {
+      /********************
+       * Export CardTypes
+       ********************/
+      async function exportCardTypes() {
         const payload = {
           contract: CONTRACT_ADDRESS,
           ts: new Date().toISOString(),
-          cardTypes: cardTypesCache.map((x) => ({
+          cardTypes: cardTypesCache.map((x) => x._revert ? ({
+            index: x.index, revert: true, err: x.err || ""
+          }) : ({
             index: x.index,
             name: x.name,
             uri: x.uri,
@@ -927,39 +1090,96 @@
             uriLocked: x.locked,
           })),
         };
-
-        const txt = JSON.stringify(payload, null, 2);
-        await copyToClipboard(txt);
-        setStatus("Export JSON copié dans le clipboard ✅");
+        await copyToClipboard(JSON.stringify(payload, null, 2));
+        setStatus("Export CardTypes copié ✅");
       }
 
-      // UI events
+      /********************
+       * Danger mode confirm UX
+       ********************/
+      function handleDangerToggle() {
+        const on = dangerModeEl.checked;
+        if (on) {
+          const ok = confirm("Danger Mode active des mints on-chain réels. Confirmer ?");
+          if (!ok) {
+            dangerModeEl.checked = false;
+            setDanger(false);
+            updateMintButtonsState();
+            return;
+          }
+          setDanger(true);
+          log("warn", "Danger Mode", "ENABLED");
+        } else {
+          setDanger(false);
+          log("info", "Danger Mode", "DISABLED");
+        }
+        updateMintButtonsState();
+      }
+
+      /********************
+       * Bind UI
+       ********************/
       connectBtn.addEventListener("click", connectWallet);
       refreshBtn.addEventListener("click", () => refreshAll().catch(console.error));
       mintBoosterBtn.addEventListener("click", mintBooster);
-      exportBtn.addEventListener("click", exportJson);
+      exportBtn.addEventListener("click", exportCardTypes);
 
-      copyContractBtn.addEventListener("click", () => copyToClipboard(CONTRACT_ADDRESS));
-      copyTxBtn.addEventListener("click", () => {
+      copyTxEl.addEventListener("click", () => {
         const tx = lastTxEl.textContent;
         if (tx && tx !== "–") copyToClipboard(tx);
       });
 
-      // Filter controls
-      [searchEl, sortEl, onlyAvailableEl, hideSoldoutEl, hideWeight0El, disableSoldoutMintEl].forEach((el) => {
-        el.addEventListener("input", () => applyViewTransform());
-        el.addEventListener("change", () => applyViewTransform());
+      exportLogBtn.addEventListener("click", async () => {
+        const txt = JSON.stringify(loadLog(), null, 2);
+        await copyToClipboard(txt);
+        setStatus("Export Log copié ✅");
       });
 
-      fastRefreshEl.addEventListener("change", () => {
-        setStatus("Fast refresh changé. Reconnecte pour appliquer l’event listener.");
+      clearLogBtn.addEventListener("click", () => {
+        localStorage.removeItem(LOG_KEY);
+        renderLog();
+        log("info", "Log", "Cleared");
+        setStatus("Log cleared ✅");
       });
 
-      // init UI
+      dangerModeEl.addEventListener("change", handleDangerToggle);
+      disableSoldoutEl.addEventListener("change", () => refreshAll().catch(() => {}));
+
+      [searchEl, sortEl, onlyAvailableEl, hideSoldoutEl, hideWeight0El].forEach((el) => {
+        el.addEventListener("input", () => {
+          const okList = applyTransform(cardTypesCache);
+          const revertList = cardTypesCache.filter((x) => x._revert);
+          renderTable([...okList, ...revertList]);
+        });
+        el.addEventListener("change", () => {
+          const okList = applyTransform(cardTypesCache);
+          const revertList = cardTypesCache.filter((x) => x._revert);
+          renderTable([...okList, ...revertList]);
+        });
+      });
+
+      /********************
+       * Init
+       ********************/
       contractAddrEl.textContent = CONTRACT_ADDRESS;
-      contractLinkEl.href = `${ETHERSCAN_SEPOLIA_BASE}/address/${CONTRACT_ADDRESS}`;
       setLastTx(null);
-      setAdminEnabled(false);
+      renderLog();
+
+      // restore danger mode
+      dangerModeEl.checked = loadDanger();
+      updateMintButtonsState();
+
+      // initial health
+      setHealthPill("warn", "Health: unknown");
+      hcNetwork.textContent = "–";
+      hcOwner.textContent = "–";
+      hcInit.textContent = "–";
+      hcRemaining.textContent = "–";
+      hcReadable.textContent = "–";
+      hcNotes.textContent = "–";
+
+      log("info", "Boot", "Admin V5 loaded.");
     </script>
   </body>
 </html>
+
