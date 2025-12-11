@@ -775,57 +775,76 @@
 
     <script>
       /********************
-       * CONFIG CONTRAT V3 *
+       * CONFIG CONTRAT V4 *
        ********************/
 
-      const CONTRACT_ADDRESS =
-        "0x56B842c2BF2863b2041dd72e7a0Afd0aA5357941";
+     const CONTRACT_ADDRESS =
+       "0x6279B83Fd6093c5cAf2989cc428197D7A7d7342D";
 
-      // ABI minimal : CardMinted + mintBooster (onlyOwner)
-      const CONTRACT_ABI = [
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              indexed: false,
-              internalType: "uint8",
-              name: "rarity",
-              type: "uint8",
-            },
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "cardTypeIndex",
-              type: "uint256",
-            },
-          ],
-          name: "CardMinted",
-          type: "event",
-        },
-        {
-          inputs: [
-            { internalType: "address", name: "to", type: "address" },
-            { internalType: "uint256", name: "randomNumber", type: "uint256" },
-          ],
-          name: "mintBooster",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [{ internalType: "address", name: "", type: "address" }],
-          stateMutability: "view",
-          type: "function",
-        },
-      ];
+
+
+// ABI minimal : CardMinted + mintBooster + buyAndOpenPack + owner + packPrice
+const CONTRACT_ABI = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "rarity",
+        type: "uint8",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "cardTypeIndex",
+        type: "uint256",
+      },
+    ],
+    name: "CardMinted",
+    type: "event",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "uint256", name: "randomNumber", type: "uint256" },
+    ],
+    name: "mintBooster",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint256", name: "randomNumber", type: "uint256" },
+    ],
+    name: "buyAndOpenPack",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "packPrice",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
 
       const SEPOLIA_CHAIN_ID = "0xaa36a7";
 
@@ -1179,72 +1198,80 @@
         setStatus("Ouverture du pack… transaction en cours.", "pending");
         playSound(sfxBooster);
 
-        try {
-          const randomNumber = ethers.toBigInt(
-            Math.floor(Math.random() * 1e9)
-          );
+try {
+  const randomNumber = ethers.toBigInt(
+    Math.floor(Math.random() * 1e9)
+  );
 
-          // Pour l’instant : on utilise mintBooster (onlyOwner).
-          // Assure-toi d’utiliser le wallet owner sur le front.
-          const tx = await contract.mintBooster(
-            currentAccount,
-            randomNumber
-          );
+  // Vérifier si on est owner
+  const ownerAddr = (await contract.owner()).toLowerCase();
+  const isOwner =
+    currentAccount && currentAccount.toLowerCase() === ownerAddr;
 
-          const txCaption = document.getElementById("tx-caption");
-          if (txCaption) {
-            txCaption.textContent =
-              "Transaction envoyée : " + tx.hash.slice(0, 18) + "…";
-          }
+  let tx;
 
-          const [receipt] = await Promise.all([
-            tx.wait(),
-            new Promise((resolve) => setTimeout(resolve, 2200)),
-          ]);
+  if (isOwner) {
+    // Mode admin : mintBooster direct
+    tx = await contract.mintBooster(currentAccount, randomNumber);
+  } else {
+    // Mode joueur : fonction payable buyAndOpenPack
+    const price = await contract.packPrice();
+    tx = await contract.buyAndOpenPack(randomNumber, { value: price });
+  }
 
-          let tokenId = null;
-          let rarityRaw = null;
-          let cardTypeIndex = null;
+  const txCaption = document.getElementById("tx-caption");
+  if (txCaption) {
+    txCaption.textContent =
+      "Transaction envoyée : " + tx.hash.slice(0, 18) + "…";
+  }
 
-          for (const log of receipt.logs) {
-            try {
-              const parsed = contract.interface.parseLog(log);
-              if (parsed && parsed.name === "CardMinted") {
-                tokenId = parsed.args.tokenId;
-                rarityRaw = parsed.args.rarity;
-                cardTypeIndex = parsed.args.cardTypeIndex;
-                break;
-              }
-            } catch (_) {}
-          }
+  const [receipt] = await Promise.all([
+    tx.wait(),
+    new Promise((resolve) => setTimeout(resolve, 2200)),
+  ]);
 
-          if (tokenId == null) {
-            throw new Error("Event CardMinted introuvable dans les logs.");
-          }
+  let tokenId = null;
+  let rarityRaw = null;
+  let cardTypeIndex = null;
 
-          const rarityNum = normalizeRarity(
-            rarityRaw && rarityRaw.toString
-              ? rarityRaw.toString()
-              : rarityRaw
-          );
-
-          renderCard(Number(tokenId), rarityNum, cardTypeIndex);
-
-          setStatus(
-            "Pack ouvert ! Clique à nouveau pour ouvrir le prochain.",
-            "ok"
-          );
-
-          if (frame) frame.classList.remove("opening");
-          setButtonsState({ walletEnabled: true, openPackEnabled: true });
-        } catch (err) {
-          console.error(err);
-          setStatus("Erreur lors de l'ouverture du pack.", "error");
-          if (frame) frame.classList.remove("opening");
-          uiState = UI_STATE.IDLE;
-          setButtonsState({ walletEnabled: true, openPackEnabled: true });
-        }
+  for (const log of receipt.logs) {
+    try {
+      const parsed = contract.interface.parseLog(log);
+      if (parsed && parsed.name === "CardMinted") {
+        tokenId = parsed.args.tokenId;
+        rarityRaw = parsed.args.rarity;
+        cardTypeIndex = parsed.args.cardTypeIndex;
+        break;
       }
+    } catch (_) {}
+  }
+
+  if (tokenId == null) {
+    throw new Error("Event CardMinted introuvable dans les logs.");
+  }
+
+  const rarityNum = normalizeRarity(
+    rarityRaw && rarityRaw.toString ? rarityRaw.toString() : rarityRaw
+  );
+
+  renderCard(Number(tokenId), rarityNum, cardTypeIndex);
+
+  setStatus(
+    "Pack ouvert ! Clique à nouveau pour ouvrir le prochain.",
+    "ok"
+  );
+
+  if (frame) frame.classList.remove("opening");
+  setButtonsState({ walletEnabled: true, openPackEnabled: true });
+
+} catch (err) {
+  console.error(err);
+  setStatus("Erreur lors de l'ouverture du pack.", "error");
+  if (frame) frame.classList.remove("opening");
+  uiState = UI_STATE.IDLE;
+  setButtonsState({ walletEnabled: true, openPackEnabled: true });
+}
+
 
       function handleOpenPackClick() {
         if (
@@ -1279,3 +1306,4 @@
     </script>
   </body>
 </html>
+
