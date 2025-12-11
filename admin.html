@@ -63,6 +63,7 @@
         border-radius: 12px;
         background: rgba(15, 23, 42, 0.7);
         border: 1px solid #374151;
+        white-space: pre-line;
       }
 
       .small {
@@ -81,34 +82,23 @@
     <div class="panel">
       <h1>VaultSpin Admin</h1>
 
-      <div class="status" id="status">
-        Wallet non connecté.
-      </div>
+      <div class="status" id="status">Wallet non connecté.</div>
 
-      <button class="btn" id="connect-btn">
-        Connecter MetaMask
-      </button>
+      <button class="btn" id="connect-btn">Connecter MetaMask</button>
 
-      <button class="btn" id="mint-btn" disabled>
-        Mint Booster (on-chain)
-      </button>
+      <button class="btn" id="mint-btn" disabled>Mint Booster (on-chain)</button>
 
-      <div class="small">
-        Cette page minte réellement des NFTs vers ton wallet admin.
-      </div>
+      <div class="small">Cette page minte réellement des NFTs vers ton wallet admin.</div>
 
-      <div class="small danger">
-        ⚠️ À ne jamais partager publiquement.
-      </div>
+      <div class="small danger">⚠️ À ne jamais partager publiquement.</div>
     </div>
 
     <script>
       /********************
        * CONFIG CONTRAT
        ********************/
-
-      const CONTRACT_ADDRESS =
-        "0x6279B83Fd6093c5cAf2989cc428197D7A7d7342D";
+      const CONTRACT_ADDRESS = "0x6279B83Fd6093c5cAf2989cc428197D7A7d7342D";
+      const SEPOLIA_CHAIN_ID = 11155111n;
 
       const CONTRACT_ABI = [
         {
@@ -122,18 +112,20 @@
           type: "event",
         },
         {
+          inputs: [],
+          name: "owner",
+          outputs: [{ type: "address" }],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
           inputs: [
             { name: "to", type: "address" },
             { name: "randomNumber", type: "uint256" },
           ],
           name: "mintBooster",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [{ type: "address" }],
-          stateMutability: "view",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
       ];
@@ -151,63 +143,82 @@
         statusEl.textContent = txt;
       }
 
+      function shortAddr(addr) {
+        if (!addr) return "";
+        return addr.slice(0, 6) + "…" + addr.slice(-4);
+      }
+
       async function connectWallet() {
-        if (!window.ethereum) {
-          setStatus("MetaMask non détecté.");
-          return;
-        }
+        try {
+          if (!window.ethereum) {
+            setStatus("MetaMask non détecté.");
+            return;
+          }
 
-        provider = new ethers.BrowserProvider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = await provider.getSigner();
-        currentAccount = await signer.getAddress();
+          provider = new ethers.BrowserProvider(window.ethereum);
 
-        contract = new ethers.Contract(
-          CONTRACT_ADDRESS,
-          CONTRACT_ABI,
-          signer
-        );
+          // Check réseau
+          const net = await provider.getNetwork();
+          if (net.chainId !== SEPOLIA_CHAIN_ID) {
+            setStatus("Mauvais réseau : passe sur Sepolia.\n(chainId: " + net.chainId + ")");
+            mintBtn.disabled = true;
+            return;
+          }
 
-        const owner = (await contract.owner()).toLowerCase();
+          await provider.send("eth_requestAccounts", []);
+          signer = await provider.getSigner();
+          currentAccount = await signer.getAddress();
 
-        if (currentAccount.toLowerCase() !== owner) {
-          setStatus(
-            "Connecté mais NON OWNER du contrat."
-          );
+          contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+          const owner = (await contract.owner()).toLowerCase();
+
+          if (currentAccount.toLowerCase() !== owner) {
+            setStatus(
+              "Connecté : " +
+                shortAddr(currentAccount) +
+                "\nNON OWNER du contrat.\nOwner attendu : " +
+                shortAddr(owner)
+            );
+            mintBtn.disabled = true;
+            return;
+          }
+
+          setStatus("Admin connecté : " + shortAddr(currentAccount) + "\nRéseau : Sepolia ✅");
+          mintBtn.disabled = false;
+        } catch (e) {
+          console.error(e);
+          setStatus("Erreur connexion: " + (e.shortMessage || e.message));
           mintBtn.disabled = true;
-          return;
         }
-
-        setStatus(
-          "Admin connecté : " +
-            currentAccount.slice(0, 6) +
-            "…" +
-            currentAccount.slice(-4)
-        );
-
-        mintBtn.disabled = false;
       }
 
       async function mintBooster() {
         mintBtn.disabled = true;
-        setStatus("Mint en cours…");
 
         try {
-          const randomNumber = BigInt(
-            Math.floor(Math.random() * 1e9)
-          );
+          if (!contract || !currentAccount) {
+            setStatus("Connecte d'abord le wallet.");
+            return;
+          }
 
-          const tx = await contract.mintBooster(
-            currentAccount,
-            randomNumber
-          );
+          const randomNumber = BigInt(Math.floor(Math.random() * 1e9) + 1);
 
+          // 1) Simulation => te donne la vraie raison en cas de revert
+          setStatus("Simulation du mint…");
+          await contract.mintBooster.staticCall(currentAccount, randomNumber);
+
+          // 2) Envoi tx
+          setStatus("Signature MetaMask…");
+          const tx = await contract.mintBooster(currentAccount, randomNumber);
+
+          setStatus("Tx envoyée : " + tx.hash + "\nAttente confirmation…");
           await tx.wait();
 
-          setStatus("Mint réussi ✔️");
+          setStatus("Mint réussi ✔️\nTx: " + tx.hash);
         } catch (e) {
           console.error(e);
-          setStatus("Erreur pendant le mint.");
+          setStatus("Mint revert: " + (e.shortMessage || e.message));
         } finally {
           mintBtn.disabled = false;
         }
