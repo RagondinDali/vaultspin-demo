@@ -2,13 +2,9 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Admin Mint Panel</title>
+    <title>VaultSpin – Admin Panel V4</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Ethers v6 -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
-
-    <link rel="stylesheet" href="animations.css" />
 
     <style>
       body {
@@ -19,29 +15,42 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 24px;
       }
-
       .panel {
         width: 100%;
-        max-width: 420px;
+        max-width: 1280px;
         background: radial-gradient(circle at top, #020617, #020617 70%);
         border-radius: 24px;
         border: 1px solid rgba(148, 163, 184, 0.25);
-        padding: 24px;
+        padding: 22px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 14px;
       }
-
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
       h1 {
-        font-size: 18px;
+        font-size: 16px;
         text-transform: uppercase;
         letter-spacing: 0.14em;
+        margin: 0;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
       }
 
       .btn {
         border-radius: 999px;
-        padding: 12px 18px;
+        padding: 12px 16px;
         font-size: 12px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
@@ -50,11 +59,27 @@
         background: radial-gradient(circle at top left, #a855f7, #4f46e5);
         color: #fff;
         box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
+        transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
       }
-
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 22px rgba(168, 85, 247, 0.7);
+      }
       .btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+      }
+      .btn.secondary {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid #374151;
+        box-shadow: none;
+      }
+      .btn.small {
+        padding: 8px 12px;
+        font-size: 11px;
+        letter-spacing: 0.12em;
       }
 
       .status {
@@ -66,40 +91,303 @@
         white-space: pre-line;
       }
 
-      .small {
-        font-size: 11px;
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 12px;
+      }
+      .card {
+        grid-column: span 12;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 16px;
+        padding: 14px;
+      }
+      @media (min-width: 900px) {
+        .card.third {
+          grid-column: span 4;
+        }
+        .card.half {
+          grid-column: span 6;
+        }
+      }
+      .card h2 {
+        margin: 0 0 10px 0;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
         color: #9ca3af;
       }
 
-      .danger {
-        color: #f97373;
-        font-weight: 600;
+      .kv {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        gap: 8px 12px;
+        font-size: 13px;
+        align-items: start;
       }
+      .kv .k { color: #9ca3af; }
+      .kv .v { color: #e5e7eb; word-break: break-word; }
+
+      input[type="text"], select {
+        border-radius: 12px;
+        padding: 10px 12px;
+        border: 1px solid #374151;
+        background: rgba(2, 6, 23, 0.6);
+        color: #e5e7eb;
+        outline: none;
+        font-size: 13px;
+      }
+      input[type="text"] { min-width: 260px; }
+      select { min-width: 220px; }
+
+      label.chk {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #cbd5e1;
+        background: rgba(2, 6, 23, 0.35);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 8px 10px;
+        border-radius: 999px;
+      }
+      label.chk input { transform: translateY(1px); }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+        font-size: 12px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        font-size: 12px;
+      }
+      .link {
+        color: #a5b4fc;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .link:hover { color: #c4b5fd; }
+      .small { font-size: 11px; color: #9ca3af; }
+      .danger { color: #f97373; font-weight: 600; }
+
+      .table-wrap {
+        overflow: auto;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1240px;
+        background: rgba(2, 6, 23, 0.35);
+      }
+      th, td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        vertical-align: top;
+        font-size: 13px;
+      }
+      th {
+        text-align: left;
+        color: #9ca3af;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        background: rgba(15, 23, 42, 0.55);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+      tr.soldout { opacity: 0.55; }
+
+      .rarity-common { color: #facc15; font-weight: 800; }
+      .rarity-rare { color: #38bdf8; font-weight: 800; }
+      .rarity-ultra { color: #a855f7; font-weight: 800; }
+      .rarity-legendary { color: #f97316; font-weight: 800; }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 5px 10px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(15, 23, 42, 0.65);
+        font-size: 12px;
+        gap: 8px;
+      }
+      .badge.ok { border-color: rgba(34, 197, 94, 0.45); }
+      .badge.ok .dot { background: #22c55e; }
+      .badge.sold { border-color: rgba(249, 115, 115, 0.45); }
+      .badge.sold .dot { background: #f97373; }
+      .badge.lock { border-color: rgba(250, 204, 21, 0.45); }
+      .badge.lock .dot { background: #facc15; }
+      .dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; }
+
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace; }
+
+      .muted { opacity: 0.8; }
     </style>
   </head>
 
   <body>
     <div class="panel">
-      <h1>VaultSpin Admin</h1>
+      <div class="top">
+        <h1>VaultSpin Admin · V4</h1>
+        <div class="row">
+          <button class="btn secondary" id="refresh-btn" disabled>Refresh</button>
+          <button class="btn" id="mint-booster-btn" disabled>Mint Booster</button>
+          <button class="btn" id="export-btn" disabled>Export JSON</button>
+          <button class="btn" id="connect-btn">Connecter MetaMask</button>
+        </div>
+      </div>
 
       <div class="status" id="status">Wallet non connecté.</div>
 
-      <button class="btn" id="connect-btn">Connecter MetaMask</button>
+      <div class="grid">
+        <div class="card third">
+          <h2>Contrat</h2>
+          <div class="kv">
+            <div class="k">Adresse</div>
+            <div class="v">
+              <span class="pill">
+                <code id="contract-addr">–</code>
+                <button class="btn secondary small" id="copy-contract" disabled>Copy</button>
+              </span>
+              <div class="small" style="margin-top: 6px;">
+                <a class="link" id="contract-link" target="_blank" rel="noreferrer">Etherscan</a>
+              </div>
+            </div>
 
-      <button class="btn" id="mint-btn" disabled>Mint Booster (on-chain)</button>
+            <div class="k">Réseau</div>
+            <div class="v" id="net-label">–</div>
 
-      <div class="small">Cette page minte réellement des NFTs vers ton wallet admin.</div>
+            <div class="k">Owner</div>
+            <div class="v"><code id="owner-addr">–</code></div>
 
-      <div class="small danger">⚠️ À ne jamais partager publiquement.</div>
+            <div class="k">Wallet</div>
+            <div class="v"><code id="account-addr">–</code></div>
+
+            <div class="k">Admin</div>
+            <div class="v" id="admin-ok">–</div>
+          </div>
+
+          <div class="small danger" style="margin-top: 10px;">
+            ⚠️ Admin = mint réel on-chain. Ne publie pas cette page.
+          </div>
+        </div>
+
+        <div class="card third">
+          <h2>Stats</h2>
+          <div class="kv">
+            <div class="k">nextTokenId</div>
+            <div class="v" id="next-token">–</div>
+
+            <div class="k">Total minted</div>
+            <div class="v" id="total-minted">–</div>
+
+            <div class="k">Total remaining</div>
+            <div class="v" id="total-remaining">–</div>
+
+            <div class="k">Rarities</div>
+            <div class="v" id="rarity-stats">–</div>
+
+            <div class="k">Dernier mint</div>
+            <div class="v" id="last-mint">–</div>
+
+            <div class="k">Dernière tx</div>
+            <div class="v">
+              <span class="pill">
+                <code id="last-tx">–</code>
+                <button class="btn secondary small" id="copy-tx" disabled>Copy</button>
+              </span>
+              <div class="small" style="margin-top: 6px;">
+                <a class="link" id="tx-link" target="_blank" rel="noreferrer">Ouvrir</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card third">
+          <h2>Filtres & Tri</h2>
+          <div class="row">
+            <input id="search" type="text" placeholder="Search (name / uri / index)…" />
+            <select id="sort">
+              <option value="index_asc">Sort: Index ↑</option>
+              <option value="index_desc">Sort: Index ↓</option>
+              <option value="rarity_asc">Sort: Rarity ↑</option>
+              <option value="rarity_desc">Sort: Rarity ↓</option>
+              <option value="remaining_desc">Sort: Remaining ↓</option>
+              <option value="remaining_asc">Sort: Remaining ↑</option>
+              <option value="weight_desc">Sort: Weight ↓</option>
+              <option value="weight_asc">Sort: Weight ↑</option>
+              <option value="minted_desc">Sort: Minted ↓</option>
+              <option value="minted_asc">Sort: Minted ↑</option>
+            </select>
+          </div>
+
+          <div class="row" style="margin-top: 10px;">
+            <label class="chk"><input id="only-available" type="checkbox" />Only available</label>
+            <label class="chk"><input id="hide-soldout" type="checkbox" />Hide sold out</label>
+            <label class="chk"><input id="hide-weight0" type="checkbox" />Hide weight=0</label>
+          </div>
+
+          <div class="row" style="margin-top: 10px;">
+            <label class="chk"><input id="disable-soldout-mint" type="checkbox" checked />Disable sold-out mint</label>
+            <label class="chk"><input id="fast-refresh" type="checkbox" />Fast refresh (no events)</label>
+          </div>
+
+          <div class="small" style="margin-top: 10px;">
+            “Fast refresh” évite l’event listener (utile si MetaMask bug / double events).
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>CardTypes (0 → 12) · Mint xN + Export</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Index</th>
+                  <th>Nom</th>
+                  <th>Rareté</th>
+                  <th>Minted/Max</th>
+                  <th>Remaining</th>
+                  <th>Weight</th>
+                  <th>URI locked</th>
+                  <th>Status</th>
+                  <th>URI</th>
+                  <th>Mint</th>
+                  <th>Tools</th>
+                </tr>
+              </thead>
+              <tbody id="ct-body">
+                <tr><td colspan="11" class="small">Connecte le wallet puis Refresh.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small" style="margin-top: 10px;">
+            Mint xN = fait N transactions successives (rate-limit anti spam). Si tu veux du batching on-chain, il faudra une fonction batch dans le contrat.
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-      /********************
-       * CONFIG CONTRAT
-       ********************/
+      // CONFIG
       const CONTRACT_ADDRESS = "0x6279B83Fd6093c5cAf2989cc428197D7A7d7342D";
       const SEPOLIA_CHAIN_ID = 11155111n;
+      const EXPECTED_CARDTYPES = 13;
+      const ETHERSCAN_SEPOLIA_BASE = "https://sepolia.etherscan.io";
 
+      // ABI
       const CONTRACT_ABI = [
         {
           anonymous: false,
@@ -111,43 +399,164 @@
           name: "CardMinted",
           type: "event",
         },
+        { inputs: [], name: "owner", outputs: [{ type: "address" }], stateMutability: "view", type: "function" },
+        { inputs: [], name: "nextTokenId", outputs: [{ type: "uint256" }], stateMutability: "view", type: "function" },
         {
-          inputs: [],
-          name: "owner",
-          outputs: [{ type: "address" }],
+          inputs: [{ name: "", type: "uint256" }],
+          name: "cardTypes",
+          outputs: [
+            { name: "uri", type: "string" },
+            { name: "name", type: "string" },
+            { name: "rarity", type: "uint8" },
+            { name: "maxSupply", type: "uint256" },
+            { name: "minted", type: "uint256" },
+            { name: "weight", type: "uint32" },
+            { name: "uriLocked", type: "bool" },
+          ],
           stateMutability: "view",
           type: "function",
         },
-        {
-          inputs: [
-            { name: "to", type: "address" },
-            { name: "randomNumber", type: "uint256" },
-          ],
-          name: "mintBooster",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
+        { inputs: [{ name: "to", type: "address" }, { name: "randomNumber", type: "uint256" }], name: "mintBooster", outputs: [], stateMutability: "nonpayable", type: "function" },
+        { inputs: [{ name: "to", type: "address" }, { name: "cardTypeIndex", type: "uint256" }], name: "mintCard", outputs: [], stateMutability: "nonpayable", type: "function" },
       ];
 
-      let provider;
-      let signer;
-      let contract;
-      let currentAccount;
+      // STATE
+      let provider, signer, contract;
+      let currentAccount = null;
+      let isAdmin = false;
+      let eventAttached = false;
 
+      // DATA cache
+      let cardTypesCache = [];
+
+      // Simple rate-limit: 1 tx at a time + minimal delay
+      let txLock = false;
+      const TX_COOLDOWN_MS = 450;
+
+      // UI refs
       const statusEl = document.getElementById("status");
       const connectBtn = document.getElementById("connect-btn");
-      const mintBtn = document.getElementById("mint-btn");
+      const refreshBtn = document.getElementById("refresh-btn");
+      const mintBoosterBtn = document.getElementById("mint-booster-btn");
+      const exportBtn = document.getElementById("export-btn");
 
-      function setStatus(txt) {
-        statusEl.textContent = txt;
+      const contractAddrEl = document.getElementById("contract-addr");
+      const contractLinkEl = document.getElementById("contract-link");
+      const copyContractBtn = document.getElementById("copy-contract");
+
+      const netLabelEl = document.getElementById("net-label");
+      const ownerAddrEl = document.getElementById("owner-addr");
+      const accountAddrEl = document.getElementById("account-addr");
+      const adminOkEl = document.getElementById("admin-ok");
+
+      const nextTokenEl = document.getElementById("next-token");
+      const totalMintedEl = document.getElementById("total-minted");
+      const totalRemainingEl = document.getElementById("total-remaining");
+      const rarityStatsEl = document.getElementById("rarity-stats");
+
+      const lastMintEl = document.getElementById("last-mint");
+      const lastTxEl = document.getElementById("last-tx");
+      const copyTxBtn = document.getElementById("copy-tx");
+      const txLinkEl = document.getElementById("tx-link");
+
+      const searchEl = document.getElementById("search");
+      const sortEl = document.getElementById("sort");
+      const onlyAvailableEl = document.getElementById("only-available");
+      const hideSoldoutEl = document.getElementById("hide-soldout");
+      const hideWeight0El = document.getElementById("hide-weight0");
+      const disableSoldoutMintEl = document.getElementById("disable-soldout-mint");
+      const fastRefreshEl = document.getElementById("fast-refresh");
+
+      const ctBody = document.getElementById("ct-body");
+
+      // Helpers
+      function setStatus(txt) { statusEl.textContent = txt; }
+
+      function shortAddr(a) {
+        if (!a) return "–";
+        return a.slice(0, 6) + "…" + a.slice(-4);
       }
 
-      function shortAddr(addr) {
-        if (!addr) return "";
-        return addr.slice(0, 6) + "…" + addr.slice(-4);
+      function rarityLabel(n) {
+        const v = Number(n);
+        if (v === 0) return { text: "COMMON", cls: "rarity-common" };
+        if (v === 1) return { text: "RARE", cls: "rarity-rare" };
+        if (v === 2) return { text: "ULTRA", cls: "rarity-ultra" };
+        if (v === 3) return { text: "LEGENDARY", cls: "rarity-legendary" };
+        return { text: String(v), cls: "" };
       }
 
+      function escapeHtml(s) {
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function uriShort(uri) {
+        if (!uri) return "";
+        return uri.length > 44 ? uri.slice(0, 22) + "…" + uri.slice(-16) : uri;
+      }
+
+      function statusBadge({ remaining, locked }) {
+        if (remaining <= 0n) return `<span class="badge sold"><span class="dot"></span>SOLD OUT</span>`;
+        if (locked) return `<span class="badge lock"><span class="dot"></span>LOCKED</span>`;
+        return `<span class="badge ok"><span class="dot"></span>OK</span>`;
+      }
+
+      function setAdminEnabled(enabled) {
+        refreshBtn.disabled = !enabled;
+        mintBoosterBtn.disabled = !enabled;
+        exportBtn.disabled = !enabled;
+        copyContractBtn.disabled = !enabled;
+      }
+
+      function setLastTx(hash) {
+        if (!hash) {
+          lastTxEl.textContent = "–";
+          copyTxBtn.disabled = true;
+          txLinkEl.href = "#";
+          return;
+        }
+        lastTxEl.textContent = hash;
+        copyTxBtn.disabled = false;
+        txLinkEl.href = `${ETHERSCAN_SEPOLIA_BASE}/tx/${hash}`;
+      }
+
+      async function copyToClipboard(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          setStatus("Copié ✅");
+        } catch (e) {
+          console.error(e);
+          setStatus("Impossible de copier (permissions navigateur).");
+        }
+      }
+
+      async function safeStaticCall(promise, label) {
+        try {
+          return await promise;
+        } catch (e) {
+          console.error(label, e);
+          throw new Error(e.shortMessage || e.message || "Revert");
+        }
+      }
+
+      function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+      function canSendTx() {
+        if (txLock) return false;
+        txLock = true;
+        return true;
+      }
+      async function releaseTxLock() {
+        await sleep(TX_COOLDOWN_MS);
+        txLock = false;
+      }
+
+      // Connect
       async function connectWallet() {
         try {
           if (!window.ethereum) {
@@ -156,12 +565,12 @@
           }
 
           provider = new ethers.BrowserProvider(window.ethereum);
-
-          // Check réseau
           const net = await provider.getNetwork();
+
           if (net.chainId !== SEPOLIA_CHAIN_ID) {
-            setStatus("Mauvais réseau : passe sur Sepolia.\n(chainId: " + net.chainId + ")");
-            mintBtn.disabled = true;
+            netLabelEl.textContent = `Mauvais réseau (chainId: ${net.chainId})`;
+            setStatus("Passe sur Sepolia dans MetaMask, puis reconnecte.");
+            setAdminEnabled(false);
             return;
           }
 
@@ -171,61 +580,386 @@
 
           contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-          const owner = (await contract.owner()).toLowerCase();
+          const owner = await contract.owner();
+          isAdmin = currentAccount.toLowerCase() === owner.toLowerCase();
 
-          if (currentAccount.toLowerCase() !== owner) {
+          contractAddrEl.textContent = CONTRACT_ADDRESS;
+          contractLinkEl.href = `${ETHERSCAN_SEPOLIA_BASE}/address/${CONTRACT_ADDRESS}`;
+          netLabelEl.textContent = `Sepolia ✅ (chainId: ${net.chainId})`;
+          ownerAddrEl.textContent = owner;
+          accountAddrEl.textContent = currentAccount;
+          adminOkEl.textContent = isAdmin ? "✅ oui" : "❌ non";
+
+          if (!isAdmin) {
             setStatus(
-              "Connecté : " +
-                shortAddr(currentAccount) +
-                "\nNON OWNER du contrat.\nOwner attendu : " +
-                shortAddr(owner)
+              "Connecté : " + shortAddr(currentAccount) +
+              "\nNON OWNER du contrat.\nOwner attendu : " + shortAddr(owner)
             );
-            mintBtn.disabled = true;
+            setAdminEnabled(false);
             return;
           }
 
-          setStatus("Admin connecté : " + shortAddr(currentAccount) + "\nRéseau : Sepolia ✅");
-          mintBtn.disabled = false;
+          setStatus("Admin connecté : " + shortAddr(currentAccount));
+          setAdminEnabled(true);
+
+          if (!fastRefreshEl.checked) attachEventListener();
+          await refreshAll();
         } catch (e) {
           console.error(e);
           setStatus("Erreur connexion: " + (e.shortMessage || e.message));
-          mintBtn.disabled = true;
+          setAdminEnabled(false);
         }
       }
 
-      async function mintBooster() {
-        mintBtn.disabled = true;
+      function attachEventListener() {
+        if (!contract || eventAttached) return;
 
-        try {
-          if (!contract || !currentAccount) {
-            setStatus("Connecte d'abord le wallet.");
-            return;
+        contract.on("CardMinted", (tokenId, rarity, cardTypeIndex, ev) => {
+          const r = rarityLabel(rarity);
+          lastMintEl.innerHTML =
+            `tokenId #${tokenId.toString()} · ` +
+            `<span class="${r.cls}">${r.text}</span>` +
+            ` · cardTypeIndex ${cardTypeIndex.toString()}`;
+
+          const txHash = ev?.log?.transactionHash;
+          if (txHash) setLastTx(txHash);
+
+          // Refresh best effort
+          refreshAll().catch(() => {});
+        });
+
+        eventAttached = true;
+      }
+
+      // Load cardTypes cache
+      async function loadCardTypes() {
+        const arr = [];
+        for (let i = 0; i < EXPECTED_CARDTYPES; i++) {
+          const ct = await contract.cardTypes(BigInt(i));
+          const uri = ct[0];
+          const name = ct[1];
+          const rarity = Number(ct[2]);
+          const maxSupply = BigInt(ct[3].toString());
+          const minted = BigInt(ct[4].toString());
+          const weight = Number(ct[5]);
+          const locked = Boolean(ct[6]);
+          const remaining = maxSupply - minted;
+
+          arr.push({
+            index: i,
+            uri, name, rarity,
+            maxSupply, minted, remaining,
+            weight, locked
+          });
+        }
+        cardTypesCache = arr;
+      }
+
+      // Stats
+      function computeStats(list) {
+        let totalMinted = 0n;
+        let totalRemaining = 0n;
+        const byR = { 0: { m:0n, r:0n }, 1: { m:0n, r:0n }, 2: { m:0n, r:0n }, 3: { m:0n, r:0n } };
+
+        for (const x of list) {
+          totalMinted += x.minted;
+          totalRemaining += x.remaining;
+          if (byR[x.rarity]) {
+            byR[x.rarity].m += x.minted;
+            byR[x.rarity].r += x.remaining;
           }
+        }
 
+        totalMintedEl.textContent = totalMinted.toString();
+        totalRemainingEl.textContent = totalRemaining.toString();
+
+        const fmt = (r, label) => `${label}: ${byR[r].m.toString()} minted / ${byR[r].r.toString()} rem`;
+        rarityStatsEl.textContent =
+          fmt(0,"C") + " · " + fmt(1,"R") + " · " + fmt(2,"U") + " · " + fmt(3,"L");
+      }
+
+      // Filters + sort
+      function applyViewTransform() {
+        const q = (searchEl.value || "").trim().toLowerCase();
+        const onlyAvail = onlyAvailableEl.checked;
+        const hideSold = hideSoldoutEl.checked;
+        const hideW0 = hideWeight0El.checked;
+
+        let list = [...cardTypesCache];
+
+        if (q) {
+          list = list.filter((x) => {
+            const hay = `${x.index} ${x.name} ${x.uri}`.toLowerCase();
+            return hay.includes(q);
+          });
+        }
+        if (onlyAvail) list = list.filter((x) => x.remaining > 0n);
+        if (hideSold) list = list.filter((x) => x.remaining > 0n);
+        if (hideW0) list = list.filter((x) => x.weight > 0);
+
+        const key = sortEl.value;
+        const cmpNum = (a,b) => (a<b ? -1 : a>b ? 1 : 0);
+
+        list.sort((a,b) => {
+          switch (key) {
+            case "index_desc": return b.index - a.index;
+            case "rarity_asc": return a.rarity - b.rarity || a.index - b.index;
+            case "rarity_desc": return b.rarity - a.rarity || a.index - b.index;
+            case "remaining_desc": return cmpNum(b.remaining, a.remaining) || a.index - b.index;
+            case "remaining_asc": return cmpNum(a.remaining, b.remaining) || a.index - b.index;
+            case "weight_desc": return b.weight - a.weight || a.index - b.index;
+            case "weight_asc": return a.weight - b.weight || a.index - b.index;
+            case "minted_desc": return cmpNum(b.minted, a.minted) || a.index - b.index;
+            case "minted_asc": return cmpNum(a.minted, b.minted) || a.index - b.index;
+            default: return a.index - b.index;
+          }
+        });
+
+        computeStats(list);
+        renderTable(list);
+      }
+
+      function renderTable(list) {
+        const disableSoldoutMint = disableSoldoutMintEl.checked;
+
+        const rows = list.map((x) => {
+          const r = rarityLabel(x.rarity);
+          const soldout = x.remaining <= 0n;
+          const trClass = soldout ? "soldout" : "";
+          const mintDisabled = soldout && disableSoldoutMint;
+
+          return `
+            <tr class="${trClass}">
+              <td><code>${x.index}</code></td>
+              <td>${escapeHtml(x.name || "")}</td>
+              <td><span class="${r.cls}">${r.text}</span></td>
+              <td>${x.minted.toString()} / ${x.maxSupply.toString()}</td>
+              <td><strong>${x.remaining.toString()}</strong></td>
+              <td>${x.weight}</td>
+              <td>${x.locked ? "true" : "false"}</td>
+              <td>${statusBadge({ remaining: x.remaining, locked: x.locked })}</td>
+              <td><code title="${escapeHtml(x.uri)}">${escapeHtml(uriShort(x.uri))}</code></td>
+              <td>
+                <div class="row">
+                  <button class="btn small secondary" data-action="mintn" data-n="1" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x1</button>
+                  <button class="btn small secondary" data-action="mintn" data-n="3" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x3</button>
+                  <button class="btn small secondary" data-action="mintn" data-n="5" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x5</button>
+                  <button class="btn small secondary" data-action="mintn" data-n="10" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>x10</button>
+                </div>
+              </td>
+              <td>
+                <div class="row">
+                  <button class="btn small secondary" data-action="copy-uri" data-uri="${escapeHtml(x.uri)}">Copy URI</button>
+                  <button class="btn small" data-action="mint1" data-idx="${x.index}" ${mintDisabled ? "disabled" : ""}>Mint</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        ctBody.innerHTML = rows.join("") || `<tr><td colspan="11" class="small">Aucun résultat.</td></tr>`;
+
+        // bind events
+        ctBody.querySelectorAll("button[data-action='copy-uri']").forEach((btn) => {
+          btn.addEventListener("click", async (ev) => {
+            const uri = ev.currentTarget.getAttribute("data-uri") || "";
+            if (!uri) return setStatus("URI vide.");
+            await copyToClipboard(uri);
+          });
+        });
+
+        ctBody.querySelectorAll("button[data-action='mint1']").forEach((btn) => {
+          btn.addEventListener("click", async (ev) => {
+            const idx = Number(ev.currentTarget.getAttribute("data-idx"));
+            await mintCardOnce(idx, ev.currentTarget);
+          });
+        });
+
+        ctBody.querySelectorAll("button[data-action='mintn']").forEach((btn) => {
+          btn.addEventListener("click", async (ev) => {
+            const idx = Number(ev.currentTarget.getAttribute("data-idx"));
+            const n = Number(ev.currentTarget.getAttribute("data-n"));
+            await mintCardMany(idx, n, ev.currentTarget);
+          });
+        });
+      }
+
+      // Refresh
+      async function refreshAll() {
+        if (!contract) return;
+        setStatus("Refresh…");
+        const next = await contract.nextTokenId();
+        nextTokenEl.textContent = next.toString();
+
+        await loadCardTypes();
+        applyViewTransform();
+        setStatus("OK ✅");
+      }
+
+      // TX actions
+      async function mintBooster() {
+        if (!contract || !currentAccount) return;
+        if (!canSendTx()) return setStatus("Tx en cours…");
+
+        mintBoosterBtn.disabled = true;
+        try {
           const randomNumber = BigInt(Math.floor(Math.random() * 1e9) + 1);
 
-          // 1) Simulation => te donne la vraie raison en cas de revert
-          setStatus("Simulation du mint…");
-          await contract.mintBooster.staticCall(currentAccount, randomNumber);
+          setStatus("Simulation mintBooster…");
+          await safeStaticCall(
+            contract.mintBooster.staticCall(currentAccount, randomNumber),
+            "mintBooster.staticCall"
+          );
 
-          // 2) Envoi tx
-          setStatus("Signature MetaMask…");
+          setStatus("Signature MetaMask (mintBooster)…");
           const tx = await contract.mintBooster(currentAccount, randomNumber);
+          setLastTx(tx.hash);
 
-          setStatus("Tx envoyée : " + tx.hash + "\nAttente confirmation…");
+          setStatus("Tx envoyée…\n" + tx.hash + "\nAttente confirmation…");
           await tx.wait();
 
-          setStatus("Mint réussi ✔️\nTx: " + tx.hash);
+          setStatus("MintBooster confirmé ✔️\nTx: " + tx.hash);
+          await refreshAll();
         } catch (e) {
           console.error(e);
-          setStatus("Mint revert: " + (e.shortMessage || e.message));
+          setStatus("MintBooster revert: " + (e.message || e.shortMessage || "Erreur"));
         } finally {
-          mintBtn.disabled = false;
+          mintBoosterBtn.disabled = false;
+          await releaseTxLock();
         }
       }
 
+      async function mintCardOnce(idx, btnEl) {
+        if (!contract || !currentAccount) return;
+        if (!Number.isFinite(idx) || idx < 0 || idx >= EXPECTED_CARDTYPES) return;
+
+        if (!canSendTx()) return setStatus("Tx en cours…");
+
+        const prev = btnEl.textContent;
+        btnEl.disabled = true;
+        btnEl.textContent = "…";
+
+        try {
+          setStatus("Simulation mintCard(index=" + idx + ")…");
+          await safeStaticCall(
+            contract.mintCard.staticCall(currentAccount, BigInt(idx)),
+            "mintCard.staticCall"
+          );
+
+          setStatus("Signature MetaMask (mintCard index=" + idx + ")…");
+          const tx = await contract.mintCard(currentAccount, BigInt(idx));
+          setLastTx(tx.hash);
+
+          setStatus("Tx envoyée…\n" + tx.hash + "\nAttente confirmation…");
+          await tx.wait();
+
+          setStatus("MintCard confirmé ✔️ (index " + idx + ")\nTx: " + tx.hash);
+          await refreshAll();
+        } catch (e) {
+          console.error(e);
+          setStatus("MintCard revert (index " + idx + "): " + (e.message || e.shortMessage || "Erreur"));
+        } finally {
+          btnEl.textContent = prev;
+          btnEl.disabled = false;
+          await releaseTxLock();
+        }
+      }
+
+      async function mintCardMany(idx, n, btnEl) {
+        if (!contract || !currentAccount) return;
+        if (!Number.isFinite(idx) || idx < 0 || idx >= EXPECTED_CARDTYPES) return;
+        if (!Number.isFinite(n) || n < 1) return;
+
+        // lock once for the whole batch
+        if (!canSendTx()) return setStatus("Tx en cours…");
+
+        const prev = btnEl.textContent;
+        btnEl.disabled = true;
+        btnEl.textContent = "…";
+
+        try {
+          for (let i = 0; i < n; i++) {
+            setStatus(`Batch mint ${i + 1}/${n} · simulation…`);
+            await safeStaticCall(
+              contract.mintCard.staticCall(currentAccount, BigInt(idx)),
+              "mintCard.staticCall"
+            );
+
+            setStatus(`Batch mint ${i + 1}/${n} · signature MetaMask…`);
+            const tx = await contract.mintCard(currentAccount, BigInt(idx));
+            setLastTx(tx.hash);
+
+            setStatus(`Batch mint ${i + 1}/${n} · tx envoyée\n${tx.hash}\nAttente confirmation…`);
+            await tx.wait();
+
+            // petit cooldown entre tx (UX + mempool)
+            await sleep(250);
+          }
+
+          setStatus(`Batch mint terminé ✔️ (index ${idx} x${n})`);
+          await refreshAll();
+        } catch (e) {
+          console.error(e);
+          setStatus("Batch mint stoppé: " + (e.message || e.shortMessage || "Erreur"));
+          // refresh quand même pour refléter ce qui a réussi
+          await refreshAll().catch(() => {});
+        } finally {
+          btnEl.textContent = prev;
+          btnEl.disabled = false;
+          await releaseTxLock();
+        }
+      }
+
+      // Export JSON
+      async function exportJson() {
+        const payload = {
+          contract: CONTRACT_ADDRESS,
+          ts: new Date().toISOString(),
+          cardTypes: cardTypesCache.map((x) => ({
+            index: x.index,
+            name: x.name,
+            uri: x.uri,
+            rarity: x.rarity,
+            maxSupply: x.maxSupply.toString(),
+            minted: x.minted.toString(),
+            remaining: x.remaining.toString(),
+            weight: x.weight,
+            uriLocked: x.locked,
+          })),
+        };
+
+        const txt = JSON.stringify(payload, null, 2);
+        await copyToClipboard(txt);
+        setStatus("Export JSON copié dans le clipboard ✅");
+      }
+
+      // UI events
       connectBtn.addEventListener("click", connectWallet);
-      mintBtn.addEventListener("click", mintBooster);
+      refreshBtn.addEventListener("click", () => refreshAll().catch(console.error));
+      mintBoosterBtn.addEventListener("click", mintBooster);
+      exportBtn.addEventListener("click", exportJson);
+
+      copyContractBtn.addEventListener("click", () => copyToClipboard(CONTRACT_ADDRESS));
+      copyTxBtn.addEventListener("click", () => {
+        const tx = lastTxEl.textContent;
+        if (tx && tx !== "–") copyToClipboard(tx);
+      });
+
+      // Filter controls
+      [searchEl, sortEl, onlyAvailableEl, hideSoldoutEl, hideWeight0El, disableSoldoutMintEl].forEach((el) => {
+        el.addEventListener("input", () => applyViewTransform());
+        el.addEventListener("change", () => applyViewTransform());
+      });
+
+      fastRefreshEl.addEventListener("change", () => {
+        setStatus("Fast refresh changé. Reconnecte pour appliquer l’event listener.");
+      });
+
+      // init UI
+      contractAddrEl.textContent = CONTRACT_ADDRESS;
+      contractLinkEl.href = `${ETHERSCAN_SEPOLIA_BASE}/address/${CONTRACT_ADDRESS}`;
+      setLastTx(null);
+      setAdminEnabled(false);
     </script>
   </body>
 </html>
