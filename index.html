@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V10 – Roulette CS:GO)</title>
+    <title>VaultSpin – Booster Plante (V11 – Roulette CS:GO)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -72,7 +72,7 @@
 
       .caption{ font-size:12px; color:#9ca3af; line-height:1.4; }
 
-      /* ✅ Stats (plus clean) */
+      /* ✅ Stats */
       .stats{
         margin-top:4px;
         padding:12px;
@@ -96,7 +96,7 @@
       .stat .v{ margin-top:5px; font-size:16px; font-weight:850; color:#f9fafb; }
       .stat .s{ margin-top:2px; font-size:11px; color:#9ca3af; }
 
-      /* ✅ Best pull block (miniature + date) */
+      /* ✅ Best pull block */
       .best-pull{
         display:flex; align-items:center; gap:10px; margin-top:5px;
       }
@@ -223,17 +223,7 @@
         background:radial-gradient(circle at top,#22c55e,#064e3b 70%);
         box-shadow:0 0 36px rgba(34,197,94,.45);
       }
-      .card-frame.state-opened{
-        background:radial-gradient(circle at top,#facc15,#4b5563 70%);
-        box-shadow:0 0 40px rgba(250,204,21,.40);
-      }
-      .card-frame.opening{
-        animation:cardPulse .7s ease-in-out infinite alternate;
-      }
-      @keyframes cardPulse{
-        from{ transform:translateY(0) scale(1); box-shadow:0 0 18px rgba(250,204,21,.25); }
-        to{ transform:translateY(-4px) scale(1.02); box-shadow:0 0 34px rgba(250,204,21,.45); }
-      }
+
       .card-inner{
         position:relative;
         width:100%; height:100%;
@@ -242,81 +232,6 @@
       }
 
       .hidden{ display:none; }
-
-      .card-opened{
-        width:100%; height:100%;
-        border-radius:22px;
-        background:radial-gradient(circle at top,#020617,#020617 65%);
-        display:flex; flex-direction:column; justify-content:space-between;
-        transform-origin:center;
-      }
-
-      .imgwrap{ flex:1; display:flex; align-items:center; justify-content:center; padding:18px 18px 8px; position:relative; }
-      .imgwrap img{
-        max-width:100%; max-height:100%;
-        border-radius:16px; display:block;
-        border:1px solid rgba(148,163,184,.18);
-      }
-
-      /* ✅ Mystery overlay (NO blur, no leak) */
-      .mystery-cover{
-        position:absolute;
-        inset:18px 18px 8px;
-        border-radius:16px;
-        display:none;
-        border:1px solid rgba(148,163,184,.16);
-        background:
-          radial-gradient(circle at top, rgba(255,255,255,.08), rgba(0,0,0,.55) 70%),
-          linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.10), rgba(255,255,255,.04));
-        overflow:hidden;
-      }
-      .mystery-cover.on{ display:block; }
-      .mystery-shimmer{
-        position:absolute; inset:0;
-        transform:translateX(-18%);
-        animation:shimmer 900ms ease-in-out infinite;
-        background:linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent);
-      }
-      @keyframes shimmer{
-        0%{ transform:translateX(-30%); opacity:.65; }
-        50%{ transform:translateX(30%); opacity:1; }
-        100%{ transform:translateX(-30%); opacity:.65; }
-      }
-
-      /* flip */
-      .flip{ animation:flip 420ms ease-out; }
-      @keyframes flip{
-        0%{ transform:rotateY(0deg); }
-        50%{ transform:rotateY(85deg); }
-        100%{ transform:rotateY(0deg); }
-      }
-
-      .card-footer{
-        padding:12px 18px 16px;
-        display:flex; justify-content:space-between; align-items:center;
-        font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-        color:#f9fafb;
-      }
-      .card-footer-left{ opacity:.9; }
-      .card-footer-right{ font-weight:700; }
-      .token-id{ opacity:.8; }
-
-      .rarity-common{ color:#facc15; }
-      .rarity-rare{ color:#38bdf8; }
-      .rarity-ultra{ color:#a855f7; }
-      .rarity-legendary{ color:#f97316; }
-
-      .card-frame.state-opened[data-rarity="COMMON"]{ background:radial-gradient(circle at top,#facc15,#4b5563 70%); box-shadow:0 0 34px rgba(250,204,21,.35); }
-      .card-frame.state-opened[data-rarity="RARE"]{ background:radial-gradient(circle at top,#38bdf8,#4b5563 70%); box-shadow:0 0 34px rgba(56,189,248,.35); }
-      .card-frame.state-opened[data-rarity="ULTRA"]{ background:radial-gradient(circle at top,#a855f7,#4b5563 70%); box-shadow:0 0 34px rgba(168,85,247,.35); }
-      .card-frame.state-opened[data-rarity="LEGENDARY"]{ background:radial-gradient(circle at top,#f97316,#4b5563 70%); box-shadow:0 0 40px rgba(249,115,22,.40); }
-
-      .card-opened.transfer-to-collection{ animation:toCollection .9s ease-in forwards; }
-      @keyframes toCollection{
-        0%{ transform:translate(0,0) scale(1); opacity:1; }
-        60%{ transform:translate(80px,-80px) scale(.9); opacity:.9; }
-        100%{ transform:translate(150px,-140px) scale(.75); opacity:0; }
-      }
 
       /* Loot table */
       .drop-table{
@@ -509,181 +424,51 @@
       .collection-link{ font-size:12px; color:#a5b4fc; cursor:pointer; text-decoration:underline; width:fit-content; }
       .collection-link:hover{ color:#c4b5fd; }
 
-      /* ==========================
-         ✅ V10 Roulette CS:GO
-         ========================== */
-      .case-overlay{
+      /* =======================================
+         ✅ V11 – Roulette overlay + big result
+         ======================================= */
+      .open-overlay{
         position:fixed; inset:0;
         display:none;
         align-items:center; justify-content:center;
-        z-index:120;
+        z-index:140;
         background:rgba(0,0,0,.62);
         backdrop-filter: blur(12px);
         padding:18px;
       }
-      .case-overlay.on{ display:flex; }
+      .open-overlay.on{ display:flex; }
 
-      .case-modal{
-        width:min(980px, 96vw);
+      .open-modal{
+        width:min(1040px, 96vw);
         border-radius:26px;
         border:1px solid rgba(148,163,184,.22);
-        background:rgba(2,6,23,.88);
+        background:rgba(2,6,23,.90);
         box-shadow:0 0 44px rgba(0,0,0,.55);
         padding:18px;
         position:relative;
       }
 
-      .case-top{
+      .open-top{
         display:flex;
         align-items:center;
         justify-content:space-between;
         gap:10px;
         margin-bottom:12px;
       }
-      .case-title{
+      .open-title{
         font-size:12px;
         letter-spacing:.22em;
         text-transform:uppercase;
         color:#cbd5e1;
         font-weight:800;
       }
-      .case-sub{
+      .open-sub{
         font-size:12px;
         color:#9ca3af;
+        margin-top:3px;
       }
 
-      .case-viewport{
-        position:relative;
-        border-radius:22px;
-        border:1px solid rgba(148,163,184,.20);
-        background:radial-gradient(circle at top,#0b1120,#020617 70%);
-        overflow:hidden;
-        padding:18px 12px;
-      }
-
-      .case-strip{
-        position:relative;
-        height:160px;
-        display:flex;
-        align-items:center;
-      }
-
-      .case-reel{
-        display:flex;
-        align-items:center;
-        gap:12px;
-        will-change: transform;
-        transform: translateX(0px);
-      }
-      .case-reel.spinning{
-        transition: transform 4.9s cubic-bezier(0.08, 0.82, 0.12, 1);
-      }
-
-      .case-cursor{
-        position:absolute;
-        left:50%;
-        top:0;
-        transform:translateX(-50%);
-        width:3px;
-        height:100%;
-        background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
-        box-shadow: 0 0 18px rgba(250,204,21,.55);
-        border-radius:999px;
-        pointer-events:none;
-      }
-
-      .case-fade-left,
-      .case-fade-right{
-        position:absolute;
-        top:0; bottom:0;
-        width:120px;
-        pointer-events:none;
-        z-index:2;
-      }
-      .case-fade-left{
-        left:0;
-        background: linear-gradient(to right, rgba(2,6,23,.92), rgba(2,6,23,0));
-      }
-      .case-fade-right{
-        right:0;
-        background: linear-gradient(to left, rgba(2,6,23,.92), rgba(2,6,23,0));
-      }
-
-      .case-item{
-        width:132px;
-        height:156px;
-        border-radius:18px;
-        border:1px solid rgba(148,163,184,.16);
-        background:rgba(15,23,42,.32);
-        overflow:hidden;
-        display:flex;
-        flex-direction:column;
-        justify-content:space-between;
-        flex:0 0 auto;
-        box-shadow: 0 0 0 rgba(0,0,0,0);
-        transform: translateY(0px);
-      }
-      .case-thumb{
-        width:100%;
-        height:112px;
-        overflow:hidden;
-        border-bottom:1px solid rgba(148,163,184,.12);
-        background:#020617;
-      }
-      .case-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-      .case-meta{
-        padding:8px 10px 10px;
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:8px;
-        min-width:0;
-      }
-      .case-name{
-        font-size:10px;
-        letter-spacing:.12em;
-        text-transform:uppercase;
-        font-weight:900;
-        color:#e5e7eb;
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
-      }
-      .case-rarity{
-        font-size:10px;
-        letter-spacing:.12em;
-        text-transform:uppercase;
-        padding:4px 8px;
-        border-radius:999px;
-        border:1px solid rgba(148,163,184,.16);
-        background:rgba(2,6,23,.35);
-        flex:0 0 auto;
-        font-weight:900;
-      }
-      .case-rarity.common{ color:#facc15; }
-      .case-rarity.rare{ color:#38bdf8; }
-      .case-rarity.ultra{ color:#a855f7; }
-      .case-rarity.legendary{ color:#f97316; }
-
-      .case-item.won{
-        border-color: rgba(250,204,21,.55);
-        box-shadow: 0 0 22px rgba(250,204,21,.22);
-        transform: translateY(-3px);
-        animation: wonPulse 650ms ease-in-out infinite alternate;
-      }
-      @keyframes wonPulse{
-        from{ box-shadow: 0 0 14px rgba(250,204,21,.22); }
-        to{ box-shadow: 0 0 28px rgba(250,204,21,.38); }
-      }
-
-      .case-actions{
-        margin-top:12px;
-        display:flex;
-        justify-content:flex-end;
-        gap:10px;
-      }
-      .case-btn{
+      .open-btn{
         border-radius:999px;
         padding:10px 14px;
         font-size:11px;
@@ -694,17 +479,259 @@
         color:#e5e7eb;
         cursor:pointer;
       }
-      .case-btn:disabled{ opacity:.45; cursor:default; }
-      .case-btn.primary{
+      .open-btn:disabled{ opacity:.45; cursor:default; }
+      .open-btn.primary{
         border:none;
         background: radial-gradient(circle at top left, #a855f7, #4f46e5);
         box-shadow: 0 0 18px rgba(168,85,247,.30);
+      }
+
+      .open-body{
+        position:relative;
+      }
+
+      .reel-viewport{
+        position:relative;
+        border-radius:22px;
+        border:1px solid rgba(148,163,184,.20);
+        background:radial-gradient(circle at top,#0b1120,#020617 70%);
+        overflow:hidden;
+        padding:18px 12px;
+      }
+
+      .reel-strip{
+        position:relative;
+        height:188px;
+        display:flex;
+        align-items:center;
+      }
+
+      .reel-fade-left,
+      .reel-fade-right{
+        position:absolute;
+        top:0; bottom:0;
+        width:140px;
+        pointer-events:none;
+        z-index:3;
+      }
+      .reel-fade-left{
+        left:0;
+        background: linear-gradient(to right, rgba(2,6,23,.94), rgba(2,6,23,0));
+      }
+      .reel-fade-right{
+        right:0;
+        background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
+      }
+
+      .reel-cursor{
+        position:absolute;
+        left:50%;
+        top:50%;
+        transform:translate(-50%,-50%);
+        width:188px;
+        height:176px;
+        border-radius:22px;
+        border:2px solid rgba(250,204,21,.95);
+        box-shadow: 0 0 36px rgba(250,204,21,.45);
+        z-index:4;              /* ✅ au-dessus des cartes */
+        pointer-events:none;
+      }
+
+      .reel-cursor::after{
+        content:"";
+        position:absolute;
+        left:50%;
+        top:-10px;
+        transform:translateX(-50%);
+        width:4px;
+        height:calc(100% + 20px);
+        border-radius:999px;
+        background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
+        box-shadow: 0 0 18px rgba(250,204,21,.55);
+        opacity:.95;
+      }
+
+      .reel-track{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        will-change: transform;
+        transform: translateX(0px);
+      }
+
+      .reel-track.spinning{
+        /* ✅ un peu plus lent que V10 */
+        transition: transform 6.4s cubic-bezier(0.08, 0.82, 0.12, 1);
+      }
+
+      .reel-item{
+        width:168px;
+        height:184px;
+        border-radius:20px;
+        overflow:hidden;
+        border:1px solid rgba(148,163,184,.16);
+        background:rgba(15,23,42,.28);
+        flex:0 0 auto;
+        position:relative;
+        transform: translateY(0px);
+      }
+      .reel-thumb{
+        width:100%;
+        height:132px;
+        overflow:hidden;
+        border-bottom:1px solid rgba(148,163,184,.12);
+        background:#020617;
+      }
+      .reel-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+      .reel-meta{
+        padding:10px 12px 12px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        min-width:0;
+      }
+      .reel-name{
+        font-size:10px;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        font-weight:900;
+        color:#e5e7eb;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .reel-tag{
+        font-size:10px;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        padding:4px 8px;
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.16);
+        background:rgba(2,6,23,.35);
+        flex:0 0 auto;
+        font-weight:900;
+      }
+      .reel-tag.common{ color:#facc15; }
+      .reel-tag.rare{ color:#38bdf8; }
+      .reel-tag.ultra{ color:#a855f7; }
+      .reel-tag.legendary{ color:#f97316; }
+
+      .reel-item.won{
+        border-color: rgba(250,204,21,.55);
+        box-shadow: 0 0 22px rgba(250,204,21,.22);
+        transform: translateY(-3px);
+        animation: wonPulse 700ms ease-in-out infinite alternate;
+      }
+      @keyframes wonPulse{
+        from{ box-shadow: 0 0 14px rgba(250,204,21,.22); }
+        to{ box-shadow: 0 0 30px rgba(250,204,21,.40); }
+      }
+
+      .open-actions{
+        margin-top:12px;
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+        align-items:center;
+      }
+      .open-actions-left{
+        font-size:12px;
+        color:#9ca3af;
+      }
+
+      /* Result panel (big card) */
+      .result-panel{
+        display:none;
+        margin-top:14px;
+        border-radius:22px;
+        border:1px solid rgba(148,163,184,.20);
+        background:rgba(2,6,23,.52);
+        padding:14px;
+        gap:14px;
+        align-items:stretch;
+      }
+      .result-panel.on{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      @media (max-width: 860px){
+        .result-panel.on{ grid-template-columns: 1fr; }
+      }
+
+      .result-card{
+        border-radius:22px;
+        border:1px solid rgba(148,163,184,.22);
+        background:rgba(15,23,42,.28);
+        padding:12px;
+      }
+      .result-img{
+        width:100%;
+        aspect-ratio:3/4;
+        border-radius:18px;
+        overflow:hidden;
+        border:1px solid rgba(148,163,184,.22);
+        background:#020617;
+      }
+      .result-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+      .result-meta{
+        margin-top:10px;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        gap:10px;
+      }
+      .result-name{
+        font-size:12px;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        font-weight:900;
+        color:#f9fafb;
+      }
+      .result-sub{
+        margin-top:6px;
+        font-size:12px;
+        color:#9ca3af;
+        line-height:1.35;
+      }
+      .result-pill{
+        font-size:11px;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        padding:8px 10px;
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.20);
+        background:rgba(2,6,23,.35);
+        font-weight:900;
+        white-space:nowrap;
+      }
+      .result-pill.common{ color:#facc15; }
+      .result-pill.rare{ color:#38bdf8; }
+      .result-pill.ultra{ color:#a855f7; }
+      .result-pill.legendary{ color:#f97316; }
+
+      .result-cta{
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+      }
+      .result-cta .note{
+        font-size:12px;
+        color:#9ca3af;
+        line-height:1.4;
+      }
+      .result-cta .btn-row2{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
       }
     </style>
   </head>
 
   <body>
-    <!-- Center preview modal -->
+    <!-- Loot preview modal -->
     <div class="loot-modal" id="loot-modal" aria-hidden="true">
       <div class="loot-modal-card" role="dialog" aria-modal="true">
         <button class="loot-modal-close" id="loot-modal-close">✕</button>
@@ -718,29 +745,64 @@
       </div>
     </div>
 
-    <!-- ✅ Roulette overlay -->
-    <div class="case-overlay" id="case-overlay" aria-hidden="true">
-      <div class="case-modal" role="dialog" aria-modal="true">
-        <div class="case-top">
+    <!-- ✅ V11 Opening overlay (roulette + result) -->
+    <div class="open-overlay" id="open-overlay" aria-hidden="true">
+      <div class="open-modal" role="dialog" aria-modal="true">
+        <div class="open-top">
           <div>
-            <div class="case-title">VAULTSPIN · OPENING</div>
-            <div class="case-sub" id="case-sub">La roulette ralentit et s’arrête sur ta carte.</div>
+            <div class="open-title">VAULTSPIN · OPENING</div>
+            <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
           </div>
-          <button class="case-btn" id="case-close" disabled>Close</button>
+          <button class="open-btn" id="open-close" disabled>Close</button>
         </div>
 
-        <div class="case-viewport" id="case-viewport">
-          <div class="case-fade-left"></div>
-          <div class="case-fade-right"></div>
+        <div class="open-body">
+          <div class="reel-viewport" id="reel-viewport">
+            <div class="reel-fade-left"></div>
+            <div class="reel-fade-right"></div>
 
-          <div class="case-strip">
-            <div class="case-cursor"></div>
-            <div class="case-reel" id="case-reel"></div>
+            <div class="reel-strip">
+              <div class="reel-cursor"></div>
+              <div class="reel-track" id="reel-track"></div>
+            </div>
           </div>
-        </div>
 
-        <div class="case-actions">
-          <button class="case-btn primary" id="case-continue" disabled>Continue</button>
+          <div class="open-actions">
+            <div class="open-actions-left" id="open-hint">Opening…</div>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <button class="open-btn" id="open-skip">Skip</button>
+              <button class="open-btn primary" id="open-another" disabled>Open another pack</button>
+            </div>
+          </div>
+
+          <!-- Big result -->
+          <div class="result-panel" id="result-panel">
+            <div class="result-card">
+              <div class="result-img">
+                <img id="result-img" src="" alt="Result" />
+              </div>
+              <div class="result-meta">
+                <div>
+                  <div class="result-name" id="result-name">—</div>
+                  <div class="result-sub" id="result-desc">—</div>
+                </div>
+                <div class="result-pill common" id="result-pill">COMMON</div>
+              </div>
+            </div>
+
+            <div class="result-cta">
+              <div class="note">
+                Ta carte est ajoutée à ta collection (démo localStorage). Tu peux maintenant en ouvrir une autre ou aller dans la collection.
+              </div>
+              <div class="btn-row2">
+                <button class="open-btn primary" id="result-open-another">Open another pack</button>
+                <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
+                  Ma collection
+                </a>
+              </div>
+              <div class="note" id="result-footnote">—</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -782,7 +844,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V10 : roulette type CS:GO (reel 60 items au poids + stop sur la carte gagnante).
+            V11 : ouverture type CS:GO (roulette + curseur) + “big card view” + bouton “Open another pack”.
           </p>
         </div>
 
@@ -841,7 +903,7 @@
 
         <div style="margin-top: 6px">
           <div class="caption" id="mint-info">
-            En attente d’une ouverture… clique sur le bouton pour voir la carte ici.
+            En attente d’une ouverture… clique sur le bouton pour lancer l’animation.
           </div>
           <a class="collection-link" href="collection.html" id="collection-link">→ Voir ma collection</a>
         </div>
@@ -860,23 +922,6 @@
                   <div class="booster-chip">VaultSpin Pack</div>
                   <div class="booster-title">Booster Plante</div>
                   <div class="booster-subtitle">1 carte à révéler</div>
-                </div>
-              </div>
-
-              <div id="card-opened" class="card-opened hidden">
-                <div class="imgwrap" id="imgwrap">
-                  <img id="card-image" src="images/venusaur_common.png" alt="VaultSpin Card" />
-                  <div class="mystery-cover" id="mystery-cover">
-                    <div class="mystery-shimmer"></div>
-                  </div>
-                </div>
-
-                <div class="card-footer">
-                  <div class="card-footer-left">
-                    <div>VAULTSPIN (DÉMO)</div>
-                    <div class="token-id" id="token-id-label">#–</div>
-                  </div>
-                  <div class="card-footer-right rarity-common" id="rarity-label">Common</div>
                 </div>
               </div>
             </div>
@@ -1029,17 +1074,11 @@
       const CARD_RARITY_BY_INDEX = { 0:0,1:0,2:0, 3:1,4:1,5:1, 6:2,7:2,8:2, 9:3,10:3,11:3,12:3 };
       const CARD_WEIGHT_BY_INDEX = { 0:7000,1:7000,2:7000, 3:2000,4:2000,5:2000, 6:900,7:900,8:900, 9:100,10:100,11:100,12:100 };
 
-      const RARITY_LABEL_CLASS = { COMMON:"rarity-common", RARE:"rarity-rare", ULTRA:"rarity-ultra", LEGENDARY:"rarity-legendary" };
       const RARITY_ORDER = ["COMMON","RARE","ULTRA","LEGENDARY"];
+      const RARITY_LABEL_CLASS = { COMMON:"common", RARE:"rare", ULTRA:"ultra", LEGENDARY:"legendary" };
 
       function rarityToLabel(num){ return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common"; }
       function rarityKeyFromNum(num){ return (num===0)?"COMMON":(num===1)?"RARE":(num===2)?"ULTRA":(num===3)?"LEGENDARY":"COMMON"; }
-      function rarityClassFromKey(k){
-        if (k==="LEGENDARY") return "legendary";
-        if (k==="ULTRA") return "ultra";
-        if (k==="RARE") return "rare";
-        return "common";
-      }
 
       function pickWeightedCardIndex(){
         let total = 0;
@@ -1079,7 +1118,7 @@
       /********************
        * UI state
        ********************/
-      const UI_STATE = { IDLE:"idle", OPENING:"opening", MYSTERY:"mystery", REVEAL:"reveal", ADDING:"adding", ROULETTE:"roulette" };
+      const UI_STATE = { IDLE:"idle", OPENING:"opening" };
       let uiState = UI_STATE.IDLE;
 
       let sfxBooster=null, sfxReveal=null, sfxLegendary=null;
@@ -1099,43 +1138,6 @@
       function playSound(el){
         if(!el) return;
         try{ el.currentTime=0; el.play().catch(()=>{}); }catch(_){}
-      }
-
-      function setBoosterMode(modeClass){
-        const booster = document.getElementById("booster-closed");
-        booster.classList.remove("booster-mode-idle","booster-mode-opening","booster-mode-split","booster-mode-hidden");
-        if(modeClass) booster.classList.add(modeClass);
-      }
-
-      function showOpenedCardLayout(){
-        const booster = document.getElementById("booster-closed");
-        const opened = document.getElementById("card-opened");
-        const frame = document.getElementById("card-frame");
-        booster.classList.add("hidden");
-        setBoosterMode("booster-mode-hidden");
-        opened.classList.remove("hidden");
-        frame.classList.remove("state-closed");
-        frame.classList.add("state-opened");
-      }
-
-      function resetToBoosterClosed(){
-        const booster = document.getElementById("booster-closed");
-        const opened = document.getElementById("card-opened");
-        const frame = document.getElementById("card-frame");
-        const cover = document.getElementById("mystery-cover");
-        const imgwrap = document.getElementById("imgwrap");
-
-        opened.classList.add("hidden");
-        opened.classList.remove("transfer-to-collection");
-        cover.classList.remove("on");
-        imgwrap.classList.remove("flip");
-
-        booster.classList.remove("hidden");
-        setBoosterMode("booster-mode-idle");
-
-        frame.classList.remove("state-opened","opening");
-        frame.classList.add("state-closed");
-        frame.setAttribute("data-rarity","COMMON");
       }
 
       function triggerFX(rarityKey){
@@ -1200,8 +1202,8 @@
       function renderHistory(){
         const list = document.getElementById("history-list");
         const arr = getCollection().slice(0, 12);
-
         list.innerHTML = "";
+
         if (!arr.length){
           const empty = document.createElement("div");
           empty.className = "caption";
@@ -1213,9 +1215,6 @@
         for (const c of arr){
           const row = document.createElement("div");
           row.className = "hist-item";
-          row.setAttribute("data-img", c.img);
-          row.setAttribute("data-name", c.name || "Card");
-          row.setAttribute("data-rarity", c.rarityKey);
 
           const dot = document.createElement("div");
           dot.className = "hist-dot " + dotClassForRarityKey(c.rarityKey);
@@ -1251,271 +1250,12 @@
           row.appendChild(main);
           row.appendChild(tools);
 
-          row.addEventListener("mouseenter", () => openLootModal({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey }));
-          row.addEventListener("mouseleave", closeLootModal);
-
           list.appendChild(row);
         }
       }
 
-      function setCardFooter(tokenId, rarityNum, rarityKey){
-        const frame = document.getElementById("card-frame");
-        const tokenIdLabel = document.getElementById("token-id-label");
-        const rarityLabel = document.getElementById("rarity-label");
-
-        tokenIdLabel.textContent = "#" + tokenId;
-
-        frame.setAttribute("data-rarity", rarityKey);
-
-        rarityLabel.textContent = rarityToLabel(rarityNum);
-        rarityLabel.className = "card-footer-right";
-        const cls = RARITY_LABEL_CLASS[rarityKey];
-        if (cls) rarityLabel.classList.add(cls);
-      }
-
-      async function animateToCollection(){
-        uiState = UI_STATE.ADDING;
-        setStatus("Ajout à la collection…", "pending");
-
-        const opened = document.getElementById("card-opened");
-        opened.classList.add("transfer-to-collection");
-
-        await sleep(850);
-        resetToBoosterClosed();
-      }
-
-      async function mysteryThenReveal(imgSrc){
-        uiState = UI_STATE.MYSTERY;
-
-        showOpenedCardLayout();
-
-        const img = document.getElementById("card-image");
-        const cover = document.getElementById("mystery-cover");
-        const imgwrap = document.getElementById("imgwrap");
-
-        img.style.opacity = "0";
-        cover.classList.add("on");
-        setStatus("Suspense…", "pending");
-        await sleep(520);
-
-        uiState = UI_STATE.REVEAL;
-        imgwrap.classList.add("flip");
-        await sleep(220);
-
-        img.src = imgSrc;
-        img.style.opacity = "1";
-
-        cover.classList.remove("on");
-        await sleep(160);
-
-        imgwrap.classList.remove("flip");
-      }
-
       /********************
-       * ✅ V10 Roulette
-       ********************/
-      function openCaseOverlay(){
-        const overlay = document.getElementById("case-overlay");
-        overlay.classList.add("on");
-        overlay.setAttribute("aria-hidden", "false");
-      }
-      function closeCaseOverlay(){
-        const overlay = document.getElementById("case-overlay");
-        overlay.classList.remove("on");
-        overlay.setAttribute("aria-hidden", "true");
-      }
-
-      function renderReelItems(reelItems){
-        const reel = document.getElementById("case-reel");
-        reel.innerHTML = "";
-        for (let i=0;i<reelItems.length;i++){
-          const ct = reelItems[i];
-          const rarityNum = CARD_RARITY_BY_INDEX[ct] ?? 0;
-          const rk = rarityKeyFromNum(rarityNum);
-
-          const el = document.createElement("div");
-          el.className = "case-item";
-          el.setAttribute("data-i", String(i));
-          el.setAttribute("data-ct", String(ct));
-
-          el.innerHTML = `
-            <div class="case-thumb"><img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${CARD_NAME_BY_INDEX[ct] || ("Card #"+ct)}"/></div>
-            <div class="case-meta">
-              <div class="case-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card #"+ct))}</div>
-              <div class="case-rarity ${rarityClassFromKey(rk)}">${rk}</div>
-            </div>
-          `;
-          reel.appendChild(el);
-        }
-      }
-
-      function escapeHtml(s){
-        return String(s || "").replace(/[&<>"']/g, (c) => ({
-          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
-        }[c]));
-      }
-
-      function getReelStepPx(){
-        const reel = document.getElementById("case-reel");
-        const first = reel.firstElementChild;
-        if (!first) return 144; // fallback
-        const w = first.getBoundingClientRect().width;
-        const gapStr = (getComputedStyle(reel).gap || "12px");
-        const gap = parseFloat(gapStr) || 12;
-        return w + gap;
-      }
-
-      function buildReelWeighted(totalItems, winningCt){
-        // 1) Fill weighted
-        const arr = [];
-        for (let i=0;i<totalItems;i++){
-          arr.push(pickWeightedCardIndex());
-        }
-
-        // 2) Force winning at a late stopIndex
-        const stopIndex = Math.max(20, totalItems - 12);
-        arr[stopIndex] = winningCt;
-
-        return { reelItems: arr, stopIndex };
-      }
-
-      async function spinReelToStop(stopIndex){
-        const viewport = document.getElementById("case-viewport");
-        const reel = document.getElementById("case-reel");
-
-        // Reset transition clean
-        reel.classList.remove("spinning");
-        reel.style.transform = "translateX(0px)";
-
-        await sleep(40);
-
-        const step = getReelStepPx();
-        const viewportW = viewport.getBoundingClientRect().width;
-
-        // Center of stop item relative to reel start
-        const targetCenter = stopIndex * step + (step / 2);
-        const cursorX = viewportW / 2;
-
-        // Translate so that item center lands on cursor
-        const targetTranslate = targetCenter - cursorX;
-
-        // Add some "human" tiny jitter but keep within item center tolerance
-        const jitter = (Math.random() * 6) - 3; // -3..+3 px
-        const finalX = -(targetTranslate + jitter);
-
-        // Force reflow then animate
-        void reel.offsetHeight;
-        reel.classList.add("spinning");
-
-        // Start booster split in background for coherence
-        setBoosterMode("booster-mode-split");
-        playSound(sfxBooster);
-
-        requestAnimationFrame(() => {
-          reel.style.transform = `translateX(${finalX}px)`;
-        });
-
-        return new Promise((resolve) => {
-          const onEnd = () => {
-            reel.removeEventListener("transitionend", onEnd);
-            resolve();
-          };
-          reel.addEventListener("transitionend", onEnd, { once:true });
-        });
-      }
-
-      function markWinningItem(stopIndex){
-        const reel = document.getElementById("case-reel");
-        const kids = reel.querySelectorAll(".case-item");
-        kids.forEach(k => k.classList.remove("won"));
-        const el = reel.querySelector(`.case-item[data-i="${stopIndex}"]`);
-        if (el) el.classList.add("won");
-      }
-
-      async function openPackV10_Roulette(){
-        if (isBusy()) return;
-        uiState = UI_STATE.ROULETTE;
-
-        const btn = document.getElementById("open-pack-btn");
-        btn.disabled = true;
-
-        // disable overlay buttons until done
-        const closeBtn = document.getElementById("case-close");
-        const contBtn = document.getElementById("case-continue");
-        closeBtn.disabled = true;
-        contBtn.disabled = true;
-
-        setStatus("Ouverture : lancement de la roulette…", "pending");
-
-        // ✅ 1) Decide winner FIRST (truth)
-        const winningCt = pickWeightedCardIndex();
-        const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 0;
-        const rarityKey = rarityKeyFromNum(rarityNum);
-        const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[0];
-
-        // ✅ 2) Build reel (60 items, weighted), force winner near end
-        const { reelItems, stopIndex } = buildReelWeighted(60, winningCt);
-
-        // ✅ 3) Open overlay + render reel
-        openCaseOverlay();
-        renderReelItems(reelItems);
-
-        // small delay for layout
-        await sleep(60);
-
-        // ✅ 4) Spin & decelerate to stopIndex
-        await spinReelToStop(stopIndex);
-
-        // ✅ 5) Highlight winner
-        markWinningItem(stopIndex);
-
-        // enable buttons
-        document.getElementById("case-sub").textContent = `✅ Tu as obtenu : ${CARD_NAME_BY_INDEX[winningCt] || ("Card #"+winningCt)} · ${rarityToLabel(rarityNum)}`;
-        contBtn.disabled = false;
-        closeBtn.disabled = false;
-
-        // ✅ 6) Commit mint/collection AFTER spin ends (same as before)
-        const tokenId = nextLocalTokenId();
-
-        // reveal in right card zone (ciné)
-        await mysteryThenReveal(imgSrc);
-        setCardFooter(tokenId, rarityNum, rarityKey);
-
-        playSound(sfxReveal);
-        if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
-        triggerFX(rarityKey);
-
-        const entry = {
-          tokenId,
-          ts: Date.now(),
-          priceEur: PACK_PRICE_EUR,
-          rarity: rarityNum,
-          rarityLabel: rarityToLabel(rarityNum),
-          rarityKey,
-          cardTypeIndex: winningCt,
-          img: imgSrc,
-          name: CARD_NAME_BY_INDEX[winningCt] || ("Card #" + winningCt)
-        };
-
-        pushToCollection(entry);
-
-        document.getElementById("mint-info").textContent =
-          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel} • cardTypeIndex ${winningCt}`;
-
-        renderStats();
-        renderHistory();
-
-        // auto fly to collection after a bit (keeps your current vibe)
-        await sleep(320);
-        await animateToCollection();
-
-        uiState = UI_STATE.IDLE;
-        btn.disabled = false;
-        setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
-      }
-
-      /********************
-       * Modal preview (loot list)
+       * Loot preview modal
        ********************/
       function openLootModal({ img, name, rarity }){
         const modal = document.getElementById("loot-modal");
@@ -1529,6 +1269,261 @@
         const modal = document.getElementById("loot-modal");
         modal.classList.remove("on");
         modal.setAttribute("aria-hidden", "true");
+      }
+
+      /********************
+       * V11 – Roulette logic
+       ********************/
+      const REEL_TOTAL_ITEMS = 60;
+      let currentOpen = null;      // { winningCt, stopIndex, tokenId, rarityKey, rarityNum, imgSrc, name }
+      let spinning = false;
+      let skipRequested = false;
+
+      function openOverlay(){
+        const o = document.getElementById("open-overlay");
+        o.classList.add("on");
+        o.setAttribute("aria-hidden","false");
+      }
+      function closeOverlay(){
+        const o = document.getElementById("open-overlay");
+        o.classList.remove("on");
+        o.setAttribute("aria-hidden","true");
+      }
+
+      function resetOverlayUI(){
+        document.getElementById("result-panel").classList.remove("on");
+        document.getElementById("open-another").disabled = true;
+        document.getElementById("open-close").disabled = true;
+        document.getElementById("open-skip").disabled = false;
+        document.getElementById("open-sub").textContent = "La roulette ralentit et s’arrête sur ta carte.";
+        document.getElementById("open-hint").textContent = "Opening…";
+        skipRequested = false;
+      }
+
+      function buildReelItems(winningCt){
+        // Fill weighted with repetition (visual pool)
+        const arr = [];
+        for (let i=0;i<REEL_TOTAL_ITEMS;i++){
+          arr.push(pickWeightedCardIndex());
+        }
+
+        // Force winner near end
+        const stopIndex = Math.max(18, REEL_TOTAL_ITEMS - 10);
+        arr[stopIndex] = winningCt;
+
+        return { reelItems: arr, stopIndex };
+      }
+
+      function renderReel(reelItems){
+        const track = document.getElementById("reel-track");
+        track.innerHTML = "";
+        track.classList.remove("spinning");
+        track.style.transform = "translateX(0px)";
+        track.style.transition = "";
+
+        for (let i=0;i<reelItems.length;i++){
+          const ct = reelItems[i];
+          const rarityNum = CARD_RARITY_BY_INDEX[ct] ?? 0;
+          const rk = rarityKeyFromNum(rarityNum);
+
+          const el = document.createElement("div");
+          el.className = "reel-item";
+          el.setAttribute("data-i", String(i));
+          el.innerHTML = `
+            <div class="reel-thumb">
+              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${CARD_NAME_BY_INDEX[ct] || ("Card #"+ct)}"/>
+            </div>
+            <div class="reel-meta">
+              <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card #"+ct))}</div>
+              <div class="reel-tag ${RARITY_LABEL_CLASS[rk] || "common"}">${rk}</div>
+            </div>
+          `;
+          track.appendChild(el);
+        }
+      }
+
+      function getStepPx(){
+        const track = document.getElementById("reel-track");
+        const first = track.firstElementChild;
+        if (!first) return 180;
+        const w = first.getBoundingClientRect().width;
+        const gap = parseFloat(getComputedStyle(track).gap || "12") || 12;
+        return w + gap;
+      }
+
+      async function startSpinToStop(stopIndex){
+        spinning = true;
+
+        // Booster sound at start
+        playSound(sfxBooster);
+        setStatus("Ouverture : roulette en cours…", "pending");
+
+        const viewport = document.getElementById("reel-viewport");
+        const track = document.getElementById("reel-track");
+
+        // Reset and force layout
+        track.classList.remove("spinning");
+        track.style.transform = "translateX(0px)";
+        track.style.transition = "";
+        void track.offsetHeight;
+
+        const step = getStepPx();
+        const viewportW = viewport.getBoundingClientRect().width;
+        const cursorX = viewportW / 2;
+
+        // center of stop item
+        const targetCenter = stopIndex * step + (step / 2);
+        const targetTranslate = targetCenter - cursorX;
+
+        // small jitter for feel (safe)
+        const jitter = (Math.random()*6) - 3;
+        const finalX = -(targetTranslate + jitter);
+
+        // Start animation (slow + decel)
+        track.classList.add("spinning");
+        requestAnimationFrame(() => {
+          track.style.transform = `translateX(${finalX}px)`;
+        });
+
+        // Wait for transition end OR skip
+        await new Promise((resolve) => {
+          const onEnd = () => resolve();
+          track.addEventListener("transitionend", onEnd, { once:true });
+        });
+
+        spinning = false;
+      }
+
+      function markWon(stopIndex){
+        const track = document.getElementById("reel-track");
+        track.querySelectorAll(".reel-item").forEach(x => x.classList.remove("won"));
+        const el = track.querySelector(`.reel-item[data-i="${stopIndex}"]`);
+        if (el) el.classList.add("won");
+      }
+
+      function showBigResultAndCommit(){
+        // 1) UI: show result panel, enable open another, enable close
+        document.getElementById("open-skip").disabled = true;
+        document.getElementById("open-close").disabled = false;
+        document.getElementById("open-another").disabled = false;
+
+        const { tokenId, rarityKey, rarityNum, imgSrc, name, winningCt } = currentOpen;
+
+        document.getElementById("open-sub").textContent = `✅ Tu as obtenu : ${name} · ${rarityToLabel(rarityNum)}`;
+        document.getElementById("open-hint").textContent = "Result unlocked.";
+
+        // 2) Fill big card
+        document.getElementById("result-img").src = imgSrc;
+        document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
+        document.getElementById("result-desc").textContent = `cardTypeIndex: ${winningCt} · ${rarityToLabel(rarityNum)} · ${formatDate(Date.now())}`;
+
+        const pill = document.getElementById("result-pill");
+        pill.textContent = rarityKey;
+        pill.className = "result-pill " + (RARITY_LABEL_CLASS[rarityKey] || "common");
+
+        document.getElementById("result-footnote").textContent =
+          `Ajoutée à ta collection : tokenId ${tokenId} • ${rarityToLabel(rarityNum)} • cardTypeIndex ${winningCt}`;
+
+        document.getElementById("result-panel").classList.add("on");
+
+        // 3) Commit to collection NOW (no background transfer animation)
+        const entry = {
+          tokenId,
+          ts: Date.now(),
+          priceEur: PACK_PRICE_EUR,
+          rarity: rarityNum,
+          rarityLabel: rarityToLabel(rarityNum),
+          rarityKey,
+          cardTypeIndex: winningCt,
+          img: imgSrc,
+          name
+        };
+
+        pushToCollection(entry);
+
+        document.getElementById("mint-info").textContent =
+          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel} • cardTypeIndex ${winningCt}`;
+
+        renderStats();
+        renderHistory();
+
+        // 4) FX on right panel (optional)
+        triggerFX(rarityKey);
+
+        // 5) Status idle
+        uiState = UI_STATE.IDLE;
+        setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
+      }
+
+      async function openPackRoulette(){
+        if (isBusy()) return;
+        uiState = UI_STATE.OPENING;
+
+        const btn = document.getElementById("open-pack-btn");
+        btn.disabled = true;
+
+        resetOverlayUI();
+        openOverlay();
+
+        // Decide winner FIRST
+        const winningCt = pickWeightedCardIndex();
+        const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 0;
+        const rarityKey = rarityKeyFromNum(rarityNum);
+        const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[0];
+        const name = CARD_NAME_BY_INDEX[winningCt] || ("Card #" + winningCt);
+        const tokenId = nextLocalTokenId();
+
+        const { reelItems, stopIndex } = buildReelItems(winningCt);
+        currentOpen = { winningCt, stopIndex, tokenId, rarityKey, rarityNum, imgSrc, name };
+
+        renderReel(reelItems);
+
+        // Give the browser time to layout
+        await sleep(60);
+
+        // Spin
+        await startSpinToStop(stopIndex);
+
+        // Mark winning tile
+        markWon(stopIndex);
+
+        // Show big result (and commit to collection)
+        if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
+        playSound(sfxReveal);
+
+        showBigResultAndCommit();
+
+        // re-enable main button only after we are in result state (so user uses "open another")
+        btn.disabled = false;
+      }
+
+      function skipSpinNow(){
+        if (!spinning) return;
+        skipRequested = true;
+
+        const track = document.getElementById("reel-track");
+        const viewport = document.getElementById("reel-viewport");
+        const { stopIndex } = currentOpen;
+
+        // Remove long transition, snap fast to target, then finish
+        track.classList.remove("spinning");
+
+        const step = getStepPx();
+        const viewportW = viewport.getBoundingClientRect().width;
+        const cursorX = viewportW / 2;
+
+        const targetCenter = stopIndex * step + (step / 2);
+        const targetTranslate = targetCenter - cursorX;
+        const finalX = -(targetTranslate);
+
+        track.style.transition = "transform 220ms cubic-bezier(.2,.8,.2,1)";
+        track.style.transform = `translateX(${finalX}px)`;
+      }
+
+      function escapeHtml(s){
+        return String(s || "").replace(/[&<>"']/g, (c) => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+        }[c]));
       }
 
       /********************
@@ -1555,14 +1550,43 @@
         sfxReveal = document.getElementById("sfx-reveal");
         sfxLegendary = document.getElementById("sfx-legendary");
 
-        setBoosterMode("booster-mode-idle");
         renderStats();
         renderHistory();
 
-        // ✅ open pack => roulette
-        document.getElementById("open-pack-btn").addEventListener("click", openPackV10_Roulette);
+        // Open pack => roulette
+        document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
 
-        // loot modal close
+        // Overlay controls
+        document.getElementById("open-skip").addEventListener("click", () => {
+          skipSpinNow();
+        });
+
+        document.getElementById("open-another").addEventListener("click", () => {
+          // Start another opening immediately
+          document.getElementById("result-panel").classList.remove("on");
+          openPackRoulette();
+        });
+
+        document.getElementById("result-open-another").addEventListener("click", () => {
+          document.getElementById("result-panel").classList.remove("on");
+          openPackRoulette();
+        });
+
+        document.getElementById("open-close").addEventListener("click", () => {
+          closeOverlay();
+        });
+
+        // ESC closes overlay only when not spinning (avoid accidental close mid-opening)
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape"){
+            const overlay = document.getElementById("open-overlay");
+            if (overlay.classList.contains("on") && !spinning){
+              closeOverlay();
+            }
+          }
+        });
+
+        // Loot modal close
         document.getElementById("loot-modal-close").addEventListener("click", closeLootModal);
         document.getElementById("loot-modal").addEventListener("click", (e) => { if (e.target.id === "loot-modal") closeLootModal(); });
         document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLootModal(); });
@@ -1584,7 +1608,6 @@
           const ct = el.getAttribute("data-ct");
 
           let timer = null;
-
           el.addEventListener("mouseenter", () => {
             timer = setTimeout(() => openLootModal({ img, name, rarity }), 110);
           });
@@ -1597,24 +1620,6 @@
             e.preventDefault();
             openCollectionFiltered(ct);
           });
-        });
-
-        // ✅ Overlay buttons
-        document.getElementById("case-continue").addEventListener("click", () => {
-          closeCaseOverlay();
-        });
-        document.getElementById("case-close").addEventListener("click", () => {
-          closeCaseOverlay();
-        });
-
-        // ESC closes overlay (only if enabled)
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape"){
-            const overlay = document.getElementById("case-overlay");
-            if (overlay.classList.contains("on")){
-              closeCaseOverlay();
-            }
-          }
         });
       });
     </script>
