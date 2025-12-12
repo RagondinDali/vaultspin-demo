@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V9 – Démo)</title>
+    <title>VaultSpin – Booster Plante (V10 – Démo)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -443,7 +443,7 @@
         box-shadow: 0 0 10px rgba(129,140,248,.25);
       }
 
-      /* Center preview modal (hover-friendly, no cursor zoom) */
+      /* ✅ Center modal (CLICK only) */
       .loot-modal{
         position:fixed; inset:0;
         display:none;
@@ -502,17 +502,185 @@
       }
       .loot-modal-close:hover{
         border-color: rgba(165,180,252,.7);
-        box-shadow: 0 0 10px rgba(129,140,248,.25);
+        box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
       /* small link glow */
       .collection-link{ font-size:12px; color:#a5b4fc; cursor:pointer; text-decoration:underline; width:fit-content; }
       .collection-link:hover{ color:#c4b5fd; }
+
+      /* ✅ Preview flottante (HOVER) — NO CLIGNOTEMENT */
+      .preview-float{
+        position:fixed;
+        top:50%;
+        right:28px;
+        transform:translateY(-50%);
+        width:280px;
+        border-radius:18px;
+        overflow:hidden;
+        background:rgba(2,6,23,.92);
+        border:1px solid rgba(148,163,184,.25);
+        box-shadow:0 0 30px rgba(0,0,0,.6);
+        opacity:0;
+        pointer-events:none; /* ⭐ clé anti flicker */
+        transition:opacity .15s ease, transform .15s ease;
+        z-index:65;
+      }
+      .preview-float.on{
+        opacity:1;
+        transform:translateY(-50%) scale(1.01);
+      }
+      .preview-float-img{
+        width:100%;
+        aspect-ratio:3/4;
+        background:rgba(15,23,42,.45);
+      }
+      .preview-float-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+      .preview-float-meta{
+        padding:10px 12px 12px;
+        display:flex; justify-content:space-between; gap:10px; align-items:center;
+        border-top:1px solid rgba(148,163,184,.16);
+      }
+      .preview-float-name{
+        font-size:11px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
+        color:#e5e7eb; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      }
+      .preview-float-tag{
+        font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+        padding:6px 10px; border-radius:999px;
+        border:1px solid rgba(148,163,184,.18);
+        background:rgba(15,23,42,.55);
+        flex:0 0 auto;
+      }
+      @media (max-width: 980px){
+        .preview-float{ display:none; } /* mobile/tablet: no hover */
+      }
+
+      /* ✅ Best Pull Spotlight (V10) */
+      .spotlight{
+        position:fixed; inset:0;
+        display:none;
+        align-items:center; justify-content:center;
+        z-index:90;
+        background:rgba(0,0,0,.65);
+        backdrop-filter:blur(10px);
+      }
+      .spotlight.on{ display:flex; }
+
+      .spotlight-card{
+        width:min(520px, 92vw);
+        border-radius:28px;
+        border:1px solid rgba(148,163,184,.22);
+        background:rgba(2,6,23,.90);
+        box-shadow:0 0 44px rgba(0,0,0,.6);
+        padding:16px;
+        position:relative;
+        animation:spotPop 240ms ease-out;
+      }
+      @keyframes spotPop{
+        from{ transform:scale(.97); opacity:0; }
+        to{ transform:scale(1); opacity:1; }
+      }
+
+      .spotlight-badge{
+        display:inline-flex; align-items:center; gap:10px;
+        border-radius:999px;
+        padding:8px 12px;
+        border:1px solid rgba(165,180,252,.35);
+        background:radial-gradient(circle at top left, rgba(168,85,247,.22), rgba(79,70,229,.22));
+        color:#f9fafb;
+        font-size:11px;
+        letter-spacing:.16em;
+        text-transform:uppercase;
+        font-weight:900;
+      }
+      .spotlight-title{
+        margin-top:10px;
+        font-size:14px;
+        font-weight:950;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        color:#f9fafb;
+      }
+      .spotlight-sub{
+        margin-top:6px;
+        font-size:12px;
+        color:#9ca3af;
+        line-height:1.4;
+      }
+
+      .spotlight-img{
+        margin-top:12px;
+        border-radius:22px;
+        overflow:hidden;
+        border:1px solid rgba(148,163,184,.20);
+        background:rgba(15,23,42,.45);
+        aspect-ratio:3/4;
+      }
+      .spotlight-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+      .spotlight-actions{
+        margin-top:12px;
+        display:flex; justify-content:flex-end; gap:10px;
+      }
+      .spotlight-btn{
+        border-radius:999px;
+        padding:9px 12px;
+        font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+        border:1px solid rgba(148,163,184,.20);
+        cursor:pointer;
+        background:rgba(15,23,42,.55);
+        color:#e5e7eb;
+      }
+      .spotlight-btn:hover{
+        border-color: rgba(165,180,252,.7);
+        box-shadow: 0 0 10px rgba(129,140,248,.25);
+      }
+
+      .spotlight-glow{
+        position:absolute; inset:-20%;
+        pointer-events:none;
+        opacity:.85;
+        mix-blend-mode:screen;
+        animation:spotGlow 1.1s ease-out forwards;
+        background:
+          radial-gradient(circle at 40% 30%, rgba(249,115,22,.22), transparent 55%),
+          radial-gradient(circle at 60% 60%, rgba(168,85,247,.18), transparent 55%),
+          radial-gradient(circle at 50% 50%, rgba(250,204,21,.18), transparent 60%);
+      }
+      @keyframes spotGlow{
+        0%{ transform:scale(.95); opacity:0; }
+        30%{ opacity:1; }
+        100%{ transform:scale(1.03); opacity:.75; }
+      }
     </style>
   </head>
 
   <body>
-    <!-- Center preview modal -->
+    <!-- ✅ Preview flottante (HOVER) -->
+    <div class="preview-float" id="preview-float" aria-hidden="true">
+      <div class="preview-float-img"><img id="preview-img" src="" alt="Preview" /></div>
+      <div class="preview-float-meta">
+        <div class="preview-float-name" id="preview-name">—</div>
+        <div class="preview-float-tag" id="preview-tag">—</div>
+      </div>
+    </div>
+
+    <!-- ✅ Best Pull Spotlight -->
+    <div class="spotlight" id="spotlight" aria-hidden="true">
+      <div class="spotlight-card" role="dialog" aria-modal="true">
+        <div class="spotlight-glow"></div>
+        <div class="spotlight-badge">🔥 New Best Pull</div>
+        <div class="spotlight-title" id="spotlight-title">—</div>
+        <div class="spotlight-sub" id="spotlight-sub">—</div>
+        <div class="spotlight-img"><img id="spotlight-img" src="" alt="Best Pull" /></div>
+        <div class="spotlight-actions">
+          <button class="spotlight-btn" id="spotlight-close">Nice.</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center modal (CLICK only) -->
     <div class="loot-modal" id="loot-modal" aria-hidden="true">
       <div class="loot-modal-card" role="dialog" aria-modal="true">
         <button class="loot-modal-close" id="loot-modal-close">✕</button>
@@ -563,7 +731,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V9 : reveal ciné (sans leak), best pull + date, timeline, loot preview clean, filtre collection par carte.
+            V10 : anti-flicker (hover preview flottante), Best Pull Spotlight (record sauvegardé), UX click-only modal.
           </p>
         </div>
 
@@ -766,6 +934,7 @@
        ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
       const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
+      const VS_BEST_PULL_KEY = "vaultspin_best_pull_v1"; // ✅ V10 record
 
       /********************
        * ECONOMY (∞ wallet)
@@ -833,6 +1002,32 @@
         const arr = getCollection();
         arr.unshift(entry);
         setCollection(arr);
+      }
+
+      /********************
+       * Best pull record (V10)
+       ********************/
+      function getBestPullRecord(){
+        try { return JSON.parse(localStorage.getItem(VS_BEST_PULL_KEY) || "null"); }
+        catch { return null; }
+      }
+      function setBestPullRecord(rec){
+        localStorage.setItem(VS_BEST_PULL_KEY, JSON.stringify(rec));
+      }
+      function rarityRank(key){
+        return RARITY_ORDER.indexOf(key || "COMMON");
+      }
+      function isBetterRarity(newKey, oldKey){
+        return rarityRank(newKey) > rarityRank(oldKey);
+      }
+
+      function bestPullFromCollection(arr){
+        if (!arr.length) return null;
+        let best = arr[0];
+        for (const c of arr){
+          if (RARITY_ORDER.indexOf(c.rarityKey) > RARITY_ORDER.indexOf(best.rarityKey)) best = c;
+        }
+        return best;
       }
 
       /********************
@@ -912,21 +1107,15 @@
         return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
       }
 
-      function bestPullFromCollection(arr){
-        if (!arr.length) return null;
-        let best = arr[0];
-        for (const c of arr){
-          if (RARITY_ORDER.indexOf(c.rarityKey) > RARITY_ORDER.indexOf(best.rarityKey)) best = c;
-        }
-        return best;
-      }
-
       function renderStats(){
         const arr = getCollection();
         const opened = arr.length;
         const spent = opened * PACK_PRICE_EUR;
         const last = opened ? arr[0] : null;
-        const best = opened ? bestPullFromCollection(arr) : null;
+
+        // ✅ Best pull = record si existe, sinon calcul collection
+        const record = getBestPullRecord();
+        const best = record ? record : (opened ? bestPullFromCollection(arr) : null);
 
         document.getElementById("stat-opened").textContent = String(opened);
         document.getElementById("stat-spent").textContent = spent.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
@@ -941,7 +1130,7 @@
 
         if (best){
           document.getElementById("stat-best-img").src = best.img;
-          document.getElementById("stat-best-line1").textContent = best.rarityLabel + " #" + best.tokenId;
+          document.getElementById("stat-best-line1").textContent = best.rarityLabel + " #" + (best.tokenId ?? "—");
           document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
         } else {
           document.getElementById("stat-best-line1").textContent = "—";
@@ -1010,9 +1199,12 @@
           row.appendChild(main);
           row.appendChild(tools);
 
-          // Hover preview (clean)
-          row.addEventListener("mouseenter", () => openLootModal({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey }));
-          row.addEventListener("mouseleave", closeLootModal);
+          // ✅ Hover = preview flottante (pas de modal)
+          row.addEventListener("mouseenter", () => showPreview({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey }));
+          row.addEventListener("mouseleave", hidePreview);
+
+          // Click anywhere on row => modal
+          row.addEventListener("click", () => openLootModal({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey }));
 
           list.appendChild(row);
         }
@@ -1075,7 +1267,24 @@
         imgwrap.classList.remove("flip");
       }
 
-      async function openPackV9(){
+      /********************
+       * Best Pull Spotlight (V10)
+       ********************/
+      function openSpotlight(entry){
+        const sp = document.getElementById("spotlight");
+        document.getElementById("spotlight-img").src = entry.img;
+        document.getElementById("spotlight-title").textContent = `${entry.rarityLabel} • #${entry.tokenId}`;
+        document.getElementById("spotlight-sub").textContent = `Record sauvegardé · ${formatDate(entry.ts)} · cardTypeIndex ${entry.cardTypeIndex}`;
+        sp.classList.add("on");
+        sp.setAttribute("aria-hidden", "false");
+      }
+      function closeSpotlight(){
+        const sp = document.getElementById("spotlight");
+        sp.classList.remove("on");
+        sp.setAttribute("aria-hidden", "true");
+      }
+
+      async function openPackV10(){
         if (isBusy()) return;
 
         uiState = UI_STATE.OPENING;
@@ -1119,6 +1328,14 @@
           name: "Card #" + cardTypeIndex
         };
 
+        // ✅ V10 : record best pull (avant push pour comparaison propre)
+        const prev = getBestPullRecord();
+        if (!prev || isBetterRarity(entry.rarityKey, prev.rarityKey)){
+          setBestPullRecord(entry);
+          // Spotlight animation (non bloquante pour le flow)
+          openSpotlight(entry);
+        }
+
         pushToCollection(entry);
 
         document.getElementById("mint-info").textContent =
@@ -1136,7 +1353,7 @@
       }
 
       /********************
-       * Modal preview
+       * Modal preview (CLICK only)
        ********************/
       function openLootModal({ img, name, rarity }){
         const modal = document.getElementById("loot-modal");
@@ -1153,20 +1370,42 @@
       }
 
       /********************
+       * Hover preview flottante (anti flicker)
+       ********************/
+      function showPreview({ img, name, rarity }){
+        const preview = document.getElementById("preview-float");
+        // si hidden via media query -> inutile
+        if (window.matchMedia("(max-width: 980px)").matches) return;
+
+        document.getElementById("preview-img").src = img || "";
+        document.getElementById("preview-name").textContent = name || "—";
+        document.getElementById("preview-tag").textContent = rarity || "—";
+        preview.classList.add("on");
+        preview.setAttribute("aria-hidden", "false");
+      }
+      function hidePreview(){
+        const preview = document.getElementById("preview-float");
+        preview.classList.remove("on");
+        preview.setAttribute("aria-hidden", "true");
+      }
+
+      /********************
        * Filtered collection navigation
        ********************/
       function openCollectionFiltered(cardTypeIndex){
-        // collection.html must support ?ct=
         window.location.href = "collection.html?ct=" + encodeURIComponent(String(cardTypeIndex));
       }
 
       function resetAllData(){
         localStorage.removeItem(VS_COLLECTION_KEY);
         localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
+        localStorage.removeItem(VS_BEST_PULL_KEY); // ✅ reset record aussi
         setStatus("Données reset ✅", "ok");
         renderStats();
         renderHistory();
         closeLootModal();
+        hidePreview();
+        closeSpotlight();
       }
 
       /********************
@@ -1181,12 +1420,16 @@
         renderStats();
         renderHistory();
 
-        document.getElementById("open-pack-btn").addEventListener("click", openPackV9);
+        document.getElementById("open-pack-btn").addEventListener("click", openPackV10);
 
         // modal close
         document.getElementById("loot-modal-close").addEventListener("click", closeLootModal);
         document.getElementById("loot-modal").addEventListener("click", (e) => { if (e.target.id === "loot-modal") closeLootModal(); });
         document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLootModal(); });
+
+        // spotlight close
+        document.getElementById("spotlight-close").addEventListener("click", closeSpotlight);
+        document.getElementById("spotlight").addEventListener("click", (e) => { if (e.target.id === "spotlight") closeSpotlight(); });
 
         // Reset data
         document.getElementById("reset-data").addEventListener("click", resetAllData);
@@ -1195,9 +1438,10 @@
           setStatus("History cleared ✅", "ok");
           renderStats();
           renderHistory();
+          hidePreview();
         });
 
-        // Loot hover preview + click filter
+        // Loot hover preview + click filter (✅ hover = preview, click = filtre)
         document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
@@ -1207,16 +1451,16 @@
           let timer = null;
 
           el.addEventListener("mouseenter", () => {
-            timer = setTimeout(() => openLootModal({ img, name, rarity }), 110);
+            timer = setTimeout(() => showPreview({ img, name, rarity }), 110);
           });
           el.addEventListener("mouseleave", () => {
             if (timer) clearTimeout(timer);
-            closeLootModal();
+            hidePreview();
           });
 
+          // click = open collection filtered
           el.addEventListener("click", (e) => {
             e.preventDefault();
-            // click = open collection filtered
             openCollectionFiltered(ct);
           });
         });
