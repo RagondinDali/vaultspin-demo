@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V11.5 – UI Polish + Close/Skip Logic + Non-fixed Top)</title>
+    <title>VaultSpin – Booster Plante (V11.6 – CS:GO polish)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -10,7 +10,6 @@
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      /* ✅ Top bar must NOT float when scrolling */
       body{
         min-height:100vh;
         display:flex;
@@ -24,7 +23,7 @@
 
       .page{
         width:100%; max-width:1200px;
-        padding:24px 16px 40px; /* ✅ was 96px to offset fixed header */
+        padding:24px 16px 40px;
         display:flex; flex-direction:column; gap:24px;
       }
       @media (min-width: 900px){ .page{ flex-direction:row; gap:36px; } }
@@ -43,14 +42,6 @@
         color:#f9fafb;
       }
       .subtitle{ font-size:14px; color:#9ca3af; max-width:560px; line-height:1.45; }
-
-      .tag{
-        display:inline-flex; align-items:center; gap:8px;
-        border-radius:999px; border:1px solid rgba(148,163,184,.30);
-        padding:5px 10px;
-        font-size:10px; letter-spacing:.16em; text-transform:uppercase;
-        background:radial-gradient(circle at top,#111827,#020617 70%);
-      }
 
       .btn-row{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
       .btn-primary{
@@ -78,7 +69,6 @@
 
       .caption{ font-size:12px; color:#9ca3af; line-height:1.4; }
 
-      /* ✅ tiny helper */
       .is-hidden { display:none !important; }
 
       /* Stats */
@@ -206,14 +196,13 @@
         max-width:1200px;
         margin:16px auto 0;
         display:flex;
-        justify-content:space-between;
+        justify-content:flex-end; /* ✅ no left label */
         align-items:center;
         padding:0 16px;
         pointer-events:auto;
         z-index:10;
       }
-      .top-left,.top-right{ display:flex; align-items:center; gap:12px; }
-      .top-logo{ font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9ca3af; }
+      .top-right{ display:flex; align-items:center; gap:12px; }
 
       .top-link{
         font-size:12px; padding:6px 10px;
@@ -222,8 +211,17 @@
         color:#e5e7eb; text-decoration:none;
         letter-spacing:.14em; text-transform:uppercase;
         background:rgba(15,23,42,.85);
+        transition: box-shadow .15s ease-out, border-color .15s ease-out, transform .15s ease-out;
       }
-      .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
+      .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); transform: translateY(-1px); }
+
+      /* ✅ subtle glow like close */
+      .top-link.glow{
+        box-shadow:0 0 10px rgba(129,140,248,.35);
+      }
+      .top-link.glow:hover{
+        box-shadow:0 0 12px rgba(129,140,248,.45);
+      }
 
       .wallet-wrap{ position:relative; }
       .wallet-pill{
@@ -453,11 +451,11 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      /* ✅ Cursor line aligned ONLY on image area */
+      /* ✅ Cursor line aligned ONLY on image area, slightly higher to not touch text */
       .reel-cursor-line{
         position:absolute;
         left:50%;
-        top:0px;
+        top:-4px;            /* ✅ slightly higher */
         transform:translateX(-50%);
         width:4px;
         height:132px;
@@ -489,6 +487,7 @@
         background:rgba(15,23,42,.28);
         flex:0 0 auto;
         position:relative;
+        transform: translateZ(0);
       }
       .reel-thumb{
         width:100%;
@@ -532,6 +531,18 @@
       .reel-tag.rare{ color:#38bdf8; }
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
+
+      /* ✅ Winner highlight (micro) */
+      .reel-item.winner-pulse{
+        animation: winnerPulse 520ms ease-out;
+        border-color: rgba(250, 204, 21, .35);
+        box-shadow: 0 0 26px rgba(250, 204, 21, .20);
+      }
+      @keyframes winnerPulse{
+        0%{ transform: translateZ(0) scale(1); filter: brightness(1); }
+        35%{ transform: translateZ(0) scale(1.035); filter: brightness(1.14); }
+        100%{ transform: translateZ(0) scale(1.01); filter: brightness(1.04); }
+      }
 
       .open-actions{
         margin-top:12px;
@@ -719,14 +730,13 @@
               <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
             </div>
 
-            <!-- ✅ Close present ONLY after opening (result) -->
+            <!-- ✅ Close ONLY after opening (result) -->
             <button class="open-close is-hidden" id="open-close" disabled>Close</button>
           </div>
 
+          <!-- ✅ top-right: ONLY SKIP (no Open another here) -->
           <div style="display:flex; gap:10px; align-items:center;">
-            <!-- ✅ Skip present ONLY during opening (reel) -->
             <button class="open-btn" id="open-skip">Skip</button>
-            <button class="open-btn primary" id="open-another" disabled>Open another pack</button>
           </div>
         </div>
 
@@ -768,7 +778,7 @@
 
             <div class="result-btnrow">
               <button class="open-btn primary" id="result-open-another">Open another pack</button>
-              <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
+              <a class="top-link glow" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
                 Ma collection
               </a>
             </div>
@@ -785,11 +795,8 @@
 
     <!-- ✅ Top bar (normal flow, not fixed) -->
     <div class="top-bar">
-      <div class="top-left">
-        <div class="top-logo">VAULTSPIN · PACKS HYBRIDES</div>
-      </div>
       <div class="top-right">
-        <a class="top-link" href="collection.html" id="collection-toplink">Ma collection</a>
+        <a class="top-link glow" href="collection.html" id="collection-toplink">Ma collection</a>
 
         <div class="wallet-wrap">
           <div class="wallet-pill" title="Mode démo : ouvertures infinies">
@@ -815,12 +822,10 @@
     <div class="page">
       <!-- LEFT -->
       <div class="left-panel">
-        <div class="tag">VAULTSPIN · DÉMO (OFF-CHAIN)</div>
-
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V11.5 : Close/Skip conditionnels (reel vs result), top menu non-fix (ne chevauche plus), overlay CSGO bigger, cursor image-only, résultat centré + boutons sous carte, tick sync.
+            Ouvre un pack. La roulette s’arrête sur ta carte.
           </p>
         </div>
 
@@ -876,12 +881,6 @@
           </div>
           <div class="history-list" id="history-list"></div>
         </div>
-
-        <div style="margin-top: 6px">
-          <div class="caption" id="mint-info">
-            En attente d’une ouverture… clique sur le bouton pour lancer l’animation.
-          </div>
-        </div>
       </div>
 
       <!-- RIGHT -->
@@ -903,7 +902,7 @@
 
         <!-- Drops -->
         <div class="drop-table">
-          <div class="drop-title">Cartes potentiellement obtenables (hover = preview · click = filtre collection)</div>
+          <div class="drop-title">Cartes potentiellement obtenables</div>
 
           <div class="drop-grid" id="drop-grid">
             <!-- COMMON -->
@@ -1220,7 +1219,7 @@
       }
 
       /********************
-       * Opening overlay helpers
+       * Overlay helpers
        ********************/
       function openOverlay(){
         const o = document.getElementById("open-overlay");
@@ -1235,7 +1234,7 @@
         o.setAttribute("aria-hidden","true");
       }
 
-      // ✅ During opening: SKIP visible, CLOSE hidden
+      // Opening = SKIP visible, CLOSE hidden
       function showReel(){
         document.getElementById("reel-section").classList.remove("hidden");
         document.getElementById("result-section").classList.remove("on");
@@ -1244,14 +1243,13 @@
         document.getElementById("open-close").classList.add("is-hidden");
 
         document.getElementById("open-close").disabled = true;
-        document.getElementById("open-another").disabled = true;
-
         document.getElementById("open-skip").disabled = false;
+
         document.getElementById("open-hint").textContent = "Opening…";
         document.getElementById("open-sub").textContent = "La roulette ralentit et s’arrête sur ta carte.";
       }
 
-      // ✅ After opening: CLOSE visible, SKIP hidden
+      // Result = CLOSE visible, SKIP hidden
       function showResult(){
         document.getElementById("reel-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("on");
@@ -1365,6 +1363,14 @@
         rafId = null;
       }
 
+      function highlightWinner(){
+        const track = document.getElementById("reel-track");
+        const el = track.querySelector(`[data-i="${stopIndex}"]`);
+        if (!el) return;
+        el.classList.add("winner-pulse");
+        setTimeout(() => el.classList.remove("winner-pulse"), 560);
+      }
+
       async function spinToStop(){
         spinning = true;
         setStatus("Ouverture : roulette en cours…", "pending");
@@ -1403,14 +1409,17 @@
 
         spinning = false;
         stopTickLoop();
+
+        // ✅ micro highlight winner
+        highlightWinner();
       }
 
+      // ✅ Skip: accelerate to final, not snap
       function skipSpinNow(){
         if (!spinning) return;
+
         const track = document.getElementById("reel-track");
         const viewport = document.getElementById("reel-viewport");
-
-        track.classList.remove("spinning");
 
         const step = getStepPx();
         const vw = viewport.getBoundingClientRect().width;
@@ -1419,7 +1428,16 @@
         const targetTranslate = targetCenter - cursorX;
         const finalX = -(targetTranslate);
 
-        track.style.transition = "transform 260ms cubic-bezier(.2,.8,.2,1)";
+        // capture current x then accelerate to final
+        const currentX = getTranslateX(track);
+
+        track.classList.remove("spinning");
+        track.style.transition = "";
+        track.style.transform = `translateX(${currentX}px)`;
+        void track.offsetHeight;
+
+        // premium accel
+        track.style.transition = "transform 950ms cubic-bezier(.12,.92,.12,1)";
         track.style.transform = `translateX(${finalX}px)`;
       }
 
@@ -1453,9 +1471,6 @@
           name
         };
         pushToCollection(entry);
-
-        document.getElementById("mint-info").textContent =
-          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel}`;
 
         renderStats();
         renderHistory();
@@ -1496,12 +1511,10 @@
 
         uiState = UI_STATE.RESULT;
 
-        document.getElementById("open-another").disabled = false;
-
         // ✅ switch UI states (hide skip/show close)
         showResult();
 
-        setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
+        setStatus("Pack ouvert ✅", "ok");
         mainBtn.disabled = false;
       }
 
@@ -1571,10 +1584,6 @@
 
         document.getElementById("open-skip").addEventListener("click", () => {
           skipSpinNow();
-        });
-
-        document.getElementById("open-another").addEventListener("click", async () => {
-          await flyThenOpenAnother();
         });
 
         document.getElementById("result-open-another").addEventListener("click", async () => {
