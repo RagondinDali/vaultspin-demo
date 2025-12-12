@@ -2,711 +2,190 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Ma collection (dev)</title>
+    <title>VaultSpin – Ma collection (Locale)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Ethers v6 UMD -->
-    <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
-
-    <link rel="stylesheet" href="animations.css" />
-
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         min-height: 100vh;
-        display: flex;
-        align-items: stretch;
-        justify-content: center;
         background: radial-gradient(circle at top, #101827, #020617 60%);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
         color: #e5e7eb;
       }
 
-      .page {
-        width: 100%;
-        max-width: 1200px;
-        padding: 32px 16px 40px;
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 26px 16px 42px; }
+
+      .top {
         display: flex;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      @media (min-width: 900px) {
-        .page {
-          flex-direction: row;
-          gap: 32px;
-        }
-      }
-
-      .sidebar,
-      .main {
-        background: radial-gradient(circle at top left, #020617, #020617 70%);
-        border-radius: 32px;
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        padding: 24px 24px 28px;
-      }
-
-      .sidebar {
-        flex: 0.9;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        max-width: 360px;
-      }
-
-      .main {
-        flex: 1.6;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .tag {
-        display: inline-flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 8px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.3);
-        padding: 4px 10px;
-        font-size: 10px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: #e5e7eb;
-        background: radial-gradient(circle at top, #111827, #020617 70%);
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
       }
 
       h1 {
-        font-size: 24px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
+        font-size: 18px;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
         color: #f9fafb;
       }
 
-      .subtitle {
-        font-size: 13px;
-        color: #9ca3af;
-      }
-
-      .pill {
+      .btn {
         border-radius: 999px;
-        border: 1px solid #374151;
-        padding: 6px 10px;
-        font-size: 11px;
-        color: #e5e7eb;
-        background: rgba(15, 23, 42, 0.7);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .pill span {
-        opacity: 0.7;
-      }
-
-      .status-line {
-        font-size: 13px;
-        color: #e5e7eb;
-        background: rgba(15, 23, 42, 0.6);
-        border-radius: 999px;
-        padding: 8px 14px;
-        border: 1px solid #374151;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        background: #22c55e;
-      }
-
-      .status-dot.error {
-        background: #f97373;
-      }
-
-      .status-dot.pending {
-        background: #facc15;
-      }
-
-      .btn-secondary {
-        border-radius: 999px;
-        padding: 8px 16px;
+        padding: 10px 14px;
         font-size: 12px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        border: 1px solid #4b5563;
-        background: rgba(15, 23, 42, 0.9);
-        color: #e5e7eb;
+        border: 0;
         cursor: pointer;
+        color: #fff;
+        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
+        box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
+      }
+      .btn.secondary {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: none;
       }
 
-      .btn-secondary:hover {
-        border-color: #a855f7;
-        box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
-      }
-
-      .filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .filter-select {
-        background: rgba(15, 23, 42, 0.9);
-        border-radius: 999px;
-        border: 1px solid #4b5563;
-        padding: 6px 10px;
+      .meta {
+        margin-top: 6px;
         font-size: 12px;
-        color: #e5e7eb;
-        outline: none;
+        color: #9ca3af;
       }
 
-      .collection-grid {
-        margin-top: 8px;
+      .grid {
+        margin-top: 18px;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(6, 1fr);
         gap: 14px;
       }
+      @media (max-width: 1000px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+      @media (max-width: 720px) { .grid { grid-template-columns: repeat(2, 1fr); } }
 
-      .card-item {
+      .card {
         border-radius: 18px;
-        border: 1px solid rgba(148, 163, 184, 0.3);
-        background: radial-gradient(circle at top, #020617, #020617 70%);
-        padding: 10px 10px 12px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background: rgba(15, 23, 42, 0.55);
+        padding: 10px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
       }
 
-      .card-image-wrapper {
+      .thumb {
+        width: 100%;
+        aspect-ratio: 3 / 4;
         border-radius: 14px;
         overflow: hidden;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        background: #020617;
-        height: 180px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(2, 6, 23, 0.55);
       }
+      .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-      .card-image-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
+      .row { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; }
+      .id { opacity: 0.85; }
+      .rar.common { color: #facc15; font-weight: 800; }
+      .rar.rare { color: #38bdf8; font-weight: 800; }
+      .rar.ultra { color: #a855f7; font-weight: 800; }
+      .rar.legendary { color: #f97316; font-weight: 800; }
 
-      .card-meta-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11px;
-      }
-
-      .card-name {
-        font-weight: 500;
-      }
-
-      .token-id-badge {
-        font-size: 10px;
-        opacity: 0.8;
-      }
-
-      .rarity-badge {
-        font-size: 10px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-      }
-
-      .rarity-common {
-        color: #facc15;
-      }
-      .rarity-rare {
-        color: #38bdf8;
-      }
-      .rarity-ultra {
-        color: #a855f7;
-      }
-      .rarity-legendary {
-        color: #f97316;
-      }
-
-      .card-meta-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 10px;
+      .empty {
+        margin-top: 18px;
+        border-radius: 18px;
+        border: 1px dashed rgba(148, 163, 184, 0.35);
+        background: rgba(2, 6, 23, 0.35);
+        padding: 18px;
         color: #9ca3af;
-        margin-top: 2px;
-      }
-
-      .redeem-pill {
-        border-radius: 999px;
-        padding: 2px 8px;
-        border: 1px solid #374151;
-        font-size: 10px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .redeem-pill.badge-ok {
-        border-color: #22c55e;
-        color: #bbf7d0;
-      }
-
-      .redeem-pill.badge-pending {
-        border-color: #facc15;
-        color: #fef9c3;
-      }
-
-      .redeem-pill.badge-none {
-        border-color: #4b5563;
-      }
-
-      .empty-state {
-        margin-top: 16px;
         font-size: 13px;
-        color: #9ca3af;
       }
+
+      a { color: #a5b4fc; text-decoration: underline; }
+      a:hover { color: #c4b5fd; }
     </style>
   </head>
 
   <body>
-    <div class="page">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="tag">VAULTSPIN · COLLECTION (dev)</div>
+    <div class="wrap">
+      <div class="top">
         <div>
-          <h1>Ma collection</h1>
-          <p class="subtitle">
-            Cette version dev lit directement les NFT du
-            <strong>wallet MetaMask connecté</strong> sur le contrat VaultSpin V4.
-            Plus tard, on branchera un backend pour gérer les comptes clients
-            sans MetaMask.
-          </p>
+          <h1>Ma collection (Locale)</h1>
+          <div class="meta" id="meta">—</div>
         </div>
-
-        <button id="connect-btn" class="btn-secondary">
-          Connecter wallet
-        </button>
-
-        <div class="pill">
-          <span>Contrat :</span>
-          <span id="contract-short">0x6279…34D</span>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn secondary" href="index.html">← Retour packs</a>
+          <button class="btn secondary" id="clear">Clear collection</button>
         </div>
-        <div class="pill">
-          <span>Wallet :</span>
-          <span id="wallet-short">—</span>
-        </div>
+      </div>
 
-        <div id="status-line" class="status-line">
-          <span class="status-dot" id="status-dot"></span>
-          <span id="status-text">Wallet non connecté.</span>
-        </div>
-
-        <p style="font-size: 12px; color: #9ca3af; margin-top: 4px">
-          Le front scanne les premiers tokenId du contrat et affiche ceux dont
-          tu es propriétaire. Fonctionne sur Sepolia avec le même wallet que
-          pour l’ouverture des packs.
-        </p>
-      </aside>
-
-      <!-- Main collection area -->
-      <main class="main">
-        <div class="filters">
-          <span style="font-size: 12px; color: #9ca3af">Filtres :</span>
-          <select id="filter-rarity" class="filter-select">
-            <option value="ALL">Toutes raretés</option>
-            <option value="0">Common</option>
-            <option value="1">Rare</option>
-            <option value="2">Ultra</option>
-            <option value="3">Legendary</option>
-          </select>
-          <select id="filter-redeem" class="filter-select">
-            <option value="ALL">Tous statuts</option>
-            <option value="PENDING">Redeem demandé</option>
-            <option value="REDEEMED">Déjà redeem</option>
-            <option value="NONE">Redeem possible</option>
-            <option value="DIGITAL">NFT digital uniquement</option>
-          </select>
-        </div>
-
-        <div id="collection-grid" class="collection-grid"></div>
-
-        <div id="empty-state" class="empty-state" style="display: none">
-          Aucune carte trouvée pour ce wallet sur VaultSpin V4.
-        </div>
-      </main>
+      <div id="content"></div>
     </div>
 
     <script>
-      /********************
-       * CONFIG CHAIN     *
-       ********************/
+      const VS_COLLECTION_KEY = "vaultspin_collection_v1";
 
-      const CONTRACT_ADDRESS =
-        "0x6279B83Fd6093c5cAf2989cc428197D7A7d7342D";
-
-      const CONTRACT_ABI = [
-        // getTokenInfo
-        {
-          inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-          name: "getTokenInfo",
-          outputs: [
-            {
-              components: [
-                { internalType: "uint256", name: "tokenId", type: "uint256" },
-                { internalType: "uint8", name: "rarity", type: "uint8" },
-                {
-                  internalType: "uint256",
-                  name: "cardTypeIndex",
-                  type: "uint256",
-                },
-                { internalType: "string", name: "cardName", type: "string" },
-                { internalType: "string", name: "uri", type: "string" },
-                { internalType: "bool", name: "redeemed", type: "bool" },
-                { internalType: "uint256", name: "physicalId", type: "uint256" },
-                { internalType: "bool", name: "redeemAsked", type: "bool" },
-              ],
-              internalType: "struct VaultSpin.TokenInfo",
-              name: "",
-              type: "tuple",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        // ownerOf pour filtrer par wallet
-        {
-          inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-          name: "ownerOf",
-          outputs: [{ internalType: "address", name: "", type: "address" }],
-          stateMutability: "view",
-          type: "function",
-        },
-      ];
-
-      /********************
-       * ASSETS LOCAUX    *
-       ********************/
-
-      const CARD_IMAGE_BY_INDEX = {
-        0: "images/bulbasaur_common.png",
-        1: "images/ivysaur_common.png",
-        2: "images/venusaur_common.png",
-        3: "images/bulbasaur_rare.png",
-        4: "images/ivysaur_rare.png",
-        5: "images/venusaur_rare.png",
-        6: "images/bulbasaur_ultra.png",
-        7: "images/ivysaur_ultra.png",
-        8: "images/venusaur_ultra.png",
-        9: "images/bulbasaur_legendary.png",
-        10: "images/ivysaur_legendary.png",
-        11: "images/venusaur_legendary.png",
-        12: "images/plant_legendary.png",
-      };
-
-      const RARITY_LABEL = {
-        0: "Common",
-        1: "Rare",
-        2: "Ultra",
-        3: "Legendary",
-      };
-
-      const RARITY_CLASS = {
-        0: "rarity-common",
-        1: "rarity-rare",
-        2: "rarity-ultra",
-        3: "rarity-legendary",
-      };
-
-      /********************
-       * ÉTAT FRONT       *
-       ********************/
-
-      let provider;
-      let contract;
-      let currentAccount = null;
-      let allCards = [];
-
-      function setStatus(text, mode = "ok") {
-        const statusText = document.getElementById("status-text");
-        const dot = document.getElementById("status-dot");
-        if (!statusText || !dot) return;
-
-        statusText.textContent = text;
-        dot.classList.remove("error", "pending");
-        if (mode === "error") dot.classList.add("error");
-        if (mode === "pending") dot.classList.add("pending");
+      function getCollection() {
+        try { return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
+        catch { return []; }
+      }
+      function setCollection(arr) {
+        localStorage.setItem(VS_COLLECTION_KEY, JSON.stringify(arr));
       }
 
-      function shortAddress(addr) {
-        if (!addr) return "0x…";
-        return addr.slice(0, 6) + "…" + addr.slice(-4);
+      function rarityClass(rk) {
+        if (rk === "COMMON") return "common";
+        if (rk === "RARE") return "rare";
+        if (rk === "ULTRA") return "ultra";
+        if (rk === "LEGENDARY") return "legendary";
+        return "common";
       }
 
-      function normalizeRarity(r) {
-        if (typeof r === "number") return r;
-        if (typeof r === "bigint") return Number(r);
-        if (typeof r === "string" && /^\d+$/.test(r)) return parseInt(r, 10);
-        return 0;
-      }
+      function render() {
+        const arr = getCollection();
+        const meta = document.getElementById("meta");
+        const content = document.getElementById("content");
 
-      /********************
-       * INIT WALLET/CONTRACT
-       ********************/
+        if (meta) meta.textContent = `${arr.length} carte(s) — stockée(s) en localStorage`;
 
-      async function connectWallet() {
-        try {
-          if (!window.ethereum) {
-            setStatus("MetaMask non détecté.", "error");
-            alert(
-              "MetaMask n'est pas détecté dans ce navigateur. Installe l'extension pour tester cette version dev."
-            );
-            return;
-          }
-
-          provider = new ethers.BrowserProvider(window.ethereum);
-          const accounts = await provider.send("eth_requestAccounts", []);
-          currentAccount = accounts[0];
-
-          contract = new ethers.Contract(
-            CONTRACT_ADDRESS,
-            CONTRACT_ABI,
-            provider
-          );
-
-          document.getElementById("wallet-short").textContent =
-            shortAddress(currentAccount);
-          document.getElementById("contract-short").textContent =
-            shortAddress(CONTRACT_ADDRESS);
-
-          setStatus("Wallet connecté. Scan de ta collection…", "pending");
-
-          await loadCollection();
-        } catch (err) {
-          console.error("Erreur connectWallet :", err);
-          setStatus("Erreur connexion wallet.", "error");
-        }
-      }
-
-      /********************
-       * CHARGEMENT DATA  *
-       ********************/
-
-      async function fetchUserTokenIds() {
-        // Version dev : on scanne les 200 premiers tokenId
-        const maxCheck = 200;
-        const tokenIds = [];
-
-        if (!contract || !currentAccount) return tokenIds;
-
-        for (let id = 1; id <= maxCheck; id++) {
-          try {
-            const owner = await contract.ownerOf(id);
-            if (
-              owner &&
-              owner.toLowerCase() === currentAccount.toLowerCase()
-            ) {
-              tokenIds.push(id);
-            }
-          } catch (err) {
-            // tokenId inexistant => on ignore
-          }
-        }
-
-        return tokenIds;
-      }
-
-      async function loadCollection() {
-        if (!contract || !currentAccount) return;
-
-        try {
-          const tokenIds = await fetchUserTokenIds();
-
-          if (!tokenIds || tokenIds.length === 0) {
-            setStatus("Aucune carte pour ce wallet.", "ok");
-            document.getElementById("empty-state").style.display = "block";
-            return;
-          }
-
-          const infos = [];
-          for (const id of tokenIds) {
-            try {
-              const info = await contract.getTokenInfo(id);
-
-              const rarityNum = normalizeRarity(info.rarity);
-              const cardTypeIdx = Number(info.cardTypeIndex);
-              const img =
-                CARD_IMAGE_BY_INDEX[cardTypeIdx] || "images/venusaur_common.png";
-
-              infos.push({
-                tokenId: Number(info.tokenId),
-                rarityNum,
-                cardTypeIndex: cardTypeIdx,
-                cardName: info.cardName,
-                uri: info.uri,
-                redeemed: info.redeemed,
-                physicalId: Number(info.physicalId || 0),
-                redeemAsked: info.redeemAsked,
-                image: img,
-              });
-            } catch (errInner) {
-              console.warn("Erreur getTokenInfo pour tokenId", id, errInner);
-            }
-          }
-
-          allCards = infos;
-          setStatus(
-            "Collection chargée : " + allCards.length + " carte(s) trouvée(s).",
-            "ok"
-          );
-          renderCollection();
-        } catch (err) {
-          console.error("Erreur loadCollection :", err);
-          setStatus("Erreur lors du chargement de la collection.", "error");
-        }
-      }
-
-      /********************
-       * RENDER           *
-       ********************/
-
-      function renderCollection() {
-        const grid = document.getElementById("collection-grid");
-        const empty = document.getElementById("empty-state");
-        const rarityFilter = document.getElementById("filter-rarity").value;
-        const redeemFilter = document.getElementById("filter-redeem").value;
-
-        grid.innerHTML = "";
-
-        let filtered = [...allCards];
-
-        // filtrer rareté
-        if (rarityFilter !== "ALL") {
-          const rnum = parseInt(rarityFilter, 10);
-          filtered = filtered.filter((c) => c.rarityNum === rnum);
-        }
-
-        // filtrer redeem
-        if (redeemFilter !== "ALL") {
-          filtered = filtered.filter((c) => {
-            if (redeemFilter === "PENDING") return c.redeemAsked && !c.redeemed;
-            if (redeemFilter === "REDEEMED") return c.redeemed;
-            if (redeemFilter === "NONE")
-              return !c.redeemAsked && !c.redeemed && c.physicalId !== 0;
-            if (redeemFilter === "DIGITAL")
-              return !c.redeemAsked && !c.redeemed && c.physicalId === 0;
-            return true;
-          });
-        }
-
-        if (filtered.length === 0) {
-          empty.style.display = "block";
+        if (!arr.length) {
+          content.innerHTML = `
+            <div class="empty">
+              Aucune carte pour l’instant. Ouvre un pack sur <a href="index.html">la page packs</a>.
+            </div>
+          `;
           return;
-        } else {
-          empty.style.display = "none";
         }
 
-        for (const card of filtered) {
-          const cardDiv = document.createElement("div");
-          cardDiv.className = "card-item";
+        const grid = document.createElement("div");
+        grid.className = "grid";
 
-          const imgWrapper = document.createElement("div");
-          imgWrapper.className = "card-image-wrapper";
+        arr.forEach((c) => {
+          const el = document.createElement("div");
+          el.className = "card";
 
-          const img = document.createElement("img");
-          img.src = card.image;
-          img.alt = card.cardName || "VaultSpin Card";
+          el.innerHTML = `
+            <div class="thumb"><img src="${c.img}" alt="card"/></div>
+            <div class="row">
+              <span class="id">#${c.tokenId}</span>
+              <span class="rar ${rarityClass(c.rarityKey)}">${c.rarityLabel}</span>
+            </div>
+          `;
 
-          imgWrapper.appendChild(img);
-          cardDiv.appendChild(imgWrapper);
+          grid.appendChild(el);
+        });
 
-          const metaTop = document.createElement("div");
-          metaTop.className = "card-meta-top";
-
-          const nameSpan = document.createElement("div");
-          nameSpan.className = "card-name";
-          nameSpan.textContent = card.cardName || "VaultSpin Card";
-
-          const tokenSpan = document.createElement("div");
-          tokenSpan.className = "token-id-badge";
-          tokenSpan.textContent = "# " + card.tokenId;
-
-          metaTop.appendChild(nameSpan);
-          metaTop.appendChild(tokenSpan);
-          cardDiv.appendChild(metaTop);
-
-          const rarityDiv = document.createElement("div");
-          rarityDiv.className =
-            "rarity-badge " + (RARITY_CLASS[card.rarityNum] || "");
-          rarityDiv.textContent = RARITY_LABEL[card.rarityNum] || "Common";
-          cardDiv.appendChild(rarityDiv);
-
-          const metaBottom = document.createElement("div");
-          metaBottom.className = "card-meta-bottom";
-
-          const physSpan = document.createElement("div");
-          if (card.physicalId && card.physicalId !== 0) {
-            physSpan.textContent = "Physical ID: " + card.physicalId;
-          } else {
-            physSpan.textContent = "Pas de carte physique liée";
-          }
-
-          const redeemSpan = document.createElement("div");
-          redeemSpan.className = "redeem-pill";
-
-          if (card.redeemed) {
-            redeemSpan.classList.add("badge-ok");
-            redeemSpan.textContent = "Redeem validé";
-          } else if (card.redeemAsked) {
-            redeemSpan.classList.add("badge-pending");
-            redeemSpan.textContent = "Redeem demandé";
-          } else if (card.physicalId && card.physicalId !== 0) {
-            redeemSpan.classList.add("badge-none");
-            redeemSpan.textContent = "Redeem possible";
-          } else {
-            redeemSpan.classList.add("badge-none");
-            redeemSpan.textContent = "NFT digital uniquement";
-          }
-
-          metaBottom.appendChild(physSpan);
-          metaBottom.appendChild(redeemSpan);
-
-          cardDiv.appendChild(metaBottom);
-
-          grid.appendChild(cardDiv);
-        }
+        content.innerHTML = "";
+        content.appendChild(grid);
       }
 
-      /********************
-       * INIT DOM         *
-       ********************/
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const raritySelect = document.getElementById("filter-rarity");
-        const redeemSelect = document.getElementById("filter-redeem");
-        const connectBtn = document.getElementById("connect-btn");
-
-        raritySelect.addEventListener("change", renderCollection);
-        redeemSelect.addEventListener("change", renderCollection);
-        connectBtn.addEventListener("click", connectWallet);
-
-        document.getElementById("contract-short").textContent =
-          shortAddress(CONTRACT_ADDRESS);
-        setStatus("Wallet non connecté.", "error");
+      document.getElementById("clear").addEventListener("click", () => {
+        if (!confirm("Supprimer toute la collection locale ?")) return;
+        setCollection([]);
+        render();
       });
+
+      render();
     </script>
   </body>
 </html>
