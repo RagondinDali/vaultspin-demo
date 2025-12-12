@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V10 – Démo)</title>
+    <title>VaultSpin – Booster Plante (V10 – Roulette CS:GO)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -341,7 +341,7 @@
         width:92px;
         display:flex; flex-direction:column; align-items:center; gap:6px;
         text-align:center;
-        cursor:pointer; /* click = open collection filtered */
+        cursor:pointer;
         user-select:none;
       }
       .drop-thumb{
@@ -443,7 +443,7 @@
         box-shadow: 0 0 10px rgba(129,140,248,.25);
       }
 
-      /* ✅ Center modal (CLICK only) */
+      /* Center preview modal (hover-friendly) */
       .loot-modal{
         position:fixed; inset:0;
         display:none;
@@ -502,185 +502,209 @@
       }
       .loot-modal-close:hover{
         border-color: rgba(165,180,252,.7);
-        box-shadow:0 0 10px rgba(129,140,248,.25);
+        box-shadow: 0 0 10px rgba(129,140,248,.25);
       }
 
       /* small link glow */
       .collection-link{ font-size:12px; color:#a5b4fc; cursor:pointer; text-decoration:underline; width:fit-content; }
       .collection-link:hover{ color:#c4b5fd; }
 
-      /* ✅ Preview flottante (HOVER) — NO CLIGNOTEMENT */
-      .preview-float{
-        position:fixed;
-        top:50%;
-        right:28px;
-        transform:translateY(-50%);
-        width:280px;
-        border-radius:18px;
-        overflow:hidden;
-        background:rgba(2,6,23,.92);
-        border:1px solid rgba(148,163,184,.25);
-        box-shadow:0 0 30px rgba(0,0,0,.6);
-        opacity:0;
-        pointer-events:none; /* ⭐ clé anti flicker */
-        transition:opacity .15s ease, transform .15s ease;
-        z-index:65;
-      }
-      .preview-float.on{
-        opacity:1;
-        transform:translateY(-50%) scale(1.01);
-      }
-      .preview-float-img{
-        width:100%;
-        aspect-ratio:3/4;
-        background:rgba(15,23,42,.45);
-      }
-      .preview-float-img img{ width:100%; height:100%; object-fit:cover; display:block; }
-      .preview-float-meta{
-        padding:10px 12px 12px;
-        display:flex; justify-content:space-between; gap:10px; align-items:center;
-        border-top:1px solid rgba(148,163,184,.16);
-      }
-      .preview-float-name{
-        font-size:11px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
-        color:#e5e7eb; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-      }
-      .preview-float-tag{
-        font-size:10px; letter-spacing:.14em; text-transform:uppercase;
-        padding:6px 10px; border-radius:999px;
-        border:1px solid rgba(148,163,184,.18);
-        background:rgba(15,23,42,.55);
-        flex:0 0 auto;
-      }
-      @media (max-width: 980px){
-        .preview-float{ display:none; } /* mobile/tablet: no hover */
-      }
-
-      /* ✅ Best Pull Spotlight (V10) */
-      .spotlight{
+      /* ==========================
+         ✅ V10 Roulette CS:GO
+         ========================== */
+      .case-overlay{
         position:fixed; inset:0;
         display:none;
         align-items:center; justify-content:center;
-        z-index:90;
-        background:rgba(0,0,0,.65);
-        backdrop-filter:blur(10px);
+        z-index:120;
+        background:rgba(0,0,0,.62);
+        backdrop-filter: blur(12px);
+        padding:18px;
       }
-      .spotlight.on{ display:flex; }
+      .case-overlay.on{ display:flex; }
 
-      .spotlight-card{
-        width:min(520px, 92vw);
-        border-radius:28px;
+      .case-modal{
+        width:min(980px, 96vw);
+        border-radius:26px;
         border:1px solid rgba(148,163,184,.22);
-        background:rgba(2,6,23,.90);
-        box-shadow:0 0 44px rgba(0,0,0,.6);
-        padding:16px;
+        background:rgba(2,6,23,.88);
+        box-shadow:0 0 44px rgba(0,0,0,.55);
+        padding:18px;
         position:relative;
-        animation:spotPop 240ms ease-out;
-      }
-      @keyframes spotPop{
-        from{ transform:scale(.97); opacity:0; }
-        to{ transform:scale(1); opacity:1; }
       }
 
-      .spotlight-badge{
-        display:inline-flex; align-items:center; gap:10px;
-        border-radius:999px;
-        padding:8px 12px;
-        border:1px solid rgba(165,180,252,.35);
-        background:radial-gradient(circle at top left, rgba(168,85,247,.22), rgba(79,70,229,.22));
-        color:#f9fafb;
-        font-size:11px;
-        letter-spacing:.16em;
-        text-transform:uppercase;
-        font-weight:900;
+      .case-top{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        margin-bottom:12px;
       }
-      .spotlight-title{
-        margin-top:10px;
-        font-size:14px;
-        font-weight:950;
-        letter-spacing:.14em;
+      .case-title{
+        font-size:12px;
+        letter-spacing:.22em;
         text-transform:uppercase;
-        color:#f9fafb;
+        color:#cbd5e1;
+        font-weight:800;
       }
-      .spotlight-sub{
-        margin-top:6px;
+      .case-sub{
         font-size:12px;
         color:#9ca3af;
-        line-height:1.4;
       }
 
-      .spotlight-img{
-        margin-top:12px;
+      .case-viewport{
+        position:relative;
         border-radius:22px;
+        border:1px solid rgba(148,163,184,.20);
+        background:radial-gradient(circle at top,#0b1120,#020617 70%);
         overflow:hidden;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(15,23,42,.45);
-        aspect-ratio:3/4;
+        padding:18px 12px;
       }
-      .spotlight-img img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-      .spotlight-actions{
-        margin-top:12px;
-        display:flex; justify-content:flex-end; gap:10px;
+      .case-strip{
+        position:relative;
+        height:160px;
+        display:flex;
+        align-items:center;
       }
-      .spotlight-btn{
+
+      .case-reel{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        will-change: transform;
+        transform: translateX(0px);
+      }
+      .case-reel.spinning{
+        transition: transform 4.9s cubic-bezier(0.08, 0.82, 0.12, 1);
+      }
+
+      .case-cursor{
+        position:absolute;
+        left:50%;
+        top:0;
+        transform:translateX(-50%);
+        width:3px;
+        height:100%;
+        background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
+        box-shadow: 0 0 18px rgba(250,204,21,.55);
         border-radius:999px;
-        padding:9px 12px;
-        font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+        pointer-events:none;
+      }
+
+      .case-fade-left,
+      .case-fade-right{
+        position:absolute;
+        top:0; bottom:0;
+        width:120px;
+        pointer-events:none;
+        z-index:2;
+      }
+      .case-fade-left{
+        left:0;
+        background: linear-gradient(to right, rgba(2,6,23,.92), rgba(2,6,23,0));
+      }
+      .case-fade-right{
+        right:0;
+        background: linear-gradient(to left, rgba(2,6,23,.92), rgba(2,6,23,0));
+      }
+
+      .case-item{
+        width:132px;
+        height:156px;
+        border-radius:18px;
+        border:1px solid rgba(148,163,184,.16);
+        background:rgba(15,23,42,.32);
+        overflow:hidden;
+        display:flex;
+        flex-direction:column;
+        justify-content:space-between;
+        flex:0 0 auto;
+        box-shadow: 0 0 0 rgba(0,0,0,0);
+        transform: translateY(0px);
+      }
+      .case-thumb{
+        width:100%;
+        height:112px;
+        overflow:hidden;
+        border-bottom:1px solid rgba(148,163,184,.12);
+        background:#020617;
+      }
+      .case-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+      .case-meta{
+        padding:8px 10px 10px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:8px;
+        min-width:0;
+      }
+      .case-name{
+        font-size:10px;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        font-weight:900;
+        color:#e5e7eb;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .case-rarity{
+        font-size:10px;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        padding:4px 8px;
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.16);
+        background:rgba(2,6,23,.35);
+        flex:0 0 auto;
+        font-weight:900;
+      }
+      .case-rarity.common{ color:#facc15; }
+      .case-rarity.rare{ color:#38bdf8; }
+      .case-rarity.ultra{ color:#a855f7; }
+      .case-rarity.legendary{ color:#f97316; }
+
+      .case-item.won{
+        border-color: rgba(250,204,21,.55);
+        box-shadow: 0 0 22px rgba(250,204,21,.22);
+        transform: translateY(-3px);
+        animation: wonPulse 650ms ease-in-out infinite alternate;
+      }
+      @keyframes wonPulse{
+        from{ box-shadow: 0 0 14px rgba(250,204,21,.22); }
+        to{ box-shadow: 0 0 28px rgba(250,204,21,.38); }
+      }
+
+      .case-actions{
+        margin-top:12px;
+        display:flex;
+        justify-content:flex-end;
+        gap:10px;
+      }
+      .case-btn{
+        border-radius:999px;
+        padding:10px 14px;
+        font-size:11px;
+        letter-spacing:.14em;
+        text-transform:uppercase;
         border:1px solid rgba(148,163,184,.20);
-        cursor:pointer;
         background:rgba(15,23,42,.55);
         color:#e5e7eb;
+        cursor:pointer;
       }
-      .spotlight-btn:hover{
-        border-color: rgba(165,180,252,.7);
-        box-shadow: 0 0 10px rgba(129,140,248,.25);
-      }
-
-      .spotlight-glow{
-        position:absolute; inset:-20%;
-        pointer-events:none;
-        opacity:.85;
-        mix-blend-mode:screen;
-        animation:spotGlow 1.1s ease-out forwards;
-        background:
-          radial-gradient(circle at 40% 30%, rgba(249,115,22,.22), transparent 55%),
-          radial-gradient(circle at 60% 60%, rgba(168,85,247,.18), transparent 55%),
-          radial-gradient(circle at 50% 50%, rgba(250,204,21,.18), transparent 60%);
-      }
-      @keyframes spotGlow{
-        0%{ transform:scale(.95); opacity:0; }
-        30%{ opacity:1; }
-        100%{ transform:scale(1.03); opacity:.75; }
+      .case-btn:disabled{ opacity:.45; cursor:default; }
+      .case-btn.primary{
+        border:none;
+        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
+        box-shadow: 0 0 18px rgba(168,85,247,.30);
       }
     </style>
   </head>
 
   <body>
-    <!-- ✅ Preview flottante (HOVER) -->
-    <div class="preview-float" id="preview-float" aria-hidden="true">
-      <div class="preview-float-img"><img id="preview-img" src="" alt="Preview" /></div>
-      <div class="preview-float-meta">
-        <div class="preview-float-name" id="preview-name">—</div>
-        <div class="preview-float-tag" id="preview-tag">—</div>
-      </div>
-    </div>
-
-    <!-- ✅ Best Pull Spotlight -->
-    <div class="spotlight" id="spotlight" aria-hidden="true">
-      <div class="spotlight-card" role="dialog" aria-modal="true">
-        <div class="spotlight-glow"></div>
-        <div class="spotlight-badge">🔥 New Best Pull</div>
-        <div class="spotlight-title" id="spotlight-title">—</div>
-        <div class="spotlight-sub" id="spotlight-sub">—</div>
-        <div class="spotlight-img"><img id="spotlight-img" src="" alt="Best Pull" /></div>
-        <div class="spotlight-actions">
-          <button class="spotlight-btn" id="spotlight-close">Nice.</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Center modal (CLICK only) -->
+    <!-- Center preview modal -->
     <div class="loot-modal" id="loot-modal" aria-hidden="true">
       <div class="loot-modal-card" role="dialog" aria-modal="true">
         <button class="loot-modal-close" id="loot-modal-close">✕</button>
@@ -690,6 +714,33 @@
         <div class="loot-modal-meta">
           <div class="loot-modal-name" id="loot-modal-name">—</div>
           <div class="loot-modal-tag" id="loot-modal-tag">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Roulette overlay -->
+    <div class="case-overlay" id="case-overlay" aria-hidden="true">
+      <div class="case-modal" role="dialog" aria-modal="true">
+        <div class="case-top">
+          <div>
+            <div class="case-title">VAULTSPIN · OPENING</div>
+            <div class="case-sub" id="case-sub">La roulette ralentit et s’arrête sur ta carte.</div>
+          </div>
+          <button class="case-btn" id="case-close" disabled>Close</button>
+        </div>
+
+        <div class="case-viewport" id="case-viewport">
+          <div class="case-fade-left"></div>
+          <div class="case-fade-right"></div>
+
+          <div class="case-strip">
+            <div class="case-cursor"></div>
+            <div class="case-reel" id="case-reel"></div>
+          </div>
+        </div>
+
+        <div class="case-actions">
+          <button class="case-btn primary" id="case-continue" disabled>Continue</button>
         </div>
       </div>
     </div>
@@ -731,7 +782,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V10 : anti-flicker (hover preview flottante), Best Pull Spotlight (record sauvegardé), UX click-only modal.
+            V10 : roulette type CS:GO (reel 60 items au poids + stop sur la carte gagnante).
           </p>
         </div>
 
@@ -934,7 +985,6 @@
        ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
       const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
-      const VS_BEST_PULL_KEY = "vaultspin_best_pull_v1"; // ✅ V10 record
 
       /********************
        * ECONOMY (∞ wallet)
@@ -960,6 +1010,22 @@
         12:"images/plant_legendary.png",
       };
 
+      const CARD_NAME_BY_INDEX = {
+        0:"Bulbizarre",
+        1:"Herbizarre",
+        2:"Florizarre",
+        3:"Bulbizarre",
+        4:"Herbizarre",
+        5:"Florizarre",
+        6:"Bulbizarre",
+        7:"Herbizarre",
+        8:"Florizarre",
+        9:"Bulbizarre",
+        10:"Herbizarre",
+        11:"Florizarre",
+        12:"Plante",
+      };
+
       const CARD_RARITY_BY_INDEX = { 0:0,1:0,2:0, 3:1,4:1,5:1, 6:2,7:2,8:2, 9:3,10:3,11:3,12:3 };
       const CARD_WEIGHT_BY_INDEX = { 0:7000,1:7000,2:7000, 3:2000,4:2000,5:2000, 6:900,7:900,8:900, 9:100,10:100,11:100,12:100 };
 
@@ -968,6 +1034,12 @@
 
       function rarityToLabel(num){ return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common"; }
       function rarityKeyFromNum(num){ return (num===0)?"COMMON":(num===1)?"RARE":(num===2)?"ULTRA":(num===3)?"LEGENDARY":"COMMON"; }
+      function rarityClassFromKey(k){
+        if (k==="LEGENDARY") return "legendary";
+        if (k==="ULTRA") return "ultra";
+        if (k==="RARE") return "rare";
+        return "common";
+      }
 
       function pickWeightedCardIndex(){
         let total = 0;
@@ -1005,35 +1077,9 @@
       }
 
       /********************
-       * Best pull record (V10)
-       ********************/
-      function getBestPullRecord(){
-        try { return JSON.parse(localStorage.getItem(VS_BEST_PULL_KEY) || "null"); }
-        catch { return null; }
-      }
-      function setBestPullRecord(rec){
-        localStorage.setItem(VS_BEST_PULL_KEY, JSON.stringify(rec));
-      }
-      function rarityRank(key){
-        return RARITY_ORDER.indexOf(key || "COMMON");
-      }
-      function isBetterRarity(newKey, oldKey){
-        return rarityRank(newKey) > rarityRank(oldKey);
-      }
-
-      function bestPullFromCollection(arr){
-        if (!arr.length) return null;
-        let best = arr[0];
-        for (const c of arr){
-          if (RARITY_ORDER.indexOf(c.rarityKey) > RARITY_ORDER.indexOf(best.rarityKey)) best = c;
-        }
-        return best;
-      }
-
-      /********************
        * UI state
        ********************/
-      const UI_STATE = { IDLE:"idle", OPENING:"opening", MYSTERY:"mystery", REVEAL:"reveal", ADDING:"adding" };
+      const UI_STATE = { IDLE:"idle", OPENING:"opening", MYSTERY:"mystery", REVEAL:"reveal", ADDING:"adding", ROULETTE:"roulette" };
       let uiState = UI_STATE.IDLE;
 
       let sfxBooster=null, sfxReveal=null, sfxLegendary=null;
@@ -1107,15 +1153,21 @@
         return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
       }
 
+      function bestPullFromCollection(arr){
+        if (!arr.length) return null;
+        let best = arr[0];
+        for (const c of arr){
+          if (RARITY_ORDER.indexOf(c.rarityKey) > RARITY_ORDER.indexOf(best.rarityKey)) best = c;
+        }
+        return best;
+      }
+
       function renderStats(){
         const arr = getCollection();
         const opened = arr.length;
         const spent = opened * PACK_PRICE_EUR;
         const last = opened ? arr[0] : null;
-
-        // ✅ Best pull = record si existe, sinon calcul collection
-        const record = getBestPullRecord();
-        const best = record ? record : (opened ? bestPullFromCollection(arr) : null);
+        const best = opened ? bestPullFromCollection(arr) : null;
 
         document.getElementById("stat-opened").textContent = String(opened);
         document.getElementById("stat-spent").textContent = spent.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
@@ -1130,7 +1182,7 @@
 
         if (best){
           document.getElementById("stat-best-img").src = best.img;
-          document.getElementById("stat-best-line1").textContent = best.rarityLabel + " #" + (best.tokenId ?? "—");
+          document.getElementById("stat-best-line1").textContent = best.rarityLabel + " #" + best.tokenId;
           document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
         } else {
           document.getElementById("stat-best-line1").textContent = "—";
@@ -1147,7 +1199,7 @@
 
       function renderHistory(){
         const list = document.getElementById("history-list");
-        const arr = getCollection().slice(0, 12); // show last 12
+        const arr = getCollection().slice(0, 12);
 
         list.innerHTML = "";
         if (!arr.length){
@@ -1199,12 +1251,8 @@
           row.appendChild(main);
           row.appendChild(tools);
 
-          // ✅ Hover = preview flottante (pas de modal)
-          row.addEventListener("mouseenter", () => showPreview({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey }));
-          row.addEventListener("mouseleave", hidePreview);
-
-          // Click anywhere on row => modal
-          row.addEventListener("click", () => openLootModal({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey }));
+          row.addEventListener("mouseenter", () => openLootModal({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey }));
+          row.addEventListener("mouseleave", closeLootModal);
 
           list.appendChild(row);
         }
@@ -1245,22 +1293,18 @@
         const cover = document.getElementById("mystery-cover");
         const imgwrap = document.getElementById("imgwrap");
 
-        // IMPORTANT: no leak -> show mystery overlay, do NOT show final image
         img.style.opacity = "0";
         cover.classList.add("on");
         setStatus("Suspense…", "pending");
-        await sleep(650);
+        await sleep(520);
 
-        // flip moment
         uiState = UI_STATE.REVEAL;
         imgwrap.classList.add("flip");
         await sleep(220);
 
-        // set actual image only now
         img.src = imgSrc;
         img.style.opacity = "1";
 
-        // remove mystery
         cover.classList.remove("on");
         await sleep(160);
 
@@ -1268,48 +1312,173 @@
       }
 
       /********************
-       * Best Pull Spotlight (V10)
+       * ✅ V10 Roulette
        ********************/
-      function openSpotlight(entry){
-        const sp = document.getElementById("spotlight");
-        document.getElementById("spotlight-img").src = entry.img;
-        document.getElementById("spotlight-title").textContent = `${entry.rarityLabel} • #${entry.tokenId}`;
-        document.getElementById("spotlight-sub").textContent = `Record sauvegardé · ${formatDate(entry.ts)} · cardTypeIndex ${entry.cardTypeIndex}`;
-        sp.classList.add("on");
-        sp.setAttribute("aria-hidden", "false");
+      function openCaseOverlay(){
+        const overlay = document.getElementById("case-overlay");
+        overlay.classList.add("on");
+        overlay.setAttribute("aria-hidden", "false");
       }
-      function closeSpotlight(){
-        const sp = document.getElementById("spotlight");
-        sp.classList.remove("on");
-        sp.setAttribute("aria-hidden", "true");
+      function closeCaseOverlay(){
+        const overlay = document.getElementById("case-overlay");
+        overlay.classList.remove("on");
+        overlay.setAttribute("aria-hidden", "true");
       }
 
-      async function openPackV10(){
-        if (isBusy()) return;
+      function renderReelItems(reelItems){
+        const reel = document.getElementById("case-reel");
+        reel.innerHTML = "";
+        for (let i=0;i<reelItems.length;i++){
+          const ct = reelItems[i];
+          const rarityNum = CARD_RARITY_BY_INDEX[ct] ?? 0;
+          const rk = rarityKeyFromNum(rarityNum);
 
-        uiState = UI_STATE.OPENING;
+          const el = document.createElement("div");
+          el.className = "case-item";
+          el.setAttribute("data-i", String(i));
+          el.setAttribute("data-ct", String(ct));
 
-        const frame = document.getElementById("card-frame");
-        frame.classList.add("opening");
+          el.innerHTML = `
+            <div class="case-thumb"><img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${CARD_NAME_BY_INDEX[ct] || ("Card #"+ct)}"/></div>
+            <div class="case-meta">
+              <div class="case-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card #"+ct))}</div>
+              <div class="case-rarity ${rarityClassFromKey(rk)}">${rk}</div>
+            </div>
+          `;
+          reel.appendChild(el);
+        }
+      }
+
+      function escapeHtml(s){
+        return String(s || "").replace(/[&<>"']/g, (c) => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+        }[c]));
+      }
+
+      function getReelStepPx(){
+        const reel = document.getElementById("case-reel");
+        const first = reel.firstElementChild;
+        if (!first) return 144; // fallback
+        const w = first.getBoundingClientRect().width;
+        const gapStr = (getComputedStyle(reel).gap || "12px");
+        const gap = parseFloat(gapStr) || 12;
+        return w + gap;
+      }
+
+      function buildReelWeighted(totalItems, winningCt){
+        // 1) Fill weighted
+        const arr = [];
+        for (let i=0;i<totalItems;i++){
+          arr.push(pickWeightedCardIndex());
+        }
+
+        // 2) Force winning at a late stopIndex
+        const stopIndex = Math.max(20, totalItems - 12);
+        arr[stopIndex] = winningCt;
+
+        return { reelItems: arr, stopIndex };
+      }
+
+      async function spinReelToStop(stopIndex){
+        const viewport = document.getElementById("case-viewport");
+        const reel = document.getElementById("case-reel");
+
+        // Reset transition clean
+        reel.classList.remove("spinning");
+        reel.style.transform = "translateX(0px)";
+
+        await sleep(40);
+
+        const step = getReelStepPx();
+        const viewportW = viewport.getBoundingClientRect().width;
+
+        // Center of stop item relative to reel start
+        const targetCenter = stopIndex * step + (step / 2);
+        const cursorX = viewportW / 2;
+
+        // Translate so that item center lands on cursor
+        const targetTranslate = targetCenter - cursorX;
+
+        // Add some "human" tiny jitter but keep within item center tolerance
+        const jitter = (Math.random() * 6) - 3; // -3..+3 px
+        const finalX = -(targetTranslate + jitter);
+
+        // Force reflow then animate
+        void reel.offsetHeight;
+        reel.classList.add("spinning");
+
+        // Start booster split in background for coherence
         setBoosterMode("booster-mode-split");
-        setStatus("Ouverture du pack…", "pending");
         playSound(sfxBooster);
 
-        await sleep(900);
+        requestAnimationFrame(() => {
+          reel.style.transform = `translateX(${finalX}px)`;
+        });
 
-        frame.classList.remove("opening");
+        return new Promise((resolve) => {
+          const onEnd = () => {
+            reel.removeEventListener("transitionend", onEnd);
+            resolve();
+          };
+          reel.addEventListener("transitionend", onEnd, { once:true });
+        });
+      }
 
-        // pick card
-        const cardTypeIndex = pickWeightedCardIndex();
-        const rarityNum = CARD_RARITY_BY_INDEX[cardTypeIndex] ?? 0;
+      function markWinningItem(stopIndex){
+        const reel = document.getElementById("case-reel");
+        const kids = reel.querySelectorAll(".case-item");
+        kids.forEach(k => k.classList.remove("won"));
+        const el = reel.querySelector(`.case-item[data-i="${stopIndex}"]`);
+        if (el) el.classList.add("won");
+      }
+
+      async function openPackV10_Roulette(){
+        if (isBusy()) return;
+        uiState = UI_STATE.ROULETTE;
+
+        const btn = document.getElementById("open-pack-btn");
+        btn.disabled = true;
+
+        // disable overlay buttons until done
+        const closeBtn = document.getElementById("case-close");
+        const contBtn = document.getElementById("case-continue");
+        closeBtn.disabled = true;
+        contBtn.disabled = true;
+
+        setStatus("Ouverture : lancement de la roulette…", "pending");
+
+        // ✅ 1) Decide winner FIRST (truth)
+        const winningCt = pickWeightedCardIndex();
+        const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 0;
         const rarityKey = rarityKeyFromNum(rarityNum);
-        const imgSrc = CARD_IMAGE_BY_INDEX[cardTypeIndex] ?? CARD_IMAGE_BY_INDEX[0];
+        const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[0];
 
+        // ✅ 2) Build reel (60 items, weighted), force winner near end
+        const { reelItems, stopIndex } = buildReelWeighted(60, winningCt);
+
+        // ✅ 3) Open overlay + render reel
+        openCaseOverlay();
+        renderReelItems(reelItems);
+
+        // small delay for layout
+        await sleep(60);
+
+        // ✅ 4) Spin & decelerate to stopIndex
+        await spinReelToStop(stopIndex);
+
+        // ✅ 5) Highlight winner
+        markWinningItem(stopIndex);
+
+        // enable buttons
+        document.getElementById("case-sub").textContent = `✅ Tu as obtenu : ${CARD_NAME_BY_INDEX[winningCt] || ("Card #"+winningCt)} · ${rarityToLabel(rarityNum)}`;
+        contBtn.disabled = false;
+        closeBtn.disabled = false;
+
+        // ✅ 6) Commit mint/collection AFTER spin ends (same as before)
         const tokenId = nextLocalTokenId();
 
-        // mystery -> reveal
+        // reveal in right card zone (ciné)
         await mysteryThenReveal(imgSrc);
-
         setCardFooter(tokenId, rarityNum, rarityKey);
 
         playSound(sfxReveal);
@@ -1323,37 +1492,30 @@
           rarity: rarityNum,
           rarityLabel: rarityToLabel(rarityNum),
           rarityKey,
-          cardTypeIndex,
+          cardTypeIndex: winningCt,
           img: imgSrc,
-          name: "Card #" + cardTypeIndex
+          name: CARD_NAME_BY_INDEX[winningCt] || ("Card #" + winningCt)
         };
-
-        // ✅ V10 : record best pull (avant push pour comparaison propre)
-        const prev = getBestPullRecord();
-        if (!prev || isBetterRarity(entry.rarityKey, prev.rarityKey)){
-          setBestPullRecord(entry);
-          // Spotlight animation (non bloquante pour le flow)
-          openSpotlight(entry);
-        }
 
         pushToCollection(entry);
 
         document.getElementById("mint-info").textContent =
-          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel} • cardTypeIndex ${cardTypeIndex}`;
+          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel} • cardTypeIndex ${winningCt}`;
 
         renderStats();
         renderHistory();
 
-        // auto-fly
-        await sleep(380);
+        // auto fly to collection after a bit (keeps your current vibe)
+        await sleep(320);
         await animateToCollection();
 
         uiState = UI_STATE.IDLE;
+        btn.disabled = false;
         setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
       }
 
       /********************
-       * Modal preview (CLICK only)
+       * Modal preview (loot list)
        ********************/
       function openLootModal({ img, name, rarity }){
         const modal = document.getElementById("loot-modal");
@@ -1370,26 +1532,6 @@
       }
 
       /********************
-       * Hover preview flottante (anti flicker)
-       ********************/
-      function showPreview({ img, name, rarity }){
-        const preview = document.getElementById("preview-float");
-        // si hidden via media query -> inutile
-        if (window.matchMedia("(max-width: 980px)").matches) return;
-
-        document.getElementById("preview-img").src = img || "";
-        document.getElementById("preview-name").textContent = name || "—";
-        document.getElementById("preview-tag").textContent = rarity || "—";
-        preview.classList.add("on");
-        preview.setAttribute("aria-hidden", "false");
-      }
-      function hidePreview(){
-        const preview = document.getElementById("preview-float");
-        preview.classList.remove("on");
-        preview.setAttribute("aria-hidden", "true");
-      }
-
-      /********************
        * Filtered collection navigation
        ********************/
       function openCollectionFiltered(cardTypeIndex){
@@ -1399,13 +1541,10 @@
       function resetAllData(){
         localStorage.removeItem(VS_COLLECTION_KEY);
         localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
-        localStorage.removeItem(VS_BEST_PULL_KEY); // ✅ reset record aussi
         setStatus("Données reset ✅", "ok");
         renderStats();
         renderHistory();
         closeLootModal();
-        hidePreview();
-        closeSpotlight();
       }
 
       /********************
@@ -1420,16 +1559,13 @@
         renderStats();
         renderHistory();
 
-        document.getElementById("open-pack-btn").addEventListener("click", openPackV10);
+        // ✅ open pack => roulette
+        document.getElementById("open-pack-btn").addEventListener("click", openPackV10_Roulette);
 
-        // modal close
+        // loot modal close
         document.getElementById("loot-modal-close").addEventListener("click", closeLootModal);
         document.getElementById("loot-modal").addEventListener("click", (e) => { if (e.target.id === "loot-modal") closeLootModal(); });
         document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLootModal(); });
-
-        // spotlight close
-        document.getElementById("spotlight-close").addEventListener("click", closeSpotlight);
-        document.getElementById("spotlight").addEventListener("click", (e) => { if (e.target.id === "spotlight") closeSpotlight(); });
 
         // Reset data
         document.getElementById("reset-data").addEventListener("click", resetAllData);
@@ -1438,10 +1574,9 @@
           setStatus("History cleared ✅", "ok");
           renderStats();
           renderHistory();
-          hidePreview();
         });
 
-        // Loot hover preview + click filter (✅ hover = preview, click = filtre)
+        // Loot hover preview + click filter
         document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
@@ -1451,18 +1586,35 @@
           let timer = null;
 
           el.addEventListener("mouseenter", () => {
-            timer = setTimeout(() => showPreview({ img, name, rarity }), 110);
+            timer = setTimeout(() => openLootModal({ img, name, rarity }), 110);
           });
           el.addEventListener("mouseleave", () => {
             if (timer) clearTimeout(timer);
-            hidePreview();
+            closeLootModal();
           });
 
-          // click = open collection filtered
           el.addEventListener("click", (e) => {
             e.preventDefault();
             openCollectionFiltered(ct);
           });
+        });
+
+        // ✅ Overlay buttons
+        document.getElementById("case-continue").addEventListener("click", () => {
+          closeCaseOverlay();
+        });
+        document.getElementById("case-close").addEventListener("click", () => {
+          closeCaseOverlay();
+        });
+
+        // ESC closes overlay (only if enabled)
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape"){
+            const overlay = document.getElementById("case-overlay");
+            if (overlay.classList.contains("on")){
+              closeCaseOverlay();
+            }
+          }
         });
       });
     </script>
