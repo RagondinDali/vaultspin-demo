@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V7 – Démo)</title>
+    <title>VaultSpin – Booster Plante (V8 – Démo)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -29,9 +29,7 @@
         gap: 24px;
       }
 
-      @media (min-width: 900px) {
-        .page { flex-direction: row; gap: 40px; }
-      }
+      @media (min-width: 900px) { .page { flex-direction: row; gap: 40px; } }
 
       .left-panel,
       .right-panel {
@@ -41,20 +39,8 @@
         padding: 24px 24px 28px;
       }
 
-      .left-panel {
-        flex: 1.2;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-
-      .right-panel {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        position: relative;
-      }
+      .left-panel { flex: 1.2; display: flex; flex-direction: column; gap: 18px; }
+      .right-panel { flex: 1; display: flex; flex-direction: column; gap: 20px; position: relative; }
 
       h1 {
         font-size: 28px;
@@ -64,11 +50,7 @@
         color: #f9fafb;
       }
 
-      .subtitle {
-        font-size: 14px;
-        color: #9ca3af;
-        max-width: 520px;
-      }
+      .subtitle { font-size: 14px; color: #9ca3af; max-width: 520px; }
 
       .tag {
         display: inline-flex;
@@ -101,17 +83,8 @@
         color: #f9fafb;
         box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
       }
-
-      .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 0 22px rgba(168, 85, 247, 0.7);
-      }
-
-      .btn-primary:disabled {
-        opacity: 0.5;
-        cursor: default;
-        box-shadow: none;
-      }
+      .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 22px rgba(168, 85, 247, 0.7); }
+      .btn-primary:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
 
       .btn-ghost {
         border-radius: 999px;
@@ -124,18 +97,9 @@
         border: 1px solid rgba(148, 163, 184, 0.35);
         color: #e5e7eb;
       }
+      .btn-ghost:hover { border-color: rgba(165, 180, 252, 0.8); box-shadow: 0 0 10px rgba(129, 140, 248, 0.35); }
 
-      .btn-ghost:hover {
-        border-color: rgba(165, 180, 252, 0.8);
-        box-shadow: 0 0 10px rgba(129, 140, 248, 0.35);
-      }
-
-      .btn-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-      }
+      .btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 
       .status-line {
         font-size: 13px;
@@ -149,28 +113,13 @@
         gap: 8px;
       }
 
-      .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        background: #22c55e;
-      }
-
+      .status-dot { width: 8px; height: 8px; border-radius: 999px; background: #22c55e; }
       .status-dot.error { background: #f97373; }
       .status-dot.pending { background: #facc15; }
 
-      .caption {
-        font-size: 12px;
-        color: #9ca3af;
-        margin-top: 4px;
-      }
+      .caption { font-size: 12px; color: #9ca3af; margin-top: 4px; }
 
-      .network-pill-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-
+      .network-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
       .pill {
         border-radius: 999px;
         border: 1px solid #374151;
@@ -191,6 +140,45 @@
       }
       .collection-link:hover { color: #c4b5fd; }
 
+      /* ✅ Stats panel */
+      .stats {
+        margin-top: 6px;
+        padding: 14px 16px;
+        border-radius: 20px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(15, 23, 42, 0.5);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      @media (max-width: 720px) {
+        .stats { grid-template-columns: repeat(2, 1fr); }
+      }
+      .stat {
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(2, 6, 23, 0.35);
+        padding: 10px 10px;
+      }
+      .stat .k {
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #9ca3af;
+      }
+      .stat .v {
+        margin-top: 4px;
+        font-size: 16px;
+        font-weight: 800;
+        color: #f9fafb;
+      }
+      .stat .s {
+        margin-top: 2px;
+        font-size: 11px;
+        color: #9ca3af;
+      }
+
+      /* Card zone */
       .card-zone {
         width: 100%;
         height: 100%;
@@ -205,6 +193,20 @@
         position: relative;
         overflow: hidden;
       }
+
+      .fx-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 180ms ease-out;
+      }
+      .fx-overlay.on { opacity: 1; animation: fxFade 700ms ease-out forwards; }
+      @keyframes fxFade { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+      .fx-overlay.common { background: radial-gradient(circle at center, rgba(250,204,21,0.18), transparent 55%); }
+      .fx-overlay.rare { background: radial-gradient(circle at center, rgba(56,189,248,0.18), transparent 55%); }
+      .fx-overlay.ultra { background: radial-gradient(circle at center, rgba(168,85,247,0.20), transparent 55%); }
+      .fx-overlay.legendary { background: radial-gradient(circle at center, rgba(249,115,22,0.22), transparent 55%); }
 
       .card-frame {
         position: relative;
@@ -227,7 +229,6 @@
 
       .card-frame.state-opened.revealed { transform: translateY(-6px) scale(1.02); }
       .card-frame.opening { animation: cardPulse 0.7s ease-in-out infinite alternate; }
-
       @keyframes cardPulse {
         from { transform: translateY(0px) scale(1); box-shadow: 0 0 24px rgba(250, 204, 21, 0.35); }
         to { transform: translateY(-4px) scale(1.03); box-shadow: 0 0 40px rgba(250, 204, 21, 0.7); }
@@ -260,6 +261,42 @@
         align-items: center;
         justify-content: center;
         padding: 18px 18px 8px;
+        position: relative;
+      }
+
+      /* ✅ Suspense layer */
+      .reveal-mask {
+        position: absolute;
+        inset: 18px 18px 8px;
+        border-radius: 16px;
+        background: radial-gradient(circle at top, rgba(255,255,255,0.08), rgba(0,0,0,0.55) 70%);
+        display: none;
+        overflow: hidden;
+      }
+      .reveal-mask.on { display: block; }
+      .reveal-silhouette {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.13), rgba(255,255,255,0.05));
+        filter: blur(10px);
+        opacity: 0.9;
+        animation: shimmer 900ms ease-in-out infinite;
+        transform: scale(1.08);
+      }
+      @keyframes shimmer {
+        0% { transform: translateX(-18%) scale(1.08); opacity: 0.75; }
+        50% { transform: translateX(18%) scale(1.08); opacity: 1; }
+        100% { transform: translateX(-18%) scale(1.08); opacity: 0.75; }
+      }
+
+      /* ✅ Card flip */
+      .flip {
+        animation: flip 420ms ease-out;
+      }
+      @keyframes flip {
+        0% { transform: rotateY(0deg); }
+        50% { transform: rotateY(85deg); }
+        100% { transform: rotateY(0deg); }
       }
 
       .card-image-wrapper img {
@@ -267,6 +304,12 @@
         max-height: 100%;
         border-radius: 16px;
         display: block;
+      }
+
+      .blurred {
+        filter: blur(10px) saturate(0.9);
+        transform: scale(1.02);
+        opacity: 0.65;
       }
 
       .card-footer {
@@ -296,37 +339,11 @@
       .token-id { opacity: 0.8; }
 
       .card-opened.transfer-to-collection { animation: toCollection 0.9s ease-in forwards; }
-
       @keyframes toCollection {
         0% { transform: translate(0, 0) scale(1); opacity: 1; }
         60% { transform: translate(80px, -80px) scale(0.9); opacity: 0.9; }
         100% { transform: translate(150px, -140px) scale(0.75); opacity: 0; }
       }
-
-      /* Premium FX overlay in card zone */
-      .fx-overlay {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 180ms ease-out;
-      }
-
-      .fx-overlay.on {
-        opacity: 1;
-        animation: fxFade 700ms ease-out forwards;
-      }
-
-      @keyframes fxFade {
-        0% { opacity: 0; }
-        20% { opacity: 1; }
-        100% { opacity: 0; }
-      }
-
-      .fx-overlay.common { background: radial-gradient(circle at center, rgba(250,204,21,0.18), transparent 55%); }
-      .fx-overlay.rare { background: radial-gradient(circle at center, rgba(56,189,248,0.18), transparent 55%); }
-      .fx-overlay.ultra { background: radial-gradient(circle at center, rgba(168,85,247,0.20), transparent 55%); }
-      .fx-overlay.legendary { background: radial-gradient(circle at center, rgba(249,115,22,0.22), transparent 55%); }
 
       /* Drop table */
       .drop-table {
@@ -349,13 +366,7 @@
         margin-bottom: 4px;
       }
 
-      .drop-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 14px;
-        justify-items: center;
-      }
-
+      .drop-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; justify-items: center; }
       .drop-item {
         position: relative;
         display: flex;
@@ -376,16 +387,25 @@
         border: 1px solid rgba(148, 163, 184, 0.4);
         background: #020617;
         transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+        position: relative;
       }
-
       .drop-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-      .drop-name {
+      .owned-badge {
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
         font-size: 10px;
-        color: #e5e7eb;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        font-weight: 800;
+        color: #f9fafb;
+        padding: 4px 7px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background: rgba(2, 6, 23, 0.75);
+        letter-spacing: 0.08em;
       }
+
+      .drop-name { font-size: 10px; color: #e5e7eb; letter-spacing: 0.04em; text-transform: uppercase; }
 
       .drop-meta {
         font-size: 9px;
@@ -397,7 +417,6 @@
 
       .drop-rate { opacity: 0.85; }
       .drop-tag { letter-spacing: 0.14em; text-transform: uppercase; }
-
       .drop-tag.common { color: #facc15; }
       .drop-tag.rare { color: #38bdf8; }
       .drop-tag.ultra { color: #a855f7; }
@@ -424,12 +443,7 @@
         z-index: 30;
       }
 
-      .top-left, .top-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        pointer-events: auto;
-      }
+      .top-left, .top-right { display: flex; align-items: center; gap: 12px; pointer-events: auto; }
 
       .top-logo {
         font-size: 12px;
@@ -450,10 +464,7 @@
         background: rgba(15, 23, 42, 0.9);
       }
 
-      .top-link:hover {
-        border-color: #a5b4fc;
-        box-shadow: 0 0 10px rgba(129, 140, 248, 0.5);
-      }
+      .top-link:hover { border-color: #a5b4fc; box-shadow: 0 0 10px rgba(129, 140, 248, 0.5); }
 
       /* Wallet hover pop */
       .wallet-wrap { position: relative; }
@@ -468,23 +479,9 @@
         cursor: default;
       }
 
-      .wallet-label {
-        font-size: 10px;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: #9ca3af;
-      }
-
-      .wallet-main {
-        font-size: 12px;
-        font-weight: 700;
-        color: #f9fafb;
-      }
-
-      .wallet-sub {
-        font-size: 10px;
-        color: #9ca3af;
-      }
+      .wallet-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #9ca3af; }
+      .wallet-main { font-size: 12px; font-weight: 700; color: #f9fafb; }
+      .wallet-sub { font-size: 10px; color: #9ca3af; }
 
       .wallet-pop {
         position: absolute;
@@ -499,7 +496,6 @@
         display: none;
         box-shadow: 0 0 24px rgba(0,0,0,0.35);
       }
-
       .wallet-wrap:hover .wallet-pop { display: block; }
 
       .wallet-pop h3 {
@@ -510,12 +506,7 @@
         color: #cbd5e1;
       }
 
-      .wallet-row {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        margin-top: 8px;
-      }
+      .wallet-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
 
       .wallet-input {
         flex: 1;
@@ -547,17 +538,11 @@
         box-shadow: none;
       }
 
-      .wallet-hint {
-        margin-top: 8px;
-        font-size: 11px;
-        color: #9ca3af;
-        line-height: 1.35;
-      }
+      .wallet-hint { margin-top: 8px; font-size: 11px; color: #9ca3af; line-height: 1.35; }
 
-      /* ✅ Center-screen Loot Preview Modal */
+      /* Center loot modal */
       .loot-modal {
-        position: fixed;
-        inset: 0;
+        position: fixed; inset: 0;
         display: none;
         align-items: center;
         justify-content: center;
@@ -566,6 +551,7 @@
         backdrop-filter: blur(10px);
       }
       .loot-modal.on { display: flex; }
+
       .loot-modal-card {
         width: min(420px, 92vw);
         border-radius: 24px;
@@ -576,10 +562,8 @@
         position: relative;
         animation: popIn 140ms ease-out;
       }
-      @keyframes popIn {
-        from { transform: scale(0.96); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-      }
+      @keyframes popIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
       .loot-modal-img {
         width: 100%;
         aspect-ratio: 3 / 4;
@@ -589,6 +573,7 @@
         background: rgba(15, 23, 42, 0.45);
       }
       .loot-modal-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
       .loot-modal-meta {
         display: flex;
         justify-content: space-between;
@@ -596,12 +581,14 @@
         margin-top: 10px;
         align-items: center;
       }
+
       .loot-modal-name {
         font-size: 12px;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: #e5e7eb;
       }
+
       .loot-modal-tag {
         font-size: 11px;
         letter-spacing: 0.14em;
@@ -611,6 +598,7 @@
         border: 1px solid rgba(148, 163, 184, 0.28);
         background: rgba(15, 23, 42, 0.55);
       }
+
       .loot-modal-close {
         position: absolute;
         right: 10px;
@@ -623,24 +611,16 @@
         cursor: pointer;
         font-size: 12px;
       }
-      .loot-modal-close:hover {
-        border-color: rgba(165,180,252,0.7);
-        box-shadow: 0 0 10px rgba(129,140,248,0.35);
-      }
+      .loot-modal-close:hover { border-color: rgba(165,180,252,0.7); box-shadow: 0 0 10px rgba(129,140,248,0.35); }
 
-      /* ✅ “Target” highlight on collection link when card flies */
-      .collection-link.targetGlow {
-        animation: glowPulse 1.0s ease-in-out 2;
-      }
-      @keyframes glowPulse {
-        0%, 100% { text-shadow: none; }
-        50% { text-shadow: 0 0 16px rgba(196, 181, 253, 0.85); }
-      }
+      /* Target glow */
+      .collection-link.targetGlow { animation: glowPulse 1.0s ease-in-out 2; }
+      @keyframes glowPulse { 0%, 100% { text-shadow: none; } 50% { text-shadow: 0 0 16px rgba(196, 181, 253, 0.85); } }
     </style>
   </head>
 
   <body>
-    <!-- Loot preview modal -->
+    <!-- Loot modal -->
     <div class="loot-modal" id="loot-modal" aria-hidden="true">
       <div class="loot-modal-card" role="dialog" aria-modal="true">
         <button class="loot-modal-close" id="loot-modal-close">✕</button>
@@ -696,8 +676,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            Démo premium : paiement simulé + reveal + ajout à la collection locale.
-            Aucun NFT réel n’est minté.
+            V8 : suspense reveal + stats + owned badges. Aucun NFT réel n’est minté.
           </p>
         </div>
 
@@ -718,7 +697,31 @@
           Dans la version finale, le prix sera débité de ton wallet VaultSpin (CB ou crypto convertie en €).
         </p>
 
-        <div class="network-pill-row">
+        <!-- ✅ Stats -->
+        <div class="stats">
+          <div class="stat">
+            <div class="k">Packs opened</div>
+            <div class="v" id="stat-opened">0</div>
+            <div class="s">Total</div>
+          </div>
+          <div class="stat">
+            <div class="k">Best rarity</div>
+            <div class="v" id="stat-best">—</div>
+            <div class="s">Ever</div>
+          </div>
+          <div class="stat">
+            <div class="k">Spent</div>
+            <div class="v" id="stat-spent">0€</div>
+            <div class="s">Local</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last pull</div>
+            <div class="v" id="stat-last">—</div>
+            <div class="s" id="stat-last-sub">—</div>
+          </div>
+        </div>
+
+        <div class="network-pill-row" style="margin-top: 10px">
           <div class="pill"><span>Réseau technique :</span> Sepolia (contrat V4)</div>
           <div class="pill"><span>Statut :</span> Démo front-only</div>
           <div class="pill"><span>Local collection :</span> activée ✅</div>
@@ -753,9 +756,13 @@
               </div>
 
               <div id="card-opened" class="card-opened hidden">
-                <div class="card-image-wrapper">
+                <div class="card-image-wrapper" id="imgwrap">
                   <img id="card-image" src="images/venusaur_common.png" alt="VaultSpin Card" />
+                  <div class="reveal-mask" id="reveal-mask">
+                    <div class="reveal-silhouette"></div>
+                  </div>
                 </div>
+
                 <div class="card-footer">
                   <div class="card-footer-left">
                     <div>VAULTSPIN (DÉMO)</div>
@@ -768,89 +775,128 @@
           </div>
         </div>
 
-        <!-- Table des drops -->
+        <!-- Drops -->
         <div class="drop-table">
           <div class="drop-title">Cartes potentiellement obtenables (hover/click)</div>
 
           <div class="drop-grid" id="drop-grid">
             <!-- COMMON -->
-            <div class="drop-item" data-rarity="COMMON" data-name="Bulbizarre" data-img="images/bulbasaur_common.png">
-              <div class="drop-thumb"><img src="images/bulbasaur_common.png" alt="Bulbizarre Common" /></div>
+            <div class="drop-item" data-rarity="COMMON" data-name="Bulbizarre" data-img="images/bulbasaur_common.png" data-ct="0">
+              <div class="drop-thumb">
+                <img src="images/bulbasaur_common.png" alt="Bulbizarre Common" />
+                <div class="owned-badge" data-owned-for="0">x0</div>
+              </div>
               <div class="drop-name">Bulbizarre</div>
               <div class="drop-meta"><span class="drop-rate">70% de chance</span><span class="drop-tag common">Common</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="COMMON" data-name="Herbizarre" data-img="images/ivysaur_common.png">
-              <div class="drop-thumb"><img src="images/ivysaur_common.png" alt="Herbizarre Common" /></div>
+            <div class="drop-item" data-rarity="COMMON" data-name="Herbizarre" data-img="images/ivysaur_common.png" data-ct="1">
+              <div class="drop-thumb">
+                <img src="images/ivysaur_common.png" alt="Herbizarre Common" />
+                <div class="owned-badge" data-owned-for="1">x0</div>
+              </div>
               <div class="drop-name">Herbizarre</div>
               <div class="drop-meta"><span class="drop-rate">70% de chance</span><span class="drop-tag common">Common</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="COMMON" data-name="Florizarre" data-img="images/venusaur_common.png">
-              <div class="drop-thumb"><img src="images/venusaur_common.png" alt="Florizarre Common" /></div>
+            <div class="drop-item" data-rarity="COMMON" data-name="Florizarre" data-img="images/venusaur_common.png" data-ct="2">
+              <div class="drop-thumb">
+                <img src="images/venusaur_common.png" alt="Florizarre Common" />
+                <div class="owned-badge" data-owned-for="2">x0</div>
+              </div>
               <div class="drop-name">Florizarre</div>
               <div class="drop-meta"><span class="drop-rate">70% de chance</span><span class="drop-tag common">Common</span></div>
             </div>
 
             <!-- RARE -->
-            <div class="drop-item" data-rarity="RARE" data-name="Bulbizarre" data-img="images/bulbasaur_rare.png">
-              <div class="drop-thumb"><img src="images/bulbasaur_rare.png" alt="Bulbizarre Rare" /></div>
+            <div class="drop-item" data-rarity="RARE" data-name="Bulbizarre" data-img="images/bulbasaur_rare.png" data-ct="3">
+              <div class="drop-thumb">
+                <img src="images/bulbasaur_rare.png" alt="Bulbizarre Rare" />
+                <div class="owned-badge" data-owned-for="3">x0</div>
+              </div>
               <div class="drop-name">Bulbizarre</div>
               <div class="drop-meta"><span class="drop-rate">20% de chance</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="RARE" data-name="Herbizarre" data-img="images/ivysaur_rare.png">
-              <div class="drop-thumb"><img src="images/ivysaur_rare.png" alt="Herbizarre Rare" /></div>
+            <div class="drop-item" data-rarity="RARE" data-name="Herbizarre" data-img="images/ivysaur_rare.png" data-ct="4">
+              <div class="drop-thumb">
+                <img src="images/ivysaur_rare.png" alt="Herbizarre Rare" />
+                <div class="owned-badge" data-owned-for="4">x0</div>
+              </div>
               <div class="drop-name">Herbizarre</div>
               <div class="drop-meta"><span class="drop-rate">20% de chance</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="RARE" data-name="Florizarre" data-img="images/venusaur_rare.png">
-              <div class="drop-thumb"><img src="images/venusaur_rare.png" alt="Florizarre Rare" /></div>
+            <div class="drop-item" data-rarity="RARE" data-name="Florizarre" data-img="images/venusaur_rare.png" data-ct="5">
+              <div class="drop-thumb">
+                <img src="images/venusaur_rare.png" alt="Florizarre Rare" />
+                <div class="owned-badge" data-owned-for="5">x0</div>
+              </div>
               <div class="drop-name">Florizarre</div>
               <div class="drop-meta"><span class="drop-rate">20% de chance</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
             <!-- ULTRA -->
-            <div class="drop-item" data-rarity="ULTRA" data-name="Bulbizarre" data-img="images/bulbasaur_ultra.png">
-              <div class="drop-thumb"><img src="images/bulbasaur_ultra.png" alt="Bulbizarre Ultra" /></div>
+            <div class="drop-item" data-rarity="ULTRA" data-name="Bulbizarre" data-img="images/bulbasaur_ultra.png" data-ct="6">
+              <div class="drop-thumb">
+                <img src="images/bulbasaur_ultra.png" alt="Bulbizarre Ultra" />
+                <div class="owned-badge" data-owned-for="6">x0</div>
+              </div>
               <div class="drop-name">Bulbizarre</div>
               <div class="drop-meta"><span class="drop-rate">9% de chance</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="ULTRA" data-name="Herbizarre" data-img="images/ivysaur_ultra.png">
-              <div class="drop-thumb"><img src="images/ivysaur_ultra.png" alt="Herbizarre Ultra" /></div>
+            <div class="drop-item" data-rarity="ULTRA" data-name="Herbizarre" data-img="images/ivysaur_ultra.png" data-ct="7">
+              <div class="drop-thumb">
+                <img src="images/ivysaur_ultra.png" alt="Herbizarre Ultra" />
+                <div class="owned-badge" data-owned-for="7">x0</div>
+              </div>
               <div class="drop-name">Herbizarre</div>
               <div class="drop-meta"><span class="drop-rate">9% de chance</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="ULTRA" data-name="Florizarre" data-img="images/venusaur_ultra.png">
-              <div class="drop-thumb"><img src="images/venusaur_ultra.png" alt="Florizarre Ultra" /></div>
+            <div class="drop-item" data-rarity="ULTRA" data-name="Florizarre" data-img="images/venusaur_ultra.png" data-ct="8">
+              <div class="drop-thumb">
+                <img src="images/venusaur_ultra.png" alt="Florizarre Ultra" />
+                <div class="owned-badge" data-owned-for="8">x0</div>
+              </div>
               <div class="drop-name">Florizarre</div>
               <div class="drop-meta"><span class="drop-rate">9% de chance</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
             <!-- LEGENDARY -->
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Bulbizarre" data-img="images/bulbasaur_legendary.png">
-              <div class="drop-thumb"><img src="images/bulbasaur_legendary.png" alt="Bulbizarre Legendary" /></div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Bulbizarre" data-img="images/bulbasaur_legendary.png" data-ct="9">
+              <div class="drop-thumb">
+                <img src="images/bulbasaur_legendary.png" alt="Bulbizarre Legendary" />
+                <div class="owned-badge" data-owned-for="9">x0</div>
+              </div>
               <div class="drop-name">Bulbizarre</div>
               <div class="drop-meta"><span class="drop-rate">1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Herbizarre" data-img="images/ivysaur_legendary.png">
-              <div class="drop-thumb"><img src="images/ivysaur_legendary.png" alt="Herbizarre Legendary" /></div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Herbizarre" data-img="images/ivysaur_legendary.png" data-ct="10">
+              <div class="drop-thumb">
+                <img src="images/ivysaur_legendary.png" alt="Herbizarre Legendary" />
+                <div class="owned-badge" data-owned-for="10">x0</div>
+              </div>
               <div class="drop-name">Herbizarre</div>
               <div class="drop-meta"><span class="drop-rate">1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/venusaur_legendary.png">
-              <div class="drop-thumb"><img src="images/venusaur_legendary.png" alt="Florizarre Legendary" /></div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/venusaur_legendary.png" data-ct="11">
+              <div class="drop-thumb">
+                <img src="images/venusaur_legendary.png" alt="Florizarre Legendary" />
+                <div class="owned-badge" data-owned-for="11">x0</div>
+              </div>
               <div class="drop-name">Florizarre</div>
               <div class="drop-meta"><span class="drop-rate">1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Plante" data-img="images/plant_legendary.png">
-              <div class="drop-thumb"><img src="images/plant_legendary.png" alt="Plante Légendaire" /></div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Plante" data-img="images/plant_legendary.png" data-ct="12">
+              <div class="drop-thumb">
+                <img src="images/plant_legendary.png" alt="Plante Légendaire" />
+                <div class="owned-badge" data-owned-for="12">x0</div>
+              </div>
               <div class="drop-name">Plante</div>
               <div class="drop-meta"><span class="drop-rate">1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
@@ -859,7 +905,7 @@
       </div>
     </div>
 
-    <!-- Sons -->
+    <!-- Sounds -->
     <audio id="sfx-booster" src="sounds/booster_open.mp3" preload="auto"></audio>
     <audio id="sfx-reveal" src="sounds/card_reveal.mp3" preload="auto"></audio>
     <audio id="sfx-legendary" src="sounds/legendary_fx.mp3" preload="auto"></audio>
@@ -876,8 +922,8 @@
        * ECONOMY
        ********************/
       const PACK_PRICE_EUR = 3.99;
-      const DEFAULT_WALLET_EUR = 50000; // ✅ demandé
-      const EUR_TO_ETH = 0.000000168; // pure UI
+      const DEFAULT_WALLET_EUR = 50000;
+      const EUR_TO_ETH = 0.000000168; // UI only
 
       function getWalletEur() {
         const raw = localStorage.getItem(VS_WALLET_KEY);
@@ -885,34 +931,16 @@
         const n = Number(raw);
         return Number.isFinite(n) ? n : DEFAULT_WALLET_EUR;
       }
-
-      function setWalletEur(value) {
-        localStorage.setItem(VS_WALLET_KEY, String(value));
-      }
-
-      function formatEur(n) {
-        return n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-      }
-
-      function formatEthFromEur(eur) {
-        const eth = eur * EUR_TO_ETH;
-        return "≈ " + eth.toFixed(4) + " ETH";
-      }
+      function setWalletEur(v) { localStorage.setItem(VS_WALLET_KEY, String(v)); }
+      function formatEur(n) { return n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €"; }
+      function formatEthFromEur(eur) { return "≈ " + (eur * EUR_TO_ETH).toFixed(4) + " ETH"; }
 
       function renderWallet() {
-        const eur = getWalletEur();
-        document.getElementById("wallet-eur").textContent = formatEur(eur);
-        document.getElementById("wallet-eth").textContent = formatEthFromEur(eur);
-
+        document.getElementById("wallet-eur").textContent = formatEur(getWalletEur());
+        document.getElementById("wallet-eth").textContent = formatEthFromEur(getWalletEur());
         const openBtn = document.getElementById("open-pack-btn");
-        const block =
-          eur < PACK_PRICE_EUR ||
-          uiState === UI_STATE.PAYMENT ||
-          uiState === UI_STATE.OPENING ||
-          uiState === UI_STATE.REVEALING ||
-          uiState === UI_STATE.ADDING;
-
-        if (openBtn) openBtn.disabled = block;
+        const locked = getWalletEur() < PACK_PRICE_EUR || isBusy();
+        if (openBtn) openBtn.disabled = locked;
       }
 
       function debitPackPrice() {
@@ -922,32 +950,25 @@
         renderWallet();
         return true;
       }
-
-      function addFunds(amountEur) {
-        const eur = getWalletEur();
-        setWalletEur(eur + amountEur);
-        renderWallet();
-      }
-
+      function addFunds(a) { setWalletEur(getWalletEur() + a); renderWallet(); }
       function resetAllData() {
         localStorage.removeItem(VS_WALLET_KEY);
         localStorage.removeItem(VS_COLLECTION_KEY);
         localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
         renderWallet();
         setStatus("Données locales reset ✅", "ok");
+        renderStats();
+        renderOwnedBadges();
       }
 
       /********************
-       * COLLECTION (A)
+       * COLLECTION
        ********************/
       function getCollection() {
         try { return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
         catch { return []; }
       }
-
-      function setCollection(arr) {
-        localStorage.setItem(VS_COLLECTION_KEY, JSON.stringify(arr));
-      }
+      function setCollection(arr) { localStorage.setItem(VS_COLLECTION_KEY, JSON.stringify(arr)); }
 
       function nextLocalTokenId() {
         const raw = localStorage.getItem(VS_TOKEN_COUNTER_KEY);
@@ -964,6 +985,63 @@
       }
 
       /********************
+       * STATS
+       ********************/
+      const RARITY_ORDER = ["COMMON", "RARE", "ULTRA", "LEGENDARY"];
+      function rarityToLabel(num) { return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common"; }
+      function rarityKeyFromNum(num) { return (num===0)?"COMMON":(num===1)?"RARE":(num===2)?"ULTRA":(num===3)?"LEGENDARY":"COMMON"; }
+
+      function bestRarityKeyFromCollection(arr) {
+        let best = "COMMON";
+        for (const c of arr) {
+          if (RARITY_ORDER.indexOf(c.rarityKey) > RARITY_ORDER.indexOf(best)) best = c.rarityKey;
+        }
+        return best;
+      }
+
+      function renderStats() {
+        const arr = getCollection();
+        const opened = arr.length;
+        const spent = opened * PACK_PRICE_EUR;
+
+        const best = opened ? bestRarityKeyFromCollection(arr) : null;
+        const last = opened ? arr[0] : null;
+
+        document.getElementById("stat-opened").textContent = String(opened);
+        document.getElementById("stat-spent").textContent = spent.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
+        document.getElementById("stat-best").textContent = best ? (best[0] + best.slice(1).toLowerCase()) : "—";
+
+        if (last) {
+          document.getElementById("stat-last").textContent = "#" + last.tokenId;
+          document.getElementById("stat-last-sub").textContent = last.rarityLabel;
+        } else {
+          document.getElementById("stat-last").textContent = "—";
+          document.getElementById("stat-last-sub").textContent = "—";
+        }
+      }
+
+      /********************
+       * OWNED BADGES
+       ********************/
+      function countOwnedByCardType(arr) {
+        const map = {};
+        for (const c of arr) {
+          const k = String(c.cardTypeIndex);
+          map[k] = (map[k] || 0) + 1;
+        }
+        return map;
+      }
+
+      function renderOwnedBadges() {
+        const arr = getCollection();
+        const owned = countOwnedByCardType(arr);
+        document.querySelectorAll("[data-owned-for]").forEach((el) => {
+          const ct = el.getAttribute("data-owned-for");
+          el.textContent = "x" + (owned[ct] || 0);
+        });
+      }
+
+      /********************
        * CARDS / RNG
        ********************/
       const CARD_IMAGE_BY_INDEX = {
@@ -977,31 +1055,15 @@
         7: "images/ivysaur_ultra.png",
         8: "images/venusaur_ultra.png",
         9: "images/bulbasaur_legendary.png",
-        10: "images/ivysaur_legendary.png",
-        11: "images/venusaur_legendary.png",
-        12: "images/plant_legendary.png",
+        10:"images/ivysaur_legendary.png",
+        11:"images/venusaur_legendary.png",
+        12:"images/plant_legendary.png",
       };
 
-      const CARD_RARITY_BY_INDEX = {
-        0: 0, 1: 0, 2: 0,
-        3: 1, 4: 1, 5: 1,
-        6: 2, 7: 2, 8: 2,
-        9: 3, 10: 3, 11: 3, 12: 3,
-      };
+      const CARD_RARITY_BY_INDEX = { 0:0,1:0,2:0, 3:1,4:1,5:1, 6:2,7:2,8:2, 9:3,10:3,11:3,12:3 };
+      const CARD_WEIGHT_BY_INDEX = { 0:7000,1:7000,2:7000, 3:2000,4:2000,5:2000, 6:900,7:900,8:900, 9:100,10:100,11:100,12:100 };
 
-      const CARD_WEIGHT_BY_INDEX = {
-        0: 7000, 1: 7000, 2: 7000,
-        3: 2000, 4: 2000, 5: 2000,
-        6: 900, 7: 900, 8: 900,
-        9: 100, 10: 100, 11: 100, 12: 100,
-      };
-
-      const RARITY_LABEL_CLASS = {
-        COMMON: "rarity-common",
-        RARE: "rarity-rare",
-        ULTRA: "rarity-ultra",
-        LEGENDARY: "rarity-legendary",
-      };
+      const RARITY_LABEL_CLASS = { COMMON:"rarity-common", RARE:"rarity-rare", ULTRA:"rarity-ultra", LEGENDARY:"rarity-legendary" };
 
       function pickWeightedCardIndex() {
         let total = 0;
@@ -1015,32 +1077,17 @@
         return 0;
       }
 
-      function rarityToLabel(num) {
-        return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common";
-      }
-      function rarityKeyFromNum(num) {
-        return (num===0)?"COMMON":(num===1)?"RARE":(num===2)?"ULTRA":(num===3)?"LEGENDARY":"COMMON";
-      }
-
       /********************
-       * UI State machine (C)
+       * UI Flow (C++) + Suspense reveal
        ********************/
-      const UI_STATE = {
-        IDLE: "idle",
-        PAYMENT: "payment",
-        OPENING: "opening",
-        REVEALING: "revealing",
-        ADDING: "adding",
-        DONE: "done",
-      };
+      const UI_STATE = { IDLE:"idle", PAYMENT:"payment", OPENING:"opening", SUSPENSE:"suspense", REVEAL:"reveal", ADDING:"adding" };
       let uiState = UI_STATE.IDLE;
 
       let sfxBooster = null, sfxReveal = null, sfxLegendary = null;
       let skipRequested = false;
 
-      function playSound(el) {
-        if (!el) return;
-        try { el.currentTime = 0; el.play().catch(() => {}); } catch (_) {}
+      function isBusy() {
+        return uiState !== UI_STATE.IDLE;
       }
 
       function sleep(ms) {
@@ -1064,9 +1111,13 @@
         else b.classList.add("hidden");
       }
 
+      function playSound(el) {
+        if (!el) return;
+        try { el.currentTime = 0; el.play().catch(() => {}); } catch (_) {}
+      }
+
       function setBoosterMode(modeClass) {
         const booster = document.getElementById("booster-closed");
-        if (!booster) return;
         booster.classList.remove("booster-mode-idle","booster-mode-opening","booster-mode-split","booster-mode-hidden");
         if (modeClass) booster.classList.add(modeClass);
       }
@@ -1075,8 +1126,11 @@
         const booster = document.getElementById("booster-closed");
         const opened = document.getElementById("card-opened");
         const frame = document.getElementById("card-frame");
-        if (booster) { booster.classList.add("hidden"); setBoosterMode("booster-mode-hidden"); }
-        if (opened) opened.classList.remove("hidden");
+
+        booster.classList.add("hidden");
+        setBoosterMode("booster-mode-hidden");
+        opened.classList.remove("hidden");
+
         frame.classList.remove("state-closed");
         frame.classList.add("state-opened");
       }
@@ -1085,12 +1139,18 @@
         const booster = document.getElementById("booster-closed");
         const opened = document.getElementById("card-opened");
         const frame = document.getElementById("card-frame");
+        const mask = document.getElementById("reveal-mask");
+        const img = document.getElementById("card-image");
+        const imgwrap = document.getElementById("imgwrap");
 
-        if (opened) {
-          opened.classList.add("hidden");
-          opened.classList.remove("transfer-to-collection","ultra-flare","legendary-burst");
-        }
-        if (booster) { booster.classList.remove("hidden"); setBoosterMode("booster-mode-idle"); }
+        opened.classList.add("hidden");
+        opened.classList.remove("transfer-to-collection");
+        mask.classList.remove("on");
+        img.classList.remove("blurred");
+        imgwrap.classList.remove("flip");
+
+        booster.classList.remove("hidden");
+        setBoosterMode("booster-mode-idle");
 
         frame.classList.remove("state-opened","opening","revealed");
         frame.classList.add("state-closed");
@@ -1107,22 +1167,63 @@
         setTimeout(() => fx.className = "fx-overlay", 800);
       }
 
-      function renderCard(tokenId, rarityNum, cardTypeIndex) {
-        const rarityKey = rarityKeyFromNum(rarityNum);
-        const imgSrc = CARD_IMAGE_BY_INDEX[cardTypeIndex] ?? CARD_IMAGE_BY_INDEX[0];
+      function highlightCollectionLink() {
+        const link = document.getElementById("collection-link");
+        const top = document.getElementById("collection-toplink");
+        link.classList.add("targetGlow");
+        top.classList.add("targetGlow");
+        setTimeout(() => { link.classList.remove("targetGlow"); top.classList.remove("targetGlow"); }, 1200);
+      }
+
+      async function animateToCollection() {
+        uiState = UI_STATE.ADDING;
+        setStatus("Ajout à la collection…", "pending");
+        highlightCollectionLink();
+
+        const opened = document.getElementById("card-opened");
+        opened.classList.add("transfer-to-collection");
+        await sleep(900);
+        resetToBoosterClosed();
+      }
+
+      async function suspenseReveal(imgSrc) {
+        uiState = UI_STATE.SUSPENSE;
 
         showOpenedCardLayout();
 
-        const frame = document.getElementById("card-frame");
-        const imgEl = document.getElementById("card-image");
-        const rarityLabel = document.getElementById("rarity-label");
-        const tokenIdLabel = document.getElementById("token-id-label");
+        const mask = document.getElementById("reveal-mask");
+        const img = document.getElementById("card-image");
+        const imgwrap = document.getElementById("imgwrap");
 
-        imgEl.src = imgSrc;
+        // Start with blurred placeholder (use chosen image but blurred)
+        img.src = imgSrc;
+        img.classList.add("blurred");
+        mask.classList.add("on");
+
+        setStatus("Suspense…", "pending");
+        await sleep(700);
+
+        // Flip moment
+        uiState = UI_STATE.REVEAL;
+        imgwrap.classList.add("flip");
+        await sleep(220);
+
+        // Reveal clean
+        mask.classList.remove("on");
+        img.classList.remove("blurred");
+        await sleep(140);
+
+        imgwrap.classList.remove("flip");
+      }
+
+      function setCardFooter(tokenId, rarityNum, rarityKey) {
+        const frame = document.getElementById("card-frame");
+        const tokenIdLabel = document.getElementById("token-id-label");
+        const rarityLabel = document.getElementById("rarity-label");
+
         tokenIdLabel.textContent = "#" + tokenId;
 
         frame.setAttribute("data-rarity", rarityKey);
-        frame.classList.remove("opening");
         frame.classList.add("revealed");
         setTimeout(() => frame.classList.remove("revealed"), 400);
 
@@ -1130,44 +1231,11 @@
         rarityLabel.className = "card-footer-right";
         const cls = RARITY_LABEL_CLASS[rarityKey];
         if (cls) rarityLabel.classList.add(cls);
-
-        playSound(sfxReveal);
-        if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
-
-        triggerFX(rarityKey);
-
-        return { rarityKey, imgSrc };
       }
 
-      function highlightCollectionLink() {
-        const link = document.getElementById("collection-link");
-        const top = document.getElementById("collection-toplink");
-        link?.classList.add("targetGlow");
-        top?.classList.add("targetGlow");
-        setTimeout(() => { link?.classList.remove("targetGlow"); top?.classList.remove("targetGlow"); }, 1200);
-      }
+      async function openPackV8() {
+        if (isBusy()) return;
 
-      async function animateToCollection() {
-        const opened = document.getElementById("card-opened");
-        if (!opened) return;
-        uiState = UI_STATE.ADDING;
-
-        setStatus("Ajout à la collection…", "pending");
-        highlightCollectionLink();
-
-        opened.classList.remove("ultra-flare","legendary-burst");
-        opened.classList.add("transfer-to-collection");
-
-        // let the animation play (or skip)
-        await sleep(900);
-
-        resetToBoosterClosed();
-      }
-
-      async function openPackPremium() {
-        if (uiState !== UI_STATE.IDLE && uiState !== UI_STATE.DONE) return;
-
-        // funds
         if (getWalletEur() < PACK_PRICE_EUR) {
           setStatus("Solde insuffisant (démo). Survole le wallet pour recharger.", "error");
           renderWallet();
@@ -1177,12 +1245,11 @@
         skipRequested = false;
         setSkipVisible(true);
 
-        // Step 1: payment
+        // payment
         uiState = UI_STATE.PAYMENT;
         setStatus("Paiement… (démo)", "pending");
         await sleep(450);
 
-        // debit
         if (!debitPackPrice()) {
           setStatus("Solde insuffisant (démo).", "error");
           setSkipVisible(false);
@@ -1190,89 +1257,82 @@
           return;
         }
 
-        // Step 2: opening animation
+        // opening
         uiState = UI_STATE.OPENING;
         const frame = document.getElementById("card-frame");
-        const booster = document.getElementById("booster-closed");
-        frame.classList.remove("state-opened","revealed");
-        frame.classList.add("state-closed","opening");
-        booster.classList.remove("hidden");
+        frame.classList.add("opening");
         setBoosterMode("booster-mode-split");
-
         setStatus("Ouverture du pack…", "pending");
         playSound(sfxBooster);
         await sleep(950);
 
-        // Step 3: reveal
-        uiState = UI_STATE.REVEALING;
-        setStatus("Révélation…", "pending");
-        await sleep(300);
+        frame.classList.remove("opening");
 
+        // pick card
         const cardTypeIndex = pickWeightedCardIndex();
         const rarityNum = CARD_RARITY_BY_INDEX[cardTypeIndex] ?? 0;
+        const rarityKey = rarityKeyFromNum(rarityNum);
         const tokenId = nextLocalTokenId();
+        const imgSrc = CARD_IMAGE_BY_INDEX[cardTypeIndex] ?? CARD_IMAGE_BY_INDEX[0];
 
-        // save to collection
-        const img = CARD_IMAGE_BY_INDEX[cardTypeIndex] ?? CARD_IMAGE_BY_INDEX[0];
+        // suspense reveal
+        await suspenseReveal(imgSrc);
+
+        // footer + sounds + fx
+        setCardFooter(tokenId, rarityNum, rarityKey);
+
+        playSound(sfxReveal);
+        if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
+        triggerFX(rarityKey);
+
+        // save collection
         pushToCollection({
           tokenId,
           ts: Date.now(),
           priceEur: PACK_PRICE_EUR,
           rarity: rarityNum,
           rarityLabel: rarityToLabel(rarityNum),
-          rarityKey: rarityKeyFromNum(rarityNum),
+          rarityKey,
           cardTypeIndex,
-          img,
+          img: imgSrc,
         });
 
-        const { rarityKey } = renderCard(tokenId, rarityNum, cardTypeIndex);
-
+        // update UI info
         const mintInfo = document.getElementById("mint-info");
-        if (mintInfo) {
-          mintInfo.textContent =
-            `Carte ajoutée à ta collection locale — tokenId ${tokenId} • ${rarityToLabel(rarityNum)} • cardTypeIndex ${cardTypeIndex}`;
-        }
+        mintInfo.textContent =
+          `Carte ajoutée à ta collection locale — tokenId ${tokenId} • ${rarityToLabel(rarityNum)} • cardTypeIndex ${cardTypeIndex}`;
 
-        // rarity extra micro-step
+        // update stats + owned now (before fly)
+        renderStats();
+        renderOwnedBadges();
+
         if (!skipRequested) {
-          if (rarityKey === "LEGENDARY") {
-            setStatus("✨ Legendary ! Ajout à la collection…", "pending");
-            await sleep(650);
-          } else if (rarityKey === "ULTRA") {
-            setStatus("💜 Ultra ! Ajout à la collection…", "pending");
-            await sleep(520);
-          } else {
-            await sleep(380);
-          }
+          if (rarityKey === "LEGENDARY") { setStatus("✨ Legendary ! Ajout à la collection…", "pending"); await sleep(650); }
+          else if (rarityKey === "ULTRA") { setStatus("💜 Ultra ! Ajout à la collection…", "pending"); await sleep(520); }
+          else { await sleep(380); }
         }
 
-        // Step 4: add to collection (fly)
+        // fly to collection
         await animateToCollection();
 
-        // Done
-        uiState = UI_STATE.DONE;
+        // done
+        uiState = UI_STATE.IDLE;
         setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
         setSkipVisible(false);
         renderWallet();
       }
 
       /********************
-       * Loot preview modal (center screen)
+       * Loot modal
        ********************/
       function openLootModal({ img, name, rarity }) {
+        document.getElementById("loot-modal-img").src = img;
+        document.getElementById("loot-modal-name").textContent = name || "—";
+        document.getElementById("loot-modal-tag").textContent = rarity || "—";
         const modal = document.getElementById("loot-modal");
-        const imgEl = document.getElementById("loot-modal-img");
-        const nameEl = document.getElementById("loot-modal-name");
-        const tagEl = document.getElementById("loot-modal-tag");
-
-        imgEl.src = img;
-        nameEl.textContent = name || "—";
-        tagEl.textContent = rarity || "—";
-
         modal.classList.add("on");
         modal.setAttribute("aria-hidden", "false");
       }
-
       function closeLootModal() {
         const modal = document.getElementById("loot-modal");
         modal.classList.remove("on");
@@ -1280,7 +1340,7 @@
       }
 
       /********************
-       * DOM init
+       * Init
        ********************/
       document.addEventListener("DOMContentLoaded", () => {
         sfxBooster = document.getElementById("sfx-booster");
@@ -1289,18 +1349,17 @@
 
         setBoosterMode("booster-mode-idle");
         renderWallet();
+        renderStats();
+        renderOwnedBadges();
 
-        const openBtn = document.getElementById("open-pack-btn");
-        openBtn.addEventListener("click", openPackPremium);
-
-        const skipBtn = document.getElementById("skip-btn");
-        skipBtn.addEventListener("click", () => {
+        document.getElementById("open-pack-btn").addEventListener("click", openPackV8);
+        document.getElementById("skip-btn").addEventListener("click", () => {
           skipRequested = true;
           setStatus("Skip…", "pending");
           setTimeout(() => { skipRequested = false; }, 60);
         });
 
-        // wallet actions
+        // wallet
         const topupBtn = document.getElementById("topup-btn");
         const topupInput = document.getElementById("topup-amount");
         const topupMaxBtn = document.getElementById("topup-max-btn");
@@ -1313,49 +1372,30 @@
           topupInput.value = "";
           setStatus("Recharge effectuée ✅", "ok");
         });
-
         topupMaxBtn.addEventListener("click", () => {
           setWalletEur(DEFAULT_WALLET_EUR);
           renderWallet();
           setStatus("Wallet reset à 50 000€ ✅", "ok");
         });
-
         resetAllBtn.addEventListener("click", resetAllData);
+        topupInput.addEventListener("keydown", (e) => { if (e.key === "Enter") topupBtn.click(); });
 
-        topupInput.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") topupBtn.click();
-        });
-
-        // loot modal events: hover/click open
-        const dropGrid = document.getElementById("drop-grid");
-        dropGrid.querySelectorAll(".drop-item").forEach((el) => {
+        // loot modal: hover + click
+        document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
           const rarity = el.getAttribute("data-rarity");
 
-          // ✅ open on hover (desktop) — debounced feel
           let t = null;
-          el.addEventListener("mouseenter", () => {
-            t = setTimeout(() => openLootModal({ img, name, rarity }), 120);
-          });
-          el.addEventListener("mouseleave", () => {
-            if (t) clearTimeout(t);
-            // On laisse ouvert si l’utilisateur veut lire; sinon on ferme au leave
-            closeLootModal();
-          });
-
-          // ✅ open on click (mobile-friendly)
+          el.addEventListener("mouseenter", () => { t = setTimeout(() => openLootModal({ img, name, rarity }), 120); });
+          el.addEventListener("mouseleave", () => { if (t) clearTimeout(t); closeLootModal(); });
           el.addEventListener("click", () => openLootModal({ img, name, rarity }));
         });
 
         // close modal
         document.getElementById("loot-modal-close").addEventListener("click", closeLootModal);
-        document.getElementById("loot-modal").addEventListener("click", (e) => {
-          if (e.target.id === "loot-modal") closeLootModal();
-        });
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") closeLootModal();
-        });
+        document.getElementById("loot-modal").addEventListener("click", (e) => { if (e.target.id === "loot-modal") closeLootModal(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLootModal(); });
       });
     </script>
   </body>
