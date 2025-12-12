@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Collection (V9)</title>
+    <title>VaultSpin – Collection (V10)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <style>
@@ -191,25 +191,23 @@
         color:#9ca3af;
       }
 
-      /* Grid */
+      /* ✅ V10 : LISTE VERTICALE (au lieu de grid horizontal) */
       .grid{
-        display:grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap:14px;
+        display:flex;
+        flex-direction:column;
+        gap:12px;
       }
-      @media (max-width: 1100px){ .grid{ grid-template-columns: repeat(5, 1fr); } }
-      @media (max-width: 930px){ .grid{ grid-template-columns: repeat(4, 1fr); } }
-      @media (max-width: 740px){ .grid{ grid-template-columns: repeat(3, 1fr); } }
-      @media (max-width: 520px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
 
+      /* ✅ Cards en “row” */
       .card{
         border-radius:20px;
         border:1px solid rgba(148,163,184,.18);
         background: rgba(15,23,42,.28);
         padding:10px;
         display:flex;
-        flex-direction:column;
-        gap:10px;
+        flex-direction:row;
+        gap:12px;
+        align-items:stretch;
         transition: transform .15s ease-out, box-shadow .15s ease-out, border-color .15s ease-out;
         cursor:default;
         user-select:none;
@@ -220,9 +218,11 @@
         box-shadow: 0 0 16px rgba(129,140,248,.18);
       }
 
+      /* ✅ Thumb fixe */
       .thumb{
-        width:100%;
-        aspect-ratio: 3/4;
+        width:92px;
+        flex:0 0 auto;
+        aspect-ratio: 3 / 4;
         border-radius:16px;
         overflow:hidden;
         border:1px solid rgba(148,163,184,.18);
@@ -230,11 +230,14 @@
       }
       .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
 
+      /* ✅ Meta prend la place */
       .meta{
+        flex:1;
         display:flex;
         justify-content:space-between;
         align-items:flex-start;
-        gap:8px;
+        gap:10px;
+        min-width:0;
       }
 
       .name{
@@ -249,7 +252,7 @@
       .ct{
         font-size:11px;
         color:#9ca3af;
-        margin-top:4px;
+        margin-top:6px;
         white-space:nowrap;
         overflow:hidden;
         text-overflow:ellipsis;
@@ -258,7 +261,7 @@
       .badges{
         display:flex;
         flex-direction:column;
-        gap:6px;
+        gap:8px;
         align-items:flex-end;
         flex:0 0 auto;
       }
@@ -391,6 +394,13 @@
       .chip strong{ color:#f9fafb; }
       .chip a{ color:#a5b4fc; text-decoration: underline; }
       .chip a:hover{ color:#c4b5fd; }
+
+      /* ✅ Mobile : badges à droite mais mieux “stackés” */
+      @media (max-width: 520px){
+        .card{ gap:10px; }
+        .thumb{ width:84px; }
+        .ct{ white-space:normal; }
+      }
     </style>
   </head>
 
@@ -429,6 +439,8 @@
             <div class="sub">
               Vue “Stacks” : cartes groupées par <b>cardTypeIndex</b>. Clique sur le badge
               <b>Owned</b> pour filtrer. Le filtre est aussi supporté via <b>?ct=</b>.
+              <br/>
+              ✅ V10 : affichage <b>vertical</b> (liste) pour éviter les sorties d’écran.
             </div>
           </div>
 
@@ -469,7 +481,7 @@
         </div>
 
         <div class="hint" id="hint">
-          Astuce : clique sur une carte pour la voir en grand. Hover = preview.
+          Astuce : clique sur une carte pour la voir en grand.
         </div>
       </div>
 
@@ -485,7 +497,7 @@
 
     <script>
       /********************
-       * Compatible avec V9
+       * Compatible avec V9/V10
        ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
 
@@ -582,7 +594,7 @@
       /********************
        * Modal preview
        ********************/
-      function openModal({ img, name, rarity, extra }){
+      function openModal({ img, name, rarity }){
         document.getElementById("modal-img").src = img || "";
         document.getElementById("modal-name").textContent = name || "—";
         document.getElementById("modal-tag").textContent = rarity || "—";
@@ -678,7 +690,7 @@
           return;
         }
 
-        // Render stack cards
+        // Render stack cards (✅ vertical list rows)
         for (const s of stacks){
           const card = document.createElement("div");
           card.className = "card";
@@ -728,20 +740,6 @@
 
           card.appendChild(thumb);
           card.appendChild(meta);
-
-          // Hover = preview (clean)
-          let t = null;
-          card.addEventListener("mouseenter", () => {
-            t = setTimeout(() => openModal({
-              img: s.img,
-              name: s.name + " (ct " + s.cardTypeIndex + ")",
-              rarity: s.rarityLabel
-            }), 120);
-          });
-          card.addEventListener("mouseleave", () => {
-            if (t) clearTimeout(t);
-            closeModal();
-          });
 
           // Click = preview persistent
           card.addEventListener("click", () => {
