@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V11.2 – Roulette + Result focus)</title>
+    <title>VaultSpin – Booster Plante (V11.3 – Roulette + Result focus)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -165,20 +165,6 @@
       }
       .hist-line2{ font-size:11px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-      .hist-tools{ margin-left:auto; display:flex; gap:8px; align-items:center; }
-      .hist-open{
-        font-size:10px; letter-spacing:.14em; text-transform:uppercase;
-        border-radius:999px; padding:6px 10px;
-        border:1px solid rgba(148,163,184,.18);
-        background:rgba(15,23,42,.35);
-        color:#e5e7eb;
-        cursor:pointer;
-      }
-      .hist-open:hover{
-        border-color: rgba(165,180,252,.65);
-        box-shadow:0 0 10px rgba(129,140,248,.25);
-      }
-
       /* Right preview booster */
       .card-zone{
         width:100%; min-height:420px;
@@ -271,68 +257,61 @@
         box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
-      /* Loot preview modal */
-      .loot-modal{
-        position:fixed; inset:0;
-        display:none;
-        align-items:center; justify-content:center;
-        z-index:70;
-        background:rgba(0,0,0,.55);
-        backdrop-filter:blur(10px);
-      }
-      .loot-modal.on{ display:flex; }
-      .loot-modal-card{
-        width:min(420px, 92vw);
-        border-radius:24px;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(2,6,23,.86);
-        box-shadow:0 0 34px rgba(0,0,0,.5);
-        padding:14px;
-        position:relative;
-      }
-      .loot-modal-img{
-        width:100%;
+      /* ==============================
+         V11.3 – Hover preview float (NO BLINK)
+         ============================== */
+      .preview-float{
+        position:fixed;
+        top:50%;
+        right:28px;
+        transform:translateY(-50%);
+        width:280px;
         aspect-ratio:3/4;
         border-radius:18px;
         overflow:hidden;
+        background:rgba(2,6,23,.90);
         border:1px solid rgba(148,163,184,.22);
-        background:rgba(15,23,42,.45);
+        box-shadow:0 0 30px rgba(0,0,0,.6);
+        opacity:0;
+        pointer-events:none;
+        transition: opacity .12s ease;
+        z-index:120;
       }
-      .loot-modal-img img{ width:100%; height:100%; object-fit:cover; display:block; }
-      .loot-modal-meta{
-        display:flex; justify-content:space-between; gap:10px;
-        margin-top:10px; align-items:center;
+      .preview-float.on{ opacity:1; }
+      .preview-float img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+      .preview-float-meta{
+        position:absolute;
+        left:10px; right:10px; bottom:10px;
+        display:flex; justify-content:space-between; align-items:center; gap:10px;
       }
-      .loot-modal-name{
-        font-size:12px; letter-spacing:.12em; text-transform:uppercase;
-        color:#e5e7eb; font-weight:800;
+      .pf-name{
+        font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+        font-weight:900;
+        color:#e5e7eb;
+        padding:6px 10px;
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.16);
+        background:rgba(2,6,23,.45);
+        max-width:70%;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
       }
-      .loot-modal-tag{
+      .pf-tag{
         font-size:11px; letter-spacing:.14em; text-transform:uppercase;
         padding:6px 10px; border-radius:999px;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(15,23,42,.55);
+        border:1px solid rgba(148,163,184,.16);
+        background:rgba(2,6,23,.45);
+        font-weight:900;
       }
-      .loot-modal-close{
-        position:absolute; right:10px; top:10px;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(15,23,42,.55);
-        color:#e5e7eb;
-        border-radius:999px;
-        padding:8px 10px;
-        cursor:pointer;
-        font-size:12px;
-      }
-      .loot-modal-close:hover{
-        border-color: rgba(165,180,252,.7);
-        box-shadow:0 0 10px rgba(129,140,248,.25);
-      }
-
-      .collection-link{ font-size:12px; color:#a5b4fc; cursor:pointer; text-decoration:underline; width:fit-content; }
-      .collection-link:hover{ color:#c4b5fd; }
+      .pf-tag.common{ color:#facc15; }
+      .pf-tag.rare{ color:#38bdf8; }
+      .pf-tag.ultra{ color:#a855f7; }
+      .pf-tag.legendary{ color:#f97316; }
 
       /* ==============================
-         V11.2 – Opening overlay (spin)
+         V11.3 – Opening overlay (spin)
          ============================== */
       .open-overlay{
         position:fixed; inset:0;
@@ -439,14 +418,14 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      /* ✅ Cursor line only (no square) */
+      /* ✅ Cursor line only over IMAGE area */
       .reel-cursor-line{
         position:absolute;
         left:50%;
-        top:50%;
-        transform:translate(-50%,-50%);
+        top:18px;                 /* align with viewport padding */
+        transform:translateX(-50%);
         width:4px;
-        height:210px;
+        height:132px;            /* exactly the image height */
         border-radius:999px;
         background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
         box-shadow: 0 0 18px rgba(250,204,21,.55);
@@ -462,7 +441,6 @@
         will-change: transform;
         transform: translateX(0px);
       }
-      /* un peu plus lent + decel douce */
       .reel-track.spinning{
         transition: transform 7.1s cubic-bezier(0.08, 0.84, 0.12, 1);
       }
@@ -534,7 +512,7 @@
       }
 
       .result-card{
-        width:min(420px, 92vw);
+        width:min(460px, 92vw);
         border-radius:22px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.35);
@@ -587,8 +565,9 @@
       .result-pill.ultra{ color:#a855f7; }
       .result-pill.legendary{ color:#f97316; }
 
+      /* ✅ Right panel smaller + CTAs centered */
       .result-cta{
-        flex:1;
+        flex:0.72;
         border-radius:22px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.20);
@@ -596,21 +575,36 @@
         display:flex;
         flex-direction:column;
         gap:12px;
-        justify-content:space-between;
+        justify-content:center;
+        min-height: 520px;
       }
+      @media (max-width: 860px){
+        .result-cta{ min-height:auto; justify-content:flex-start; }
+      }
+
       .result-note{
         font-size:12px;
         color:#9ca3af;
         line-height:1.45;
+        text-align:center;
       }
       .result-btnrow{
         display:flex;
         gap:10px;
         flex-wrap:wrap;
         align-items:center;
+        justify-content:center;
+        margin-top:10px;
+      }
+      .result-foot{
+        margin-top:14px;
+        font-size:12px;
+        color:#9ca3af;
+        text-align:center;
+        opacity:.9;
       }
 
-      /* Fly to collection animation (when user clicks "Open another pack") */
+      /* Fly to collection animation */
       .fly-out{
         animation: flyToCollection .85s ease-in forwards;
         transform-origin:center;
@@ -674,17 +668,12 @@
   </head>
 
   <body>
-    <!-- Loot preview modal -->
-    <div class="loot-modal" id="loot-modal" aria-hidden="true">
-      <div class="loot-modal-card" role="dialog" aria-modal="true">
-        <button class="loot-modal-close" id="loot-modal-close">✕</button>
-        <div class="loot-modal-img">
-          <img id="loot-modal-img" src="" alt="Preview" />
-        </div>
-        <div class="loot-modal-meta">
-          <div class="loot-modal-name" id="loot-modal-name">—</div>
-          <div class="loot-modal-tag" id="loot-modal-tag">—</div>
-        </div>
+    <!-- Passive hover preview (NO blink) -->
+    <div class="preview-float" id="preview-float" aria-hidden="true">
+      <img id="preview-img" src="" alt="Preview" />
+      <div class="preview-float-meta">
+        <div class="pf-name" id="preview-name">—</div>
+        <div class="pf-tag common" id="preview-tag">COMMON</div>
       </div>
     </div>
 
@@ -696,7 +685,6 @@
             <div class="open-title">VAULTSPIN · OPENING</div>
             <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
           </div>
-          <!-- Close should be available when result is shown (not forced to chain) -->
           <button class="open-btn" id="open-close" disabled>Close</button>
         </div>
 
@@ -721,7 +709,7 @@
           </div>
         </div>
 
-        <!-- Result-only section (no reel visible) -->
+        <!-- Result-only section -->
         <div class="result-section" id="result-section">
           <div class="result-wrap">
             <div class="result-card" id="result-card">
@@ -747,10 +735,9 @@
                 <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
                   Ma collection
                 </a>
-                <button class="open-btn" id="result-close">Close</button>
               </div>
 
-              <div class="result-note" id="result-footnote">—</div>
+              <div class="result-foot" id="result-footnote">—</div>
             </div>
           </div>
         </div>
@@ -794,7 +781,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V11.2 : roulette type CS:GO + curseur ligne centrale + résultat sans roulette + animation d’envoi vers collection.
+            V11.3 : résultat clean (pas de ct affiché), CTA centrés, curseur sur image only, hover preview sans clignotement.
           </p>
         </div>
 
@@ -855,7 +842,6 @@
           <div class="caption" id="mint-info">
             En attente d’une ouverture… clique sur le bouton pour lancer l’animation.
           </div>
-          <a class="collection-link" href="collection.html" id="collection-link">→ Voir ma collection</a>
         </div>
       </div>
 
@@ -1084,8 +1070,7 @@
 
       function playTick(){
         const now = performance.now();
-        // throttle to avoid audio spam
-        if (now - lastTickAt < 55) return;
+        if (now - lastTickAt < 58) return; // slightly slower tick
         lastTickAt = now;
 
         const a = tickFlip ? tickA : tickB;
@@ -1180,42 +1165,11 @@
           main.appendChild(l1);
           main.appendChild(l2);
 
-          const tools = document.createElement("div");
-          tools.className = "hist-tools";
-
-          const previewBtn = document.createElement("button");
-          previewBtn.className = "hist-open";
-          previewBtn.textContent = "Preview";
-          previewBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            openLootModal({ img: c.img, name: c.name || "VaultSpin", rarity: c.rarityKey });
-          });
-
-          tools.appendChild(previewBtn);
-
           row.appendChild(dot);
           row.appendChild(main);
-          row.appendChild(tools);
 
           list.appendChild(row);
         }
-      }
-
-      /********************
-       * Loot preview modal
-       ********************/
-      function openLootModal({ img, name, rarity }){
-        const modal = document.getElementById("loot-modal");
-        document.getElementById("loot-modal-img").src = img;
-        document.getElementById("loot-modal-name").textContent = name || "—";
-        document.getElementById("loot-modal-tag").textContent = rarity || "—";
-        modal.classList.add("on");
-        modal.setAttribute("aria-hidden", "false");
-      }
-      function closeLootModal(){
-        const modal = document.getElementById("loot-modal");
-        modal.classList.remove("on");
-        modal.setAttribute("aria-hidden", "true");
       }
 
       /********************
@@ -1245,24 +1199,22 @@
       function showResult(){
         document.getElementById("reel-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("on");
-        document.getElementById("open-close").disabled = false;   // ✅ user can exit
+        document.getElementById("open-close").disabled = false;
       }
 
       /********************
-       * V11.2 – Reel logic (weighted winner)
+       * Reel logic
        ********************/
       const REEL_TOTAL_ITEMS = 60;
       let spinning = false;
       let stopIndex = 0;
-      let currentOpen = null; // {winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts}
+      let currentOpen = null;
       let rafId = null;
       let lastIndexUnderCursor = -1;
 
       function buildReelItems(winningCt){
         const arr = [];
         for (let i=0;i<REEL_TOTAL_ITEMS;i++) arr.push(pickWeightedCardIndex());
-
-        // force winner near end
         stopIndex = Math.max(20, REEL_TOTAL_ITEMS - 10);
         arr[stopIndex] = winningCt;
         return arr;
@@ -1292,10 +1244,10 @@
           el.setAttribute("data-i", String(i));
           el.innerHTML = `
             <div class="reel-thumb">
-              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card #"+ct))}"/>
+              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}"/>
             </div>
             <div class="reel-meta">
-              <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card #"+ct))}</div>
+              <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}</div>
               <div class="reel-tag ${rk.toLowerCase()}">${rk}</div>
             </div>
           `;
@@ -1315,7 +1267,6 @@
       function getTranslateX(el){
         const tr = getComputedStyle(el).transform;
         if (!tr || tr === "none") return 0;
-        // matrix(a,b,c,d,tx,ty)
         const m = tr.match(/matrix\(([^)]+)\)/);
         if (!m) return 0;
         const parts = m[1].split(",").map(x => parseFloat(x.trim()));
@@ -1330,13 +1281,12 @@
 
         const loop = () => {
           if (!spinning) return;
-          const x = getTranslateX(track); // translateX (negative generally)
+          const x = getTranslateX(track);
           const step = getStepPx();
           const vw = viewport.getBoundingClientRect().width;
           const cursorX = vw / 2;
 
-          // offset traveled to the right
-          const offset = -x; // positive as it moves left
+          const offset = -x;
           const idx = Math.floor((offset + cursorX) / step);
 
           if (idx !== lastIndexUnderCursor){
@@ -1368,18 +1318,15 @@
         track.style.transform = "translateX(0px)";
         void track.offsetHeight;
 
-        // compute final translate so stopIndex lands under cursor line
         const step = getStepPx();
         const vw = viewport.getBoundingClientRect().width;
         const cursorX = vw / 2;
         const targetCenter = stopIndex * step + (step / 2);
         const targetTranslate = targetCenter - cursorX;
 
-        // small safe jitter
         const jitter = (Math.random()*6) - 3;
         const finalX = -(targetTranslate + jitter);
 
-        // Start tick loop + transition
         startTickLoop();
 
         track.classList.add("spinning");
@@ -1414,19 +1361,22 @@
       }
 
       function fillResultUI(){
-        const { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
+        const { rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
 
         document.getElementById("open-sub").textContent = `✅ Tu as obtenu : ${name} · ${rarityToLabel(rarityNum)}`;
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
-        document.getElementById("result-desc").textContent = `cardTypeIndex: ${winningCt} · ${rarityToLabel(rarityNum)} · ${formatDate(ts)}`;
+
+        // ✅ remove cardTypeIndex from UI
+        document.getElementById("result-desc").textContent = `${rarityToLabel(rarityNum)} · ${formatDate(ts)}`;
 
         const pill = document.getElementById("result-pill");
         pill.textContent = rarityKey;
         pill.className = "result-pill " + rarityKey.toLowerCase();
 
+        // ✅ remove cardTypeIndex from footnote
         document.getElementById("result-footnote").textContent =
-          `Ajoutée à ta collection : tokenId ${tokenId} • ${rarityToLabel(rarityNum)} • cardTypeIndex ${winningCt}`;
+          `Ajoutée à ta collection : tokenId ${tokenId} • ${rarityToLabel(rarityNum)}`;
       }
 
       function commitToCollection(){
@@ -1438,14 +1388,14 @@
           rarity: rarityNum,
           rarityLabel: rarityToLabel(rarityNum),
           rarityKey,
-          cardTypeIndex: winningCt,
+          cardTypeIndex: winningCt, // stored but not displayed
           img: imgSrc,
           name
         };
         pushToCollection(entry);
 
         document.getElementById("mint-info").textContent =
-          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel} • cardTypeIndex ${winningCt}`;
+          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel}`;
 
         renderStats();
         renderHistory();
@@ -1465,7 +1415,7 @@
         const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 0;
         const rarityKey = rarityKeyFromNum(rarityNum);
         const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[0];
-        const name = CARD_NAME_BY_INDEX[winningCt] || ("Card #" + winningCt);
+        const name = CARD_NAME_BY_INDEX[winningCt] || ("Card");
         const tokenId = nextLocalTokenId();
         const ts = Date.now();
 
@@ -1475,21 +1425,16 @@
         renderReel(reelItems);
 
         await sleep(70);
-
-        // spin + stop
         await spinToStop();
 
-        // sounds on stop
         playSound(sfxReveal);
         if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
 
-        // commit + show result (no reel visible anymore)
         commitToCollection();
         fillResultUI();
 
         uiState = UI_STATE.RESULT;
 
-        // enable chain button
         document.getElementById("open-another").disabled = false;
         showResult();
 
@@ -1498,13 +1443,11 @@
       }
 
       async function flyThenOpenAnother(){
-        // animate card towards "collection"
         const imgwrap = document.getElementById("result-imgwrap");
         imgwrap.classList.add("fly-out");
         await sleep(850);
         imgwrap.classList.remove("fly-out");
 
-        // start another opening immediately
         uiState = UI_STATE.IDLE;
         await openPackRoulette();
       }
@@ -1519,7 +1462,25 @@
         setStatus("Données reset ✅", "ok");
         renderStats();
         renderHistory();
-        closeLootModal();
+      }
+
+      /********************
+       * Hover preview float (NO blink)
+       ********************/
+      function setPreview({ img, name, rarity }){
+        const box = document.getElementById("preview-float");
+        document.getElementById("preview-img").src = img || "";
+        document.getElementById("preview-name").textContent = name || "—";
+        const tag = document.getElementById("preview-tag");
+        tag.textContent = rarity || "COMMON";
+        tag.className = "pf-tag " + String(rarity || "COMMON").toLowerCase();
+        box.classList.add("on");
+        box.setAttribute("aria-hidden","false");
+      }
+      function clearPreview(){
+        const box = document.getElementById("preview-float");
+        box.classList.remove("on");
+        box.setAttribute("aria-hidden","true");
       }
 
       /********************
@@ -1531,7 +1492,6 @@
         sfxLegendary = document.getElementById("sfx-legendary");
         sfxTickSrc = document.getElementById("sfx-tick");
 
-        // Create two tick channels for rapid replay
         try{
           const src = sfxTickSrc ? sfxTickSrc.getAttribute("src") : null;
           if (src){
@@ -1549,7 +1509,6 @@
 
         document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
 
-        // Overlay buttons
         document.getElementById("open-skip").addEventListener("click", () => {
           skipSpinNow();
         });
@@ -1562,19 +1521,13 @@
           await flyThenOpenAnother();
         });
 
-        // Close from result (not forced to chain)
+        // ✅ only top-right close remains
         document.getElementById("open-close").addEventListener("click", () => {
-          if (spinning) return; // safety
-          closeOverlay();
-          uiState = UI_STATE.IDLE;
-        });
-        document.getElementById("result-close").addEventListener("click", () => {
           if (spinning) return;
           closeOverlay();
           uiState = UI_STATE.IDLE;
         });
 
-        // ESC: close only if not spinning and overlay is in result
         document.addEventListener("keydown", (e) => {
           if (e.key !== "Escape") return;
           const overlay = document.getElementById("open-overlay");
@@ -1583,11 +1536,6 @@
             uiState = UI_STATE.IDLE;
           }
         });
-
-        // Loot modal close
-        document.getElementById("loot-modal-close").addEventListener("click", closeLootModal);
-        document.getElementById("loot-modal").addEventListener("click", (e) => { if (e.target.id === "loot-modal") closeLootModal(); });
-        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLootModal(); });
 
         // Reset data
         document.getElementById("reset-data").addEventListener("click", resetAllData);
@@ -1598,7 +1546,7 @@
           renderHistory();
         });
 
-        // Loot hover preview + click filter
+        // ✅ Hover preview float (NO modal => no blink)
         document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
@@ -1606,16 +1554,18 @@
           const ct = el.getAttribute("data-ct");
 
           let timer = null;
+
           el.addEventListener("mouseenter", () => {
-            timer = setTimeout(() => openLootModal({ img, name, rarity }), 110);
+            timer = setTimeout(() => setPreview({ img, name, rarity }), 90);
           });
           el.addEventListener("mouseleave", () => {
             if (timer) clearTimeout(timer);
-            closeLootModal();
+            clearPreview();
           });
 
           el.addEventListener("click", (e) => {
             e.preventDefault();
+            clearPreview();
             openCollectionFiltered(ct);
           });
         });
