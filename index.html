@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V11 – Roulette CS:GO)</title>
+    <title>VaultSpin – Booster Plante (V11.2 – Roulette + Result focus)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -72,7 +72,7 @@
 
       .caption{ font-size:12px; color:#9ca3af; line-height:1.4; }
 
-      /* ✅ Stats */
+      /* Stats */
       .stats{
         margin-top:4px;
         padding:12px;
@@ -96,10 +96,8 @@
       .stat .v{ margin-top:5px; font-size:16px; font-weight:850; color:#f9fafb; }
       .stat .s{ margin-top:2px; font-size:11px; color:#9ca3af; }
 
-      /* ✅ Best pull block */
-      .best-pull{
-        display:flex; align-items:center; gap:10px; margin-top:5px;
-      }
+      /* Best pull */
+      .best-pull{ display:flex; align-items:center; gap:10px; margin-top:5px; }
       .best-thumb{
         width:34px; height:34px; border-radius:10px; overflow:hidden;
         border:1px solid rgba(148,163,184,.20);
@@ -111,7 +109,7 @@
       .best-meta .line1{ font-size:12px; font-weight:800; color:#f9fafb; }
       .best-meta .line2{ font-size:11px; color:#9ca3af; }
 
-      /* ✅ Mini timeline */
+      /* History */
       .history{
         margin-top:6px;
         padding:12px;
@@ -146,13 +144,8 @@
         border:1px solid rgba(148,163,184,.14);
         background:rgba(15,23,42,.28);
         padding:8px 10px;
-        cursor:default;
       }
-      .hist-dot{
-        width:10px; height:10px; border-radius:999px; background:#facc15;
-        flex:0 0 auto;
-        box-shadow:0 0 14px rgba(250,204,21,.25);
-      }
+      .hist-dot{ width:10px; height:10px; border-radius:999px; background:#facc15; flex:0 0 auto; box-shadow:0 0 14px rgba(250,204,21,.25); }
       .hist-dot.rare{ background:#38bdf8; box-shadow:0 0 14px rgba(56,189,248,.25); }
       .hist-dot.ultra{ background:#a855f7; box-shadow:0 0 14px rgba(168,85,247,.25); }
       .hist-dot.legendary{ background:#f97316; box-shadow:0 0 16px rgba(249,115,22,.28); }
@@ -172,9 +165,7 @@
       }
       .hist-line2{ font-size:11px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-      .hist-tools{
-        margin-left:auto; display:flex; gap:8px; align-items:center;
-      }
+      .hist-tools{ margin-left:auto; display:flex; gap:8px; align-items:center; }
       .hist-open{
         font-size:10px; letter-spacing:.14em; text-transform:uppercase;
         border-radius:999px; padding:6px 10px;
@@ -185,10 +176,10 @@
       }
       .hist-open:hover{
         border-color: rgba(165,180,252,.65);
-        box-shadow: 0 0 10px rgba(129,140,248,.25);
+        box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
-      /* Right: card zone */
+      /* Right preview booster */
       .card-zone{
         width:100%; min-height:420px;
         border-radius:28px;
@@ -199,90 +190,19 @@
         position:relative;
         overflow:hidden;
       }
-
-      .fx-overlay{
-        position:absolute; inset:0;
-        pointer-events:none;
-        opacity:0;
-      }
-      .fx-overlay.on{ opacity:1; animation:fxFade 700ms ease-out forwards; }
-      @keyframes fxFade{ 0%{opacity:0;} 20%{opacity:1;} 100%{opacity:0;} }
-      .fx-overlay.common{ background:radial-gradient(circle at center,rgba(250,204,21,.14),transparent 55%); }
-      .fx-overlay.rare{ background:radial-gradient(circle at center,rgba(56,189,248,.14),transparent 55%); }
-      .fx-overlay.ultra{ background:radial-gradient(circle at center,rgba(168,85,247,.16),transparent 55%); }
-      .fx-overlay.legendary{ background:radial-gradient(circle at center,rgba(249,115,22,.18),transparent 55%); }
-
       .card-frame{
         position:relative;
         width:260px; height:380px;
         border-radius:24px;
         padding:2px;
-        transition:transform .25s ease-out, box-shadow .25s ease-out, background .2s ease-out;
-      }
-      .card-frame.state-closed{
         background:radial-gradient(circle at top,#22c55e,#064e3b 70%);
         box-shadow:0 0 36px rgba(34,197,94,.45);
       }
-
       .card-inner{
-        position:relative;
         width:100%; height:100%;
         border-radius:22px;
         overflow:hidden;
       }
-
-      .hidden{ display:none; }
-
-      /* Loot table */
-      .drop-table{
-        margin-top:10px;
-        padding:16px 18px 18px;
-        border-radius:24px;
-        border:1px solid rgba(148,163,184,.22);
-        background:radial-gradient(circle at top left,#020617,#020617 70%);
-        display:flex; flex-direction:column; gap:12px;
-      }
-      .drop-title{
-        font-size:11px; letter-spacing:.18em; text-transform:uppercase;
-        color:#9ca3af; text-align:center;
-      }
-
-      .drop-grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:14px; justify-items:center; }
-      @media (max-width: 1080px){ .drop-grid{ grid-template-columns: repeat(6, 1fr); } }
-      @media (max-width: 900px){ .drop-grid{ grid-template-columns: repeat(5, 1fr); } }
-      @media (max-width: 740px){ .drop-grid{ grid-template-columns: repeat(4, 1fr); } }
-
-      .drop-item{
-        width:92px;
-        display:flex; flex-direction:column; align-items:center; gap:6px;
-        text-align:center;
-        cursor:pointer;
-        user-select:none;
-      }
-      .drop-thumb{
-        width:78px; height:100px;
-        border-radius:14px;
-        overflow:hidden;
-        border:1px solid rgba(148,163,184,.22);
-        background:#020617;
-        transition:transform .16s ease-out, box-shadow .16s ease-out;
-      }
-      .drop-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-      .drop-name{
-        font-size:10px; letter-spacing:.10em; text-transform:uppercase;
-        color:#e5e7eb;
-      }
-      .drop-meta{ font-size:9px; color:#9ca3af; display:flex; flex-direction:column; gap:2px; }
-      .drop-tag{ letter-spacing:.14em; text-transform:uppercase; font-weight:700; }
-      .drop-tag.common{ color:#facc15; }
-      .drop-tag.rare{ color:#38bdf8; }
-      .drop-tag.ultra{ color:#a855f7; }
-      .drop-tag.legendary{ color:#f97316; }
-
-      .drop-item[data-rarity="COMMON"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(250,204,21,.35); }
-      .drop-item[data-rarity="RARE"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(56,189,248,.35); }
-      .drop-item[data-rarity="ULTRA"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 16px rgba(168,85,247,.38); }
-      .drop-item[data-rarity="LEGENDARY"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 18px rgba(249,115,22,.42); }
 
       /* Top bar */
       .top-bar{
@@ -295,11 +215,7 @@
         z-index:50;
       }
       .top-left,.top-right{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
-
-      .top-logo{
-        font-size:12px; letter-spacing:.22em; text-transform:uppercase;
-        color:#9ca3af;
-      }
+      .top-logo{ font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9ca3af; }
       .top-link{
         font-size:12px; padding:6px 10px;
         border-radius:999px;
@@ -310,7 +226,6 @@
       }
       .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
 
-      /* Wallet (∞) */
       .wallet-wrap{ position:relative; }
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
@@ -336,14 +251,12 @@
         box-shadow:0 0 24px rgba(0,0,0,.35);
       }
       .wallet-wrap:hover .wallet-pop{ display:block; }
-
       .wallet-pop h3{
         margin:0 0 8px 0;
         font-size:11px; letter-spacing:.18em; text-transform:uppercase;
         color:#cbd5e1;
       }
       .wallet-hint{ margin-top:8px; font-size:11px; color:#9ca3af; line-height:1.35; }
-
       .btn-mini{
         border-radius:999px;
         padding:9px 12px;
@@ -355,10 +268,10 @@
       }
       .btn-mini:hover{
         border-color: rgba(165,180,252,.7);
-        box-shadow: 0 0 10px rgba(129,140,248,.25);
+        box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
-      /* Center preview modal (hover-friendly) */
+      /* Loot preview modal */
       .loot-modal{
         position:fixed; inset:0;
         display:none;
@@ -368,7 +281,6 @@
         backdrop-filter:blur(10px);
       }
       .loot-modal.on{ display:flex; }
-
       .loot-modal-card{
         width:min(420px, 92vw);
         border-radius:24px;
@@ -377,10 +289,7 @@
         box-shadow:0 0 34px rgba(0,0,0,.5);
         padding:14px;
         position:relative;
-        animation:popIn 140ms ease-out;
       }
-      @keyframes popIn{ from{ transform:scale(.98); opacity:0; } to{ transform:scale(1); opacity:1; } }
-
       .loot-modal-img{
         width:100%;
         aspect-ratio:3/4;
@@ -390,7 +299,6 @@
         background:rgba(15,23,42,.45);
       }
       .loot-modal-img img{ width:100%; height:100%; object-fit:cover; display:block; }
-
       .loot-modal-meta{
         display:flex; justify-content:space-between; gap:10px;
         margin-top:10px; align-items:center;
@@ -417,16 +325,15 @@
       }
       .loot-modal-close:hover{
         border-color: rgba(165,180,252,.7);
-        box-shadow: 0 0 10px rgba(129,140,248,.25);
+        box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
-      /* small link glow */
       .collection-link{ font-size:12px; color:#a5b4fc; cursor:pointer; text-decoration:underline; width:fit-content; }
       .collection-link:hover{ color:#c4b5fd; }
 
-      /* =======================================
-         ✅ V11 – Roulette overlay + big result
-         ======================================= */
+      /* ==============================
+         V11.2 – Opening overlay (spin)
+         ============================== */
       .open-overlay{
         position:fixed; inset:0;
         display:none;
@@ -439,7 +346,7 @@
       .open-overlay.on{ display:flex; }
 
       .open-modal{
-        width:min(1040px, 96vw);
+        width:min(1060px, 96vw);
         border-radius:26px;
         border:1px solid rgba(148,163,184,.22);
         background:rgba(2,6,23,.90);
@@ -479,16 +386,25 @@
         color:#e5e7eb;
         cursor:pointer;
       }
-      .open-btn:disabled{ opacity:.45; cursor:default; }
       .open-btn.primary{
         border:none;
         background: radial-gradient(circle at top left, #a855f7, #4f46e5);
         box-shadow: 0 0 18px rgba(168,85,247,.30);
       }
+      .open-btn:disabled{ opacity:.45; cursor:default; }
 
-      .open-body{
-        position:relative;
+      .open-actions{
+        margin-top:12px;
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+        align-items:center;
       }
+      .open-actions-left{ font-size:12px; color:#9ca3af; }
+
+      /* Reel section */
+      .reel-section{ display:block; }
+      .reel-section.hidden{ display:none; }
 
       .reel-viewport{
         position:relative;
@@ -523,32 +439,20 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      .reel-cursor{
+      /* ✅ Cursor line only (no square) */
+      .reel-cursor-line{
         position:absolute;
         left:50%;
         top:50%;
         transform:translate(-50%,-50%);
-        width:188px;
-        height:176px;
-        border-radius:22px;
-        border:2px solid rgba(250,204,21,.95);
-        box-shadow: 0 0 36px rgba(250,204,21,.45);
-        z-index:4;              /* ✅ au-dessus des cartes */
-        pointer-events:none;
-      }
-
-      .reel-cursor::after{
-        content:"";
-        position:absolute;
-        left:50%;
-        top:-10px;
-        transform:translateX(-50%);
         width:4px;
-        height:calc(100% + 20px);
+        height:210px;
         border-radius:999px;
         background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
         box-shadow: 0 0 18px rgba(250,204,21,.55);
-        opacity:.95;
+        z-index:4;
+        pointer-events:none;
+        opacity:.98;
       }
 
       .reel-track{
@@ -558,10 +462,9 @@
         will-change: transform;
         transform: translateX(0px);
       }
-
+      /* un peu plus lent + decel douce */
       .reel-track.spinning{
-        /* ✅ un peu plus lent que V10 */
-        transition: transform 6.4s cubic-bezier(0.08, 0.82, 0.12, 1);
+        transition: transform 7.1s cubic-bezier(0.08, 0.84, 0.12, 1);
       }
 
       .reel-item{
@@ -573,7 +476,6 @@
         background:rgba(15,23,42,.28);
         flex:0 0 auto;
         position:relative;
-        transform: translateY(0px);
       }
       .reel-thumb{
         width:100%;
@@ -618,53 +520,25 @@
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
 
-      .reel-item.won{
-        border-color: rgba(250,204,21,.55);
-        box-shadow: 0 0 22px rgba(250,204,21,.22);
-        transform: translateY(-3px);
-        animation: wonPulse 700ms ease-in-out infinite alternate;
-      }
-      @keyframes wonPulse{
-        from{ box-shadow: 0 0 14px rgba(250,204,21,.22); }
-        to{ box-shadow: 0 0 30px rgba(250,204,21,.40); }
-      }
+      /* Result-only view (no reel visible) */
+      .result-section{ display:none; }
+      .result-section.on{ display:block; }
 
-      .open-actions{
-        margin-top:12px;
+      .result-wrap{
         display:flex;
-        justify-content:space-between;
-        gap:10px;
-        align-items:center;
-      }
-      .open-actions-left{
-        font-size:12px;
-        color:#9ca3af;
-      }
-
-      /* Result panel (big card) */
-      .result-panel{
-        display:none;
-        margin-top:14px;
-        border-radius:22px;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(2,6,23,.52);
-        padding:14px;
-        gap:14px;
+        gap:18px;
         align-items:stretch;
       }
-      .result-panel.on{
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-      }
       @media (max-width: 860px){
-        .result-panel.on{ grid-template-columns: 1fr; }
+        .result-wrap{ flex-direction:column; }
       }
 
       .result-card{
+        width:min(420px, 92vw);
         border-radius:22px;
-        border:1px solid rgba(148,163,184,.22);
-        background:rgba(15,23,42,.28);
-        padding:12px;
+        border:1px solid rgba(148,163,184,.20);
+        background:rgba(2,6,23,.35);
+        padding:14px;
       }
       .result-img{
         width:100%;
@@ -673,6 +547,7 @@
         overflow:hidden;
         border:1px solid rgba(148,163,184,.22);
         background:#020617;
+        position:relative;
       }
       .result-img img{ width:100%; height:100%; object-fit:cover; display:block; }
 
@@ -713,20 +588,88 @@
       .result-pill.legendary{ color:#f97316; }
 
       .result-cta{
+        flex:1;
+        border-radius:22px;
+        border:1px solid rgba(148,163,184,.20);
+        background:rgba(2,6,23,.20);
+        padding:14px;
         display:flex;
         flex-direction:column;
-        gap:10px;
+        gap:12px;
+        justify-content:space-between;
       }
-      .result-cta .note{
+      .result-note{
         font-size:12px;
         color:#9ca3af;
-        line-height:1.4;
+        line-height:1.45;
       }
-      .result-cta .btn-row2{
+      .result-btnrow{
         display:flex;
         gap:10px;
         flex-wrap:wrap;
+        align-items:center;
       }
+
+      /* Fly to collection animation (when user clicks "Open another pack") */
+      .fly-out{
+        animation: flyToCollection .85s ease-in forwards;
+        transform-origin:center;
+      }
+      @keyframes flyToCollection{
+        0%{ transform:translate(0,0) scale(1); opacity:1; }
+        60%{ transform:translate(120px,-90px) scale(.92); opacity:.95; }
+        100%{ transform:translate(210px,-160px) scale(.72); opacity:0; }
+      }
+
+      /* Loot table */
+      .drop-table{
+        margin-top:10px;
+        padding:16px 18px 18px;
+        border-radius:24px;
+        border:1px solid rgba(148,163,184,.22);
+        background:radial-gradient(circle at top left,#020617,#020617 70%);
+        display:flex; flex-direction:column; gap:12px;
+      }
+      .drop-title{
+        font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+        color:#9ca3af; text-align:center;
+      }
+      .drop-grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:14px; justify-items:center; }
+      @media (max-width: 1080px){ .drop-grid{ grid-template-columns: repeat(6, 1fr); } }
+      @media (max-width: 900px){ .drop-grid{ grid-template-columns: repeat(5, 1fr); } }
+      @media (max-width: 740px){ .drop-grid{ grid-template-columns: repeat(4, 1fr); } }
+
+      .drop-item{
+        width:92px;
+        display:flex; flex-direction:column; align-items:center; gap:6px;
+        text-align:center;
+        cursor:pointer;
+        user-select:none;
+      }
+      .drop-thumb{
+        width:78px; height:100px;
+        border-radius:14px;
+        overflow:hidden;
+        border:1px solid rgba(148,163,184,.22);
+        background:#020617;
+        transition:transform .16s ease-out, box-shadow .16s ease-out;
+      }
+      .drop-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+      .drop-name{
+        font-size:10px; letter-spacing:.10em; text-transform:uppercase;
+        color:#e5e7eb;
+      }
+      .drop-meta{ font-size:9px; color:#9ca3af; display:flex; flex-direction:column; gap:2px; }
+      .drop-tag{ letter-spacing:.14em; text-transform:uppercase; font-weight:700; }
+      .drop-tag.common{ color:#facc15; }
+      .drop-tag.rare{ color:#38bdf8; }
+      .drop-tag.ultra{ color:#a855f7; }
+      .drop-tag.legendary{ color:#f97316; }
+
+      .drop-item[data-rarity="COMMON"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(250,204,21,.35); }
+      .drop-item[data-rarity="RARE"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(56,189,248,.35); }
+      .drop-item[data-rarity="ULTRA"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 16px rgba(168,85,247,.38); }
+      .drop-item[data-rarity="LEGENDARY"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 18px rgba(249,115,22,.42); }
     </style>
   </head>
 
@@ -745,7 +688,7 @@
       </div>
     </div>
 
-    <!-- ✅ V11 Opening overlay (roulette + result) -->
+    <!-- Opening overlay -->
     <div class="open-overlay" id="open-overlay" aria-hidden="true">
       <div class="open-modal" role="dialog" aria-modal="true">
         <div class="open-top">
@@ -753,16 +696,18 @@
             <div class="open-title">VAULTSPIN · OPENING</div>
             <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
           </div>
+          <!-- Close should be available when result is shown (not forced to chain) -->
           <button class="open-btn" id="open-close" disabled>Close</button>
         </div>
 
-        <div class="open-body">
+        <!-- Reel section -->
+        <div class="reel-section" id="reel-section">
           <div class="reel-viewport" id="reel-viewport">
             <div class="reel-fade-left"></div>
             <div class="reel-fade-right"></div>
 
             <div class="reel-strip">
-              <div class="reel-cursor"></div>
+              <div class="reel-cursor-line"></div>
               <div class="reel-track" id="reel-track"></div>
             </div>
           </div>
@@ -774,11 +719,13 @@
               <button class="open-btn primary" id="open-another" disabled>Open another pack</button>
             </div>
           </div>
+        </div>
 
-          <!-- Big result -->
-          <div class="result-panel" id="result-panel">
-            <div class="result-card">
-              <div class="result-img">
+        <!-- Result-only section (no reel visible) -->
+        <div class="result-section" id="result-section">
+          <div class="result-wrap">
+            <div class="result-card" id="result-card">
+              <div class="result-img" id="result-imgwrap">
                 <img id="result-img" src="" alt="Result" />
               </div>
               <div class="result-meta">
@@ -791,16 +738,19 @@
             </div>
 
             <div class="result-cta">
-              <div class="note">
-                Ta carte est ajoutée à ta collection (démo localStorage). Tu peux maintenant en ouvrir une autre ou aller dans la collection.
+              <div class="result-note" id="result-note">
+                Tu peux observer ta carte. Quand tu veux : ouvre un autre pack, ou ferme.
               </div>
-              <div class="btn-row2">
+
+              <div class="result-btnrow">
                 <button class="open-btn primary" id="result-open-another">Open another pack</button>
                 <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
                   Ma collection
                 </a>
+                <button class="open-btn" id="result-close">Close</button>
               </div>
-              <div class="note" id="result-footnote">—</div>
+
+              <div class="result-note" id="result-footnote">—</div>
             </div>
           </div>
         </div>
@@ -844,7 +794,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V11 : ouverture type CS:GO (roulette + curseur) + “big card view” + bouton “Open another pack”.
+            V11.2 : roulette type CS:GO + curseur ligne centrale + résultat sans roulette + animation d’envoi vers collection.
           </p>
         </div>
 
@@ -912,9 +862,7 @@
       <!-- RIGHT -->
       <div class="right-panel">
         <div class="card-zone">
-          <div class="fx-overlay" id="fx-overlay"></div>
-
-          <div id="card-frame" class="card-frame state-closed" data-rarity="COMMON">
+          <div id="card-frame" class="card-frame">
             <div class="card-inner">
               <div id="booster-closed" class="booster-closed booster-mode-idle">
                 <div class="booster-label">
@@ -1023,6 +971,7 @@
     <audio id="sfx-booster" src="sounds/booster_open.mp3" preload="auto"></audio>
     <audio id="sfx-reveal" src="sounds/card_reveal.mp3" preload="auto"></audio>
     <audio id="sfx-legendary" src="sounds/legendary_fx.mp3" preload="auto"></audio>
+    <audio id="sfx-tick" src="sounds/clic_clic.mp3" preload="auto"></audio>
 
     <script>
       /********************
@@ -1056,18 +1005,10 @@
       };
 
       const CARD_NAME_BY_INDEX = {
-        0:"Bulbizarre",
-        1:"Herbizarre",
-        2:"Florizarre",
-        3:"Bulbizarre",
-        4:"Herbizarre",
-        5:"Florizarre",
-        6:"Bulbizarre",
-        7:"Herbizarre",
-        8:"Florizarre",
-        9:"Bulbizarre",
-        10:"Herbizarre",
-        11:"Florizarre",
+        0:"Bulbizarre", 1:"Herbizarre", 2:"Florizarre",
+        3:"Bulbizarre", 4:"Herbizarre", 5:"Florizarre",
+        6:"Bulbizarre", 7:"Herbizarre", 8:"Florizarre",
+        9:"Bulbizarre", 10:"Herbizarre", 11:"Florizarre",
         12:"Plante",
       };
 
@@ -1075,7 +1016,6 @@
       const CARD_WEIGHT_BY_INDEX = { 0:7000,1:7000,2:7000, 3:2000,4:2000,5:2000, 6:900,7:900,8:900, 9:100,10:100,11:100,12:100 };
 
       const RARITY_ORDER = ["COMMON","RARE","ULTRA","LEGENDARY"];
-      const RARITY_LABEL_CLASS = { COMMON:"common", RARE:"rare", ULTRA:"ultra", LEGENDARY:"legendary" };
 
       function rarityToLabel(num){ return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common"; }
       function rarityKeyFromNum(num){ return (num===0)?"COMMON":(num===1)?"RARE":(num===2)?"ULTRA":(num===3)?"LEGENDARY":"COMMON"; }
@@ -1118,10 +1058,12 @@
       /********************
        * UI state
        ********************/
-      const UI_STATE = { IDLE:"idle", OPENING:"opening" };
+      const UI_STATE = { IDLE:"idle", OPENING:"opening", RESULT:"result" };
       let uiState = UI_STATE.IDLE;
 
-      let sfxBooster=null, sfxReveal=null, sfxLegendary=null;
+      let sfxBooster=null, sfxReveal=null, sfxLegendary=null, sfxTickSrc=null;
+      let tickA=null, tickB=null, tickFlip=false;
+      let lastTickAt = 0;
 
       function sleep(ms){ return new Promise((r)=>setTimeout(r, ms)); }
       function isBusy(){ return uiState !== UI_STATE.IDLE; }
@@ -1140,14 +1082,19 @@
         try{ el.currentTime=0; el.play().catch(()=>{}); }catch(_){}
       }
 
-      function triggerFX(rarityKey){
-        const fx = document.getElementById("fx-overlay");
-        fx.className = "fx-overlay on " + (
-          rarityKey==="LEGENDARY" ? "legendary" :
-          rarityKey==="ULTRA" ? "ultra" :
-          rarityKey==="RARE" ? "rare" : "common"
-        );
-        setTimeout(()=> fx.className="fx-overlay", 800);
+      function playTick(){
+        const now = performance.now();
+        // throttle to avoid audio spam
+        if (now - lastTickAt < 55) return;
+        lastTickAt = now;
+
+        const a = tickFlip ? tickA : tickB;
+        tickFlip = !tickFlip;
+        if (!a) return;
+        try{
+          a.currentTime = 0;
+          a.play().catch(()=>{});
+        }catch(_){}
       }
 
       function formatDate(ts){
@@ -1272,13 +1219,8 @@
       }
 
       /********************
-       * V11 – Roulette logic
+       * Opening overlay helpers
        ********************/
-      const REEL_TOTAL_ITEMS = 60;
-      let currentOpen = null;      // { winningCt, stopIndex, tokenId, rarityKey, rarityNum, imgSrc, name }
-      let spinning = false;
-      let skipRequested = false;
-
       function openOverlay(){
         const o = document.getElementById("open-overlay");
         o.classList.add("on");
@@ -1290,36 +1232,55 @@
         o.setAttribute("aria-hidden","true");
       }
 
-      function resetOverlayUI(){
-        document.getElementById("result-panel").classList.remove("on");
-        document.getElementById("open-another").disabled = true;
+      function showReel(){
+        document.getElementById("reel-section").classList.remove("hidden");
+        document.getElementById("result-section").classList.remove("on");
         document.getElementById("open-close").disabled = true;
+        document.getElementById("open-another").disabled = true;
         document.getElementById("open-skip").disabled = false;
-        document.getElementById("open-sub").textContent = "La roulette ralentit et s’arrête sur ta carte.";
         document.getElementById("open-hint").textContent = "Opening…";
-        skipRequested = false;
+        document.getElementById("open-sub").textContent = "La roulette ralentit et s’arrête sur ta carte.";
       }
 
+      function showResult(){
+        document.getElementById("reel-section").classList.add("hidden");
+        document.getElementById("result-section").classList.add("on");
+        document.getElementById("open-close").disabled = false;   // ✅ user can exit
+      }
+
+      /********************
+       * V11.2 – Reel logic (weighted winner)
+       ********************/
+      const REEL_TOTAL_ITEMS = 60;
+      let spinning = false;
+      let stopIndex = 0;
+      let currentOpen = null; // {winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts}
+      let rafId = null;
+      let lastIndexUnderCursor = -1;
+
       function buildReelItems(winningCt){
-        // Fill weighted with repetition (visual pool)
         const arr = [];
-        for (let i=0;i<REEL_TOTAL_ITEMS;i++){
-          arr.push(pickWeightedCardIndex());
-        }
+        for (let i=0;i<REEL_TOTAL_ITEMS;i++) arr.push(pickWeightedCardIndex());
 
-        // Force winner near end
-        const stopIndex = Math.max(18, REEL_TOTAL_ITEMS - 10);
+        // force winner near end
+        stopIndex = Math.max(20, REEL_TOTAL_ITEMS - 10);
         arr[stopIndex] = winningCt;
+        return arr;
+      }
 
-        return { reelItems: arr, stopIndex };
+      function escapeHtml(s){
+        return String(s || "").replace(/[&<>"']/g, (c) => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+        }[c]));
       }
 
       function renderReel(reelItems){
         const track = document.getElementById("reel-track");
         track.innerHTML = "";
         track.classList.remove("spinning");
-        track.style.transform = "translateX(0px)";
         track.style.transition = "";
+        track.style.transform = "translateX(0px)";
+        void track.offsetHeight;
 
         for (let i=0;i<reelItems.length;i++){
           const ct = reelItems[i];
@@ -1331,11 +1292,11 @@
           el.setAttribute("data-i", String(i));
           el.innerHTML = `
             <div class="reel-thumb">
-              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${CARD_NAME_BY_INDEX[ct] || ("Card #"+ct)}"/>
+              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card #"+ct))}"/>
             </div>
             <div class="reel-meta">
               <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card #"+ct))}</div>
-              <div class="reel-tag ${RARITY_LABEL_CLASS[rk] || "common"}">${rk}</div>
+              <div class="reel-tag ${rk.toLowerCase()}">${rk}</div>
             </div>
           `;
           track.appendChild(el);
@@ -1351,85 +1312,128 @@
         return w + gap;
       }
 
-      async function startSpinToStop(stopIndex){
-        spinning = true;
+      function getTranslateX(el){
+        const tr = getComputedStyle(el).transform;
+        if (!tr || tr === "none") return 0;
+        // matrix(a,b,c,d,tx,ty)
+        const m = tr.match(/matrix\(([^)]+)\)/);
+        if (!m) return 0;
+        const parts = m[1].split(",").map(x => parseFloat(x.trim()));
+        return Number.isFinite(parts[4]) ? parts[4] : 0;
+      }
 
-        // Booster sound at start
-        playSound(sfxBooster);
-        setStatus("Ouverture : roulette en cours…", "pending");
-
-        const viewport = document.getElementById("reel-viewport");
+      function startTickLoop(){
         const track = document.getElementById("reel-track");
+        const viewport = document.getElementById("reel-viewport");
 
-        // Reset and force layout
+        lastIndexUnderCursor = -1;
+
+        const loop = () => {
+          if (!spinning) return;
+          const x = getTranslateX(track); // translateX (negative generally)
+          const step = getStepPx();
+          const vw = viewport.getBoundingClientRect().width;
+          const cursorX = vw / 2;
+
+          // offset traveled to the right
+          const offset = -x; // positive as it moves left
+          const idx = Math.floor((offset + cursorX) / step);
+
+          if (idx !== lastIndexUnderCursor){
+            lastIndexUnderCursor = idx;
+            playTick();
+          }
+
+          rafId = requestAnimationFrame(loop);
+        };
+
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function stopTickLoop(){
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
+      async function spinToStop(){
+        spinning = true;
+        setStatus("Ouverture : roulette en cours…", "pending");
+        playSound(sfxBooster);
+
+        const track = document.getElementById("reel-track");
+        const viewport = document.getElementById("reel-viewport");
+
         track.classList.remove("spinning");
-        track.style.transform = "translateX(0px)";
         track.style.transition = "";
+        track.style.transform = "translateX(0px)";
         void track.offsetHeight;
 
+        // compute final translate so stopIndex lands under cursor line
         const step = getStepPx();
-        const viewportW = viewport.getBoundingClientRect().width;
-        const cursorX = viewportW / 2;
-
-        // center of stop item
+        const vw = viewport.getBoundingClientRect().width;
+        const cursorX = vw / 2;
         const targetCenter = stopIndex * step + (step / 2);
         const targetTranslate = targetCenter - cursorX;
 
-        // small jitter for feel (safe)
+        // small safe jitter
         const jitter = (Math.random()*6) - 3;
         const finalX = -(targetTranslate + jitter);
 
-        // Start animation (slow + decel)
+        // Start tick loop + transition
+        startTickLoop();
+
         track.classList.add("spinning");
         requestAnimationFrame(() => {
           track.style.transform = `translateX(${finalX}px)`;
         });
 
-        // Wait for transition end OR skip
         await new Promise((resolve) => {
-          const onEnd = () => resolve();
-          track.addEventListener("transitionend", onEnd, { once:true });
+          track.addEventListener("transitionend", resolve, { once:true });
         });
 
         spinning = false;
+        stopTickLoop();
       }
 
-      function markWon(stopIndex){
+      function skipSpinNow(){
+        if (!spinning) return;
         const track = document.getElementById("reel-track");
-        track.querySelectorAll(".reel-item").forEach(x => x.classList.remove("won"));
-        const el = track.querySelector(`.reel-item[data-i="${stopIndex}"]`);
-        if (el) el.classList.add("won");
+        const viewport = document.getElementById("reel-viewport");
+
+        track.classList.remove("spinning");
+
+        const step = getStepPx();
+        const vw = viewport.getBoundingClientRect().width;
+        const cursorX = vw / 2;
+        const targetCenter = stopIndex * step + (step / 2);
+        const targetTranslate = targetCenter - cursorX;
+        const finalX = -(targetTranslate);
+
+        track.style.transition = "transform 260ms cubic-bezier(.2,.8,.2,1)";
+        track.style.transform = `translateX(${finalX}px)`;
       }
 
-      function showBigResultAndCommit(){
-        // 1) UI: show result panel, enable open another, enable close
-        document.getElementById("open-skip").disabled = true;
-        document.getElementById("open-close").disabled = false;
-        document.getElementById("open-another").disabled = false;
-
-        const { tokenId, rarityKey, rarityNum, imgSrc, name, winningCt } = currentOpen;
+      function fillResultUI(){
+        const { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
 
         document.getElementById("open-sub").textContent = `✅ Tu as obtenu : ${name} · ${rarityToLabel(rarityNum)}`;
-        document.getElementById("open-hint").textContent = "Result unlocked.";
-
-        // 2) Fill big card
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
-        document.getElementById("result-desc").textContent = `cardTypeIndex: ${winningCt} · ${rarityToLabel(rarityNum)} · ${formatDate(Date.now())}`;
+        document.getElementById("result-desc").textContent = `cardTypeIndex: ${winningCt} · ${rarityToLabel(rarityNum)} · ${formatDate(ts)}`;
 
         const pill = document.getElementById("result-pill");
         pill.textContent = rarityKey;
-        pill.className = "result-pill " + (RARITY_LABEL_CLASS[rarityKey] || "common");
+        pill.className = "result-pill " + rarityKey.toLowerCase();
 
         document.getElementById("result-footnote").textContent =
           `Ajoutée à ta collection : tokenId ${tokenId} • ${rarityToLabel(rarityNum)} • cardTypeIndex ${winningCt}`;
+      }
 
-        document.getElementById("result-panel").classList.add("on");
-
-        // 3) Commit to collection NOW (no background transfer animation)
+      function commitToCollection(){
+        const { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
         const entry = {
           tokenId,
-          ts: Date.now(),
+          ts,
           priceEur: PACK_PRICE_EUR,
           rarity: rarityNum,
           rarityLabel: rarityToLabel(rarityNum),
@@ -1438,7 +1442,6 @@
           img: imgSrc,
           name
         };
-
         pushToCollection(entry);
 
         document.getElementById("mint-info").textContent =
@@ -1446,89 +1449,66 @@
 
         renderStats();
         renderHistory();
-
-        // 4) FX on right panel (optional)
-        triggerFX(rarityKey);
-
-        // 5) Status idle
-        uiState = UI_STATE.IDLE;
-        setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
       }
 
       async function openPackRoulette(){
         if (isBusy()) return;
+
         uiState = UI_STATE.OPENING;
+        const mainBtn = document.getElementById("open-pack-btn");
+        mainBtn.disabled = true;
 
-        const btn = document.getElementById("open-pack-btn");
-        btn.disabled = true;
-
-        resetOverlayUI();
         openOverlay();
+        showReel();
 
-        // Decide winner FIRST
         const winningCt = pickWeightedCardIndex();
         const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 0;
         const rarityKey = rarityKeyFromNum(rarityNum);
         const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[0];
         const name = CARD_NAME_BY_INDEX[winningCt] || ("Card #" + winningCt);
         const tokenId = nextLocalTokenId();
+        const ts = Date.now();
 
-        const { reelItems, stopIndex } = buildReelItems(winningCt);
-        currentOpen = { winningCt, stopIndex, tokenId, rarityKey, rarityNum, imgSrc, name };
+        currentOpen = { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts };
 
+        const reelItems = buildReelItems(winningCt);
         renderReel(reelItems);
 
-        // Give the browser time to layout
-        await sleep(60);
+        await sleep(70);
 
-        // Spin
-        await startSpinToStop(stopIndex);
+        // spin + stop
+        await spinToStop();
 
-        // Mark winning tile
-        markWon(stopIndex);
-
-        // Show big result (and commit to collection)
-        if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
+        // sounds on stop
         playSound(sfxReveal);
+        if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
 
-        showBigResultAndCommit();
+        // commit + show result (no reel visible anymore)
+        commitToCollection();
+        fillResultUI();
 
-        // re-enable main button only after we are in result state (so user uses "open another")
-        btn.disabled = false;
+        uiState = UI_STATE.RESULT;
+
+        // enable chain button
+        document.getElementById("open-another").disabled = false;
+        showResult();
+
+        setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
+        mainBtn.disabled = false;
       }
 
-      function skipSpinNow(){
-        if (!spinning) return;
-        skipRequested = true;
+      async function flyThenOpenAnother(){
+        // animate card towards "collection"
+        const imgwrap = document.getElementById("result-imgwrap");
+        imgwrap.classList.add("fly-out");
+        await sleep(850);
+        imgwrap.classList.remove("fly-out");
 
-        const track = document.getElementById("reel-track");
-        const viewport = document.getElementById("reel-viewport");
-        const { stopIndex } = currentOpen;
-
-        // Remove long transition, snap fast to target, then finish
-        track.classList.remove("spinning");
-
-        const step = getStepPx();
-        const viewportW = viewport.getBoundingClientRect().width;
-        const cursorX = viewportW / 2;
-
-        const targetCenter = stopIndex * step + (step / 2);
-        const targetTranslate = targetCenter - cursorX;
-        const finalX = -(targetTranslate);
-
-        track.style.transition = "transform 220ms cubic-bezier(.2,.8,.2,1)";
-        track.style.transform = `translateX(${finalX}px)`;
+        // start another opening immediately
+        uiState = UI_STATE.IDLE;
+        await openPackRoulette();
       }
 
-      function escapeHtml(s){
-        return String(s || "").replace(/[&<>"']/g, (c) => ({
-          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
-        }[c]));
-      }
-
-      /********************
-       * Filtered collection navigation
-       ********************/
       function openCollectionFiltered(cardTypeIndex){
         window.location.href = "collection.html?ct=" + encodeURIComponent(String(cardTypeIndex));
       }
@@ -1549,40 +1529,58 @@
         sfxBooster = document.getElementById("sfx-booster");
         sfxReveal = document.getElementById("sfx-reveal");
         sfxLegendary = document.getElementById("sfx-legendary");
+        sfxTickSrc = document.getElementById("sfx-tick");
+
+        // Create two tick channels for rapid replay
+        try{
+          const src = sfxTickSrc ? sfxTickSrc.getAttribute("src") : null;
+          if (src){
+            tickA = new Audio(src);
+            tickB = new Audio(src);
+            tickA.preload = "auto";
+            tickB.preload = "auto";
+            tickA.volume = 0.55;
+            tickB.volume = 0.55;
+          }
+        }catch(_){}
 
         renderStats();
         renderHistory();
 
-        // Open pack => roulette
         document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
 
-        // Overlay controls
+        // Overlay buttons
         document.getElementById("open-skip").addEventListener("click", () => {
           skipSpinNow();
         });
 
-        document.getElementById("open-another").addEventListener("click", () => {
-          // Start another opening immediately
-          document.getElementById("result-panel").classList.remove("on");
-          openPackRoulette();
+        document.getElementById("open-another").addEventListener("click", async () => {
+          await flyThenOpenAnother();
         });
 
-        document.getElementById("result-open-another").addEventListener("click", () => {
-          document.getElementById("result-panel").classList.remove("on");
-          openPackRoulette();
+        document.getElementById("result-open-another").addEventListener("click", async () => {
+          await flyThenOpenAnother();
         });
 
+        // Close from result (not forced to chain)
         document.getElementById("open-close").addEventListener("click", () => {
+          if (spinning) return; // safety
           closeOverlay();
+          uiState = UI_STATE.IDLE;
+        });
+        document.getElementById("result-close").addEventListener("click", () => {
+          if (spinning) return;
+          closeOverlay();
+          uiState = UI_STATE.IDLE;
         });
 
-        // ESC closes overlay only when not spinning (avoid accidental close mid-opening)
+        // ESC: close only if not spinning and overlay is in result
         document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape"){
-            const overlay = document.getElementById("open-overlay");
-            if (overlay.classList.contains("on") && !spinning){
-              closeOverlay();
-            }
+          if (e.key !== "Escape") return;
+          const overlay = document.getElementById("open-overlay");
+          if (overlay.classList.contains("on") && !spinning && uiState === UI_STATE.RESULT){
+            closeOverlay();
+            uiState = UI_STATE.IDLE;
           }
         });
 
