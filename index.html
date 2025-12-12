@@ -2,15 +2,21 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V11.4 – CS:GO Overlay + Result centered + Tick sync)</title>
+    <title>VaultSpin – Booster Plante (V11.5 – UI Polish + Close/Skip Logic + Non-fixed Top)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
 
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      /* ✅ Top bar must NOT float when scrolling */
       body{
-        min-height:100vh; display:flex; align-items:center; justify-content:center;
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-start;
         background:radial-gradient(circle at top,#101827,#020617 60%);
         font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
         color:#e5e7eb;
@@ -18,7 +24,7 @@
 
       .page{
         width:100%; max-width:1200px;
-        padding:96px 16px 40px;
+        padding:24px 16px 40px; /* ✅ was 96px to offset fixed header */
         display:flex; flex-direction:column; gap:24px;
       }
       @media (min-width: 900px){ .page{ flex-direction:row; gap:36px; } }
@@ -71,6 +77,9 @@
       .status-dot.pending{ background:#facc15; }
 
       .caption{ font-size:12px; color:#9ca3af; line-height:1.4; }
+
+      /* ✅ tiny helper */
+      .is-hidden { display:none !important; }
 
       /* Stats */
       .stats{
@@ -190,17 +199,20 @@
         overflow:hidden;
       }
 
-      /* Top bar */
+      /* ✅ Top bar in normal flow */
       .top-bar{
-        position:fixed; top:16px; left:50%;
-        transform:translateX(-50%);
-        width:100%; max-width:1200px;
-        display:flex; justify-content:space-between; align-items:center;
+        position:relative;
+        width:100%;
+        max-width:1200px;
+        margin:16px auto 0;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
         padding:0 16px;
-        pointer-events:none;
-        z-index:50;
+        pointer-events:auto;
+        z-index:10;
       }
-      .top-left,.top-right{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
+      .top-left,.top-right{ display:flex; align-items:center; gap:12px; }
       .top-logo{ font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9ca3af; }
 
       .top-link{
@@ -258,9 +270,7 @@
         box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
-      /* ==============================
-         V11.4 – Hover preview float (NO BLINK)
-         ============================== */
+      /* Hover preview float */
       .preview-float{
         position:fixed;
         top:50%;
@@ -311,9 +321,7 @@
       .pf-tag.ultra{ color:#a855f7; }
       .pf-tag.legendary{ color:#f97316; }
 
-      /* ==============================
-         V11.4 – Opening overlay (CS:GO-ish bigger)
-         ============================== */
+      /* Opening overlay (CSGO-ish bigger) */
       .open-overlay{
         position:fixed; inset:0;
         display:none;
@@ -321,12 +329,12 @@
         z-index:140;
         background:rgba(0,0,0,.62);
         backdrop-filter: blur(12px);
-        padding:14px; /* slightly tighter to let modal grow */
+        padding:14px;
       }
       .open-overlay.on{ display:flex; }
 
       .open-modal{
-        width:min(1140px, 98vw);   /* ✅ bigger window */
+        width:min(1140px, 98vw);
         border-radius:30px;
         border:1px solid rgba(148,163,184,.22);
         background:rgba(2,6,23,.90);
@@ -343,7 +351,6 @@
         margin-bottom:12px;
       }
 
-      /* ✅ Title + Close next to each other */
       .open-top-left{
         display:flex;
         align-items:flex-start;
@@ -364,7 +371,7 @@
         margin-top:3px;
       }
 
-      /* ✅ Close glow like "Ma collection" */
+      /* Close glow like "Ma collection" */
       .open-close{
         font-size:12px;
         padding:6px 10px;
@@ -391,7 +398,25 @@
         transform:none;
       }
 
-      /* Reel section */
+      .open-btn{
+        border-radius:999px;
+        padding:10px 14px;
+        font-size:11px;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        border:1px solid rgba(148,163,184,.20);
+        background:rgba(15,23,42,.55);
+        color:#e5e7eb;
+        cursor:pointer;
+      }
+      .open-btn.primary{
+        border:none;
+        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
+        box-shadow: 0 0 18px rgba(168,85,247,.30);
+      }
+      .open-btn:disabled{ opacity:.45; cursor:default; }
+
+      /* Reel */
       .reel-section{ display:block; }
       .reel-section.hidden{ display:none; }
 
@@ -428,14 +453,14 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      /* ✅ Cursor line: aligned ONLY on image area (no overlap text) */
+      /* ✅ Cursor line aligned ONLY on image area */
       .reel-cursor-line{
         position:absolute;
         left:50%;
-        top:0px;                 /* ✅ FIX: was 18px (too low) */
+        top:0px;
         transform:translateX(-50%);
         width:4px;
-        height:132px;            /* image height */
+        height:132px;
         border-radius:999px;
         background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
         box-shadow: 0 0 18px rgba(250,204,21,.55);
@@ -517,27 +542,7 @@
       }
       .open-actions-left{ font-size:12px; color:#9ca3af; }
 
-      .open-btn{
-        border-radius:999px;
-        padding:10px 14px;
-        font-size:11px;
-        letter-spacing:.14em;
-        text-transform:uppercase;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(15,23,42,.55);
-        color:#e5e7eb;
-        cursor:pointer;
-      }
-      .open-btn.primary{
-        border:none;
-        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
-        box-shadow: 0 0 18px rgba(168,85,247,.30);
-      }
-      .open-btn:disabled{ opacity:.45; cursor:default; }
-
-      /* ==============================
-         V11.4 – RESULT view: card centered + buttons under the card
-         ============================== */
+      /* Result view: centered, buttons under card */
       .result-section{ display:none; }
       .result-section.on{ display:block; }
 
@@ -550,14 +555,13 @@
         padding:6px 0 2px;
       }
 
-      /* ✅ slightly higher to allow buttons centered overall */
       .result-card{
         width:min(480px, 92vw);
         border-radius:22px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.35);
         padding:14px;
-        transform: translateY(-6px); /* ✅ lift a bit */
+        transform: translateY(-6px);
       }
 
       .result-img{
@@ -607,7 +611,6 @@
       .result-pill.ultra{ color:#a855f7; }
       .result-pill.legendary{ color:#f97316; }
 
-      /* ✅ Buttons under the card */
       .result-btnrow{
         display:flex;
         gap:10px;
@@ -716,11 +719,12 @@
               <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
             </div>
 
-            <!-- ✅ Close next to title + glow like "Ma collection" -->
-            <button class="open-close" id="open-close" disabled>Close</button>
+            <!-- ✅ Close present ONLY after opening (result) -->
+            <button class="open-close is-hidden" id="open-close" disabled>Close</button>
           </div>
 
           <div style="display:flex; gap:10px; align-items:center;">
+            <!-- ✅ Skip present ONLY during opening (reel) -->
             <button class="open-btn" id="open-skip">Skip</button>
             <button class="open-btn primary" id="open-another" disabled>Open another pack</button>
           </div>
@@ -762,7 +766,6 @@
               </div>
             </div>
 
-            <!-- ✅ Buttons now under the card image -->
             <div class="result-btnrow">
               <button class="open-btn primary" id="result-open-another">Open another pack</button>
               <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
@@ -780,7 +783,7 @@
       </div>
     </div>
 
-    <!-- Top bar -->
+    <!-- ✅ Top bar (normal flow, not fixed) -->
     <div class="top-bar">
       <div class="top-left">
         <div class="top-logo">VAULTSPIN · PACKS HYBRIDES</div>
@@ -817,7 +820,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V11.4 : overlay plus grand (CS:GO), curseur aligné image only, résultat centré + boutons sous la carte, close next-to-title glow, tick audio sync sur chain opens.
+            V11.5 : Close/Skip conditionnels (reel vs result), top menu non-fix (ne chevauche plus), overlay CSGO bigger, cursor image-only, résultat centré + boutons sous carte, tick sync.
           </p>
         </div>
 
@@ -1114,7 +1117,7 @@
 
       function playTick(force=false){
         const now = performance.now();
-        if (!force && (now - lastTickAt < 58)) return; // slightly slower tick
+        if (!force && (now - lastTickAt < 58)) return;
         lastTickAt = now;
 
         const a = tickFlip ? tickA : tickB;
@@ -1232,19 +1235,30 @@
         o.setAttribute("aria-hidden","true");
       }
 
+      // ✅ During opening: SKIP visible, CLOSE hidden
       function showReel(){
         document.getElementById("reel-section").classList.remove("hidden");
         document.getElementById("result-section").classList.remove("on");
+
+        document.getElementById("open-skip").classList.remove("is-hidden");
+        document.getElementById("open-close").classList.add("is-hidden");
+
         document.getElementById("open-close").disabled = true;
         document.getElementById("open-another").disabled = true;
+
         document.getElementById("open-skip").disabled = false;
         document.getElementById("open-hint").textContent = "Opening…";
         document.getElementById("open-sub").textContent = "La roulette ralentit et s’arrête sur ta carte.";
       }
 
+      // ✅ After opening: CLOSE visible, SKIP hidden
       function showResult(){
         document.getElementById("reel-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("on");
+
+        document.getElementById("open-skip").classList.add("is-hidden");
+        document.getElementById("open-close").classList.remove("is-hidden");
+
         document.getElementById("open-close").disabled = false;
       }
 
@@ -1358,7 +1372,6 @@
         const track = document.getElementById("reel-track");
         const viewport = document.getElementById("reel-viewport");
 
-        // Reset transforms
         track.classList.remove("spinning");
         track.style.transition = "";
         track.style.transform = "translateX(0px)";
@@ -1373,10 +1386,9 @@
         const jitter = (Math.random()*6) - 3;
         const finalX = -(targetTranslate + jitter);
 
-        // ✅ audio sync: hard reset tick buffers + play booster right at start
         hardResetTicks();
         playSound(sfxBooster);
-        playTick(true); // ✅ immediate first tick so it never feels late
+        playTick(true);
 
         startTickLoop();
 
@@ -1417,7 +1429,6 @@
         document.getElementById("open-sub").textContent = `✅ Tu as obtenu : ${name} · ${rarityToLabel(rarityNum)}`;
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
-
         document.getElementById("result-desc").textContent = `${rarityToLabel(rarityNum)} · ${formatDate(ts)}`;
 
         const pill = document.getElementById("result-pill");
@@ -1437,7 +1448,7 @@
           rarity: rarityNum,
           rarityLabel: rarityToLabel(rarityNum),
           rarityKey,
-          cardTypeIndex: winningCt, // stored but not displayed
+          cardTypeIndex: winningCt,
           img: imgSrc,
           name
         };
@@ -1459,8 +1470,6 @@
 
         openOverlay();
         showReel();
-
-        // ✅ make sure tick buffers are ready before any spin
         hardResetTicks();
 
         const winningCt = pickWeightedCardIndex();
@@ -1476,7 +1485,7 @@
         const reelItems = buildReelItems(winningCt);
         renderReel(reelItems);
 
-        await sleep(60); // slightly shorter to reduce perceived desync
+        await sleep(60);
         await spinToStop();
 
         playSound(sfxReveal);
@@ -1488,6 +1497,8 @@
         uiState = UI_STATE.RESULT;
 
         document.getElementById("open-another").disabled = false;
+
+        // ✅ switch UI states (hide skip/show close)
         showResult();
 
         setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
@@ -1495,7 +1506,6 @@
       }
 
       async function flyThenOpenAnother(){
-        // ✅ prevent any late ticks from previous run
         hardResetTicks();
 
         const imgwrap = document.getElementById("result-imgwrap");
@@ -1519,9 +1529,7 @@
         renderHistory();
       }
 
-      /********************
-       * Hover preview float (NO blink)
-       ********************/
+      /* Hover preview float */
       function setPreview({ img, name, rarity }){
         const box = document.getElementById("preview-float");
         document.getElementById("preview-img").src = img || "";
@@ -1538,9 +1546,6 @@
         box.setAttribute("aria-hidden","true");
       }
 
-      /********************
-       * Init
-       ********************/
       document.addEventListener("DOMContentLoaded", () => {
         sfxBooster = document.getElementById("sfx-booster");
         sfxReveal = document.getElementById("sfx-reveal");
@@ -1593,7 +1598,6 @@
           }
         });
 
-        // Reset data
         document.getElementById("reset-data").addEventListener("click", resetAllData);
         document.getElementById("clear-history").addEventListener("click", () => {
           localStorage.removeItem(VS_COLLECTION_KEY);
@@ -1602,7 +1606,6 @@
           renderHistory();
         });
 
-        // Hover preview float (NO modal => no blink)
         document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
