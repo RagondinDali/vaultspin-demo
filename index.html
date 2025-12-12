@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante</title>
+    <title>VaultSpin – CS:GO Opening</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -36,7 +36,6 @@
         font-size:28px; font-weight:650; letter-spacing:.08em; text-transform:uppercase;
         color:#f9fafb;
       }
-      .subtitle{ font-size:14px; color:#9ca3af; max-width:560px; line-height:1.45; }
 
       .tag{
         display:inline-flex; align-items:center; gap:8px;
@@ -69,8 +68,6 @@
       .status-dot{ width:8px; height:8px; border-radius:999px; background:#22c55e; }
       .status-dot.error{ background:#f97373; }
       .status-dot.pending{ background:#facc15; }
-
-      .caption{ font-size:12px; color:#9ca3af; line-height:1.4; }
 
       /* Stats */
       .stats{
@@ -190,20 +187,18 @@
         overflow:hidden;
       }
 
-      /* Top bar */
+      /* Top bar (NOT FIXED => scrolls away) */
       .top-bar{
-        position:fixed; top:16px; left:50%;
+        position:absolute;
+        top:16px; left:50%;
         transform:translateX(-50%);
         width:100%; max-width:1200px;
-        display:flex; justify-content:space-between; align-items:center;
+        display:flex; justify-content:flex-end; align-items:center;
         padding:0 16px;
         pointer-events:none;
         z-index:50;
       }
-      .top-left,.top-right{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
-
-      /* ✅ removed "PACKS HYBRIDES" label request -> keep minimal */
-      .top-logo{ display:none; }
+      .top-right{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
 
       .top-link{
         font-size:12px; padding:6px 10px;
@@ -212,17 +207,16 @@
         color:#e5e7eb; text-decoration:none;
         letter-spacing:.14em; text-transform:uppercase;
         background:rgba(15,23,42,.85);
-        /* ✅ glow like Close */
-        box-shadow: 0 0 10px rgba(129,140,248,.25);
-        transition: box-shadow .15s ease-out, border-color .15s ease-out, transform .15s ease-out;
       }
-      .top-link:hover{
-        border-color:#a5b4fc;
-        box-shadow: 0 0 16px rgba(129,140,248,.40);
-        transform: translateY(-1px);
+      .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
+
+      /* Glow like “Close” */
+      .top-link.glow{
+        border-color: rgba(165,180,252,.75);
+        box-shadow: 0 0 14px rgba(129,140,248,.28);
       }
 
-      .wallet-wrap{ position:relative; }
+      .wallet-wrap{ position:relative; pointer-events:auto; }
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
         border-radius:999px;
@@ -237,7 +231,7 @@
 
       .wallet-pop{
         position:absolute; right:0; top:44px;
-        width:300px;
+        width:290px;
         border-radius:18px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.92);
@@ -266,22 +260,6 @@
         border-color: rgba(165,180,252,.7);
         box-shadow:0 0 10px rgba(129,140,248,.25);
       }
-      .wallet-row{
-        display:flex;
-        gap:10px;
-        flex-wrap:wrap;
-        margin-top:10px;
-      }
-      .wallet-stat{
-        margin-top:10px;
-        border-radius:14px;
-        border:1px solid rgba(148,163,184,.16);
-        background: rgba(15,23,42,.35);
-        padding:10px;
-        font-size:11px;
-        color:#cbd5e1;
-        line-height:1.45;
-      }
 
       /* Passive hover preview (NO blink) */
       .preview-float{
@@ -303,7 +281,6 @@
       }
       .preview-float.on{ opacity:1; }
       .preview-float img{ width:100%; height:100%; object-fit:cover; display:block; }
-
       .preview-float-meta{
         position:absolute;
         left:10px; right:10px; bottom:10px;
@@ -346,9 +323,9 @@
       }
       .open-overlay.on{ display:flex; }
 
-      /* ✅ Slightly larger, CS:GO vibe */
+      /* slightly bigger (CS:GO feel) */
       .open-modal{
-        width:min(1160px, 97vw);
+        width:min(1180px, 98vw);
         border-radius:26px;
         border:1px solid rgba(148,163,184,.22);
         background:rgba(2,6,23,.90);
@@ -359,7 +336,7 @@
 
       .open-top{
         display:flex;
-        align-items:flex-start;
+        align-items:center;
         justify-content:space-between;
         gap:10px;
         margin-bottom:12px;
@@ -371,13 +348,13 @@
         color:#cbd5e1;
         font-weight:800;
       }
-      .open-sub{
-        font-size:12px;
-        color:#9ca3af;
-        margin-top:3px;
+
+      .open-right{
+        display:flex;
+        gap:10px;
+        align-items:center;
       }
 
-      /* ✅ Close glow like Ma collection */
       .open-btn{
         border-radius:999px;
         padding:10px 14px;
@@ -388,31 +365,19 @@
         background:rgba(15,23,42,.55);
         color:#e5e7eb;
         cursor:pointer;
-        transition: box-shadow .15s ease-out, border-color .15s ease-out, transform .15s ease-out, opacity .15s ease-out;
-      }
-      .open-btn:hover{
-        border-color: rgba(165,180,252,.7);
-        box-shadow:0 0 12px rgba(129,140,248,.30);
-        transform: translateY(-1px);
       }
       .open-btn.primary{
         border:none;
         background: radial-gradient(circle at top left, #a855f7, #4f46e5);
         box-shadow: 0 0 18px rgba(168,85,247,.30);
       }
-      .open-btn.primary:hover{
-        box-shadow: 0 0 22px rgba(168,85,247,.45);
-      }
-      .open-btn:disabled{ opacity:.45; cursor:default; box-shadow:none; transform:none; }
 
-      .open-actions{
-        margin-top:12px;
-        display:flex;
-        justify-content:space-between;
-        gap:10px;
-        align-items:center;
+      /* Close glow like Ma collection */
+      .open-btn.close-glow{
+        border-color: rgba(165,180,252,.75);
+        box-shadow: 0 0 14px rgba(129,140,248,.28);
       }
-      .open-actions-left{ font-size:12px; color:#9ca3af; }
+      .open-btn:disabled{ opacity:.45; cursor:default; }
 
       /* Reel section */
       .reel-section{ display:block; }
@@ -451,14 +416,14 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      /* ✅ Cursor line (moved slightly up to avoid bottom text overlap) */
+      /* Cursor line (raised a bit so it doesn’t touch bottom labels) */
       .reel-cursor-line{
         position:absolute;
         left:50%;
-        top:12px;                 /* was 18px -> up */
+        top:14px;                 /* was 18px */
         transform:translateX(-50%);
         width:4px;
-        height:132px;
+        height:126px;            /* was 132px */
         border-radius:999px;
         background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
         box-shadow: 0 0 18px rgba(250,204,21,.55);
@@ -537,15 +502,21 @@
 
       .result-wrap{
         display:flex;
-        gap:18px;
         align-items:center;
         justify-content:center;
+        padding:8px 0;
+      }
+
+      .result-center{
+        width:min(520px, 94vw);
+        display:flex;
         flex-direction:column;
-        padding-top: 6px;
+        align-items:center;
+        gap:14px;
       }
 
       .result-card{
-        width:min(460px, 92vw);
+        width:100%;
         border-radius:22px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.35);
@@ -598,14 +569,13 @@
       .result-pill.ultra{ color:#a855f7; }
       .result-pill.legendary{ color:#f97316; }
 
-      /* ✅ Buttons only under card */
+      /* Buttons UNDER the card */
       .result-btnrow{
         display:flex;
         gap:10px;
         flex-wrap:wrap;
         align-items:center;
         justify-content:center;
-        margin-top:12px;
       }
 
       /* Fly to collection animation */
@@ -628,7 +598,6 @@
         background:radial-gradient(circle at top left,#020617,#020617 70%);
         display:flex; flex-direction:column; gap:12px;
       }
-      /* ✅ remove extra text part per request */
       .drop-title{
         font-size:11px; letter-spacing:.18em; text-transform:uppercase;
         color:#9ca3af; text-align:center;
@@ -673,7 +642,7 @@
   </head>
 
   <body>
-    <!-- Passive hover preview -->
+    <!-- Passive hover preview (NO blink) -->
     <div class="preview-float" id="preview-float" aria-hidden="true">
       <img id="preview-img" src="" alt="Preview" />
       <div class="preview-float-meta">
@@ -687,12 +656,16 @@
       <div class="open-modal" role="dialog" aria-modal="true">
         <div class="open-top">
           <div>
-            <div class="open-title">VAULTSPIN · OPENING <button class="open-btn" id="open-close" style="margin-left:10px;" disabled>Close</button></div>
-            <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
+            <div class="open-title">VAULTSPIN · OPENING</div>
+            <div class="open-sub" id="open-sub" style="display:none;"></div>
           </div>
-          <!-- ✅ Right side: only SKIP during reel (not in result) -->
-          <div style="display:flex; gap:10px; align-items:center;">
+
+          <div class="open-right">
+            <!-- SKIP only during reel -->
             <button class="open-btn" id="open-skip">Skip</button>
+
+            <!-- CLOSE only during result (right side) -->
+            <button class="open-btn close-glow" id="open-close">Close</button>
           </div>
         </div>
 
@@ -708,76 +681,64 @@
             </div>
           </div>
 
-          <div class="open-actions">
-            <div class="open-actions-left" id="open-hint">Opening…</div>
-            <div style="display:flex; gap:10px; align-items:center;">
-              <!-- ✅ nothing else here -->
-            </div>
+          <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div style="font-size:12px; color:#9ca3af;" id="open-hint">Opening…</div>
+            <div></div>
           </div>
         </div>
 
         <!-- Result-only section -->
         <div class="result-section" id="result-section">
           <div class="result-wrap">
-            <div class="result-card" id="result-card">
-              <div class="result-img" id="result-imgwrap">
-                <!-- ✅ rarity burst overlay -->
-                <div class="rarity-burst" id="rarity-burst" style="display:none;"></div>
-                <img id="result-img" src="" alt="Result" />
-              </div>
-              <div class="result-meta">
-                <div>
-                  <div class="result-name" id="result-name">—</div>
-                  <div class="result-sub" id="result-desc">—</div>
+            <div class="result-center">
+              <div class="result-card" id="result-card">
+                <div class="result-img" id="result-imgwrap">
+                  <img id="result-img" src="" alt="Result" />
                 </div>
-                <div class="result-pill common" id="result-pill">COMMON</div>
+                <div class="result-meta">
+                  <div>
+                    <div class="result-name" id="result-name">—</div>
+                    <div class="result-sub" id="result-desc">—</div>
+                  </div>
+                  <div class="result-pill common" id="result-pill">COMMON</div>
+                </div>
               </div>
-            </div>
 
-            <!-- ✅ only buttons under the card -->
-            <div class="result-btnrow">
-              <button class="open-btn primary" id="result-open-another">Open another pack</button>
-              <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
-                Ma collection
-              </a>
+              <div class="result-btnrow">
+                <button class="open-btn primary" id="result-open-another">Open another pack</button>
+                <a class="top-link glow" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
+                  Ma collection
+                </a>
+              </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- Top bar -->
+    <!-- Top bar (scrolls away) -->
     <div class="top-bar">
-      <div class="top-left">
-        <!-- ✅ removed Pack Hybrides label -->
-      </div>
       <div class="top-right">
-        <a class="top-link" href="collection.html" id="collection-toplink">Ma collection</a>
+        <a class="top-link glow" href="collection.html" id="collection-toplink">Ma collection</a>
 
         <div class="wallet-wrap">
-          <div class="wallet-pill" title="Wallet démo (logique)">
+          <div class="wallet-pill" title="Wallet local (démo)">
             <span class="wallet-label">Wallet</span>
-            <span class="wallet-main" id="wallet-eur">—</span>
-            <span class="wallet-sub" id="wallet-eth">—</span>
+            <span class="wallet-main" id="wallet-eur">0,00 €</span>
+            <span class="wallet-sub" id="wallet-eth">≈ 0,0000 ETH</span>
           </div>
 
           <div class="wallet-pop">
             <h3>Wallet (démo)</h3>
-            <div class="wallet-hint">
-              Solde local + dépense réelle en stats.<br/>
-              Si solde insuffisant : pack bloqué.
-            </div>
-
-            <div class="wallet-stat" id="wallet-stat">
+            <div class="wallet-hint" id="wallet-hint">
               —
             </div>
-
-            <div class="wallet-row">
-              <button class="btn-mini" id="add-10">+10€</button>
-              <button class="btn-mini" id="add-50">+50€</button>
-              <button class="btn-mini" id="reset-wallet">Reset wallet</button>
+            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn-mini" id="wallet-add-20">+20€</button>
+              <button class="btn-mini" id="wallet-add-100">+100€</button>
+              <button class="btn-mini" id="wallet-reset">Reset wallet</button>
             </div>
-
             <div style="margin-top:10px; display:flex; gap:10px;">
               <button class="btn-mini" id="reset-data">Reset data</button>
             </div>
@@ -789,13 +750,10 @@
     <div class="page">
       <!-- LEFT -->
       <div class="left-panel">
-        <div class="tag">VAULTSPIN · DÉMO (OFF-CHAIN)</div>
+        <div class="tag" style="align-self:flex-start;">VAULTSPIN · DÉMO (OFF-CHAIN)</div>
 
         <div>
           <h1>Open your VaultSpin Pack</h1>
-          <p class="subtitle">
-            Démo : roulette CS:GO + résultat clean + FX Ultra/Legendary + wallet logique.
-          </p>
         </div>
 
         <div class="btn-row">
@@ -804,11 +762,8 @@
 
         <div id="status-line" class="status-line">
           <span class="status-dot" id="status-dot"></span>
-          <span id="status-text">Prêt.</span>
+          <span id="status-text">Ajoute des fonds au wallet, puis ouvre un pack.</span>
         </div>
-        <p class="caption">
-          Démo : le pack est débité du wallet local (en haut à droite).
-        </p>
 
         <!-- Stats -->
         <div class="stats">
@@ -821,7 +776,7 @@
           <div class="stat">
             <div class="k">Spent</div>
             <div class="v" id="stat-spent">0€</div>
-            <div class="s">Local</div>
+            <div class="s">Wallet</div>
           </div>
 
           <div class="stat">
@@ -849,12 +804,6 @@
             <button class="history-clear" id="clear-history">Clear</button>
           </div>
           <div class="history-list" id="history-list"></div>
-        </div>
-
-        <div style="margin-top: 6px">
-          <div class="caption" id="mint-info">
-            En attente d’une ouverture… clique sur le bouton.
-          </div>
         </div>
       </div>
 
@@ -884,89 +833,89 @@
             <div class="drop-item" data-rarity="COMMON" data-name="Bulbizarre" data-img="images/bulbasaur_common.png" data-ct="0">
               <div class="drop-thumb"><img src="images/bulbasaur_common.png" alt="Bulbizarre Common" /></div>
               <div class="drop-name">Bulbizarre</div>
-              <div class="drop-meta"><span>70% de chance</span><span class="drop-tag common">Common</span></div>
+              <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
             </div>
 
             <div class="drop-item" data-rarity="COMMON" data-name="Herbizarre" data-img="images/ivysaur_common.png" data-ct="1">
               <div class="drop-thumb"><img src="images/ivysaur_common.png" alt="Herbizarre Common" /></div>
               <div class="drop-name">Herbizarre</div>
-              <div class="drop-meta"><span>70% de chance</span><span class="drop-tag common">Common</span></div>
+              <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
             </div>
 
             <div class="drop-item" data-rarity="COMMON" data-name="Florizarre" data-img="images/venusaur_common.png" data-ct="2">
               <div class="drop-thumb"><img src="images/venusaur_common.png" alt="Florizarre Common" /></div>
               <div class="drop-name">Florizarre</div>
-              <div class="drop-meta"><span>70% de chance</span><span class="drop-tag common">Common</span></div>
+              <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
             </div>
 
             <!-- RARE -->
             <div class="drop-item" data-rarity="RARE" data-name="Bulbizarre" data-img="images/bulbasaur_rare.png" data-ct="3">
               <div class="drop-thumb"><img src="images/bulbasaur_rare.png" alt="Bulbizarre Rare" /></div>
               <div class="drop-name">Bulbizarre</div>
-              <div class="drop-meta"><span>20% de chance</span><span class="drop-tag rare">Rare</span></div>
+              <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
             <div class="drop-item" data-rarity="RARE" data-name="Herbizarre" data-img="images/ivysaur_rare.png" data-ct="4">
               <div class="drop-thumb"><img src="images/ivysaur_rare.png" alt="Herbizarre Rare" /></div>
               <div class="drop-name">Herbizarre</div>
-              <div class="drop-meta"><span>20% de chance</span><span class="drop-tag rare">Rare</span></div>
+              <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
             <div class="drop-item" data-rarity="RARE" data-name="Florizarre" data-img="images/venusaur_rare.png" data-ct="5">
               <div class="drop-thumb"><img src="images/venusaur_rare.png" alt="Florizarre Rare" /></div>
               <div class="drop-name">Florizarre</div>
-              <div class="drop-meta"><span>20% de chance</span><span class="drop-tag rare">Rare</span></div>
+              <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
             <!-- ULTRA -->
             <div class="drop-item" data-rarity="ULTRA" data-name="Bulbizarre" data-img="images/bulbasaur_ultra.png" data-ct="6">
               <div class="drop-thumb"><img src="images/bulbasaur_ultra.png" alt="Bulbizarre Ultra" /></div>
               <div class="drop-name">Bulbizarre</div>
-              <div class="drop-meta"><span>9% de chance</span><span class="drop-tag ultra">Ultra</span></div>
+              <div class="drop-meta"><span>9%</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
             <div class="drop-item" data-rarity="ULTRA" data-name="Herbizarre" data-img="images/ivysaur_ultra.png" data-ct="7">
               <div class="drop-thumb"><img src="images/ivysaur_ultra.png" alt="Herbizarre Ultra" /></div>
               <div class="drop-name">Herbizarre</div>
-              <div class="drop-meta"><span>9% de chance</span><span class="drop-tag ultra">Ultra</span></div>
+              <div class="drop-meta"><span>9%</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
             <div class="drop-item" data-rarity="ULTRA" data-name="Florizarre" data-img="images/venusaur_ultra.png" data-ct="8">
               <div class="drop-thumb"><img src="images/venusaur_ultra.png" alt="Florizarre Ultra" /></div>
               <div class="drop-name">Florizarre</div>
-              <div class="drop-meta"><span>9% de chance</span><span class="drop-tag ultra">Ultra</span></div>
+              <div class="drop-meta"><span>9%</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
             <!-- LEGENDARY -->
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Bulbizarre" data-img="images/bulbasaur_legendary.png" data-ct="9">
               <div class="drop-thumb"><img src="images/bulbasaur_legendary.png" alt="Bulbizarre Legendary" /></div>
               <div class="drop-name">Bulbizarre</div>
-              <div class="drop-meta"><span>1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
+              <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Herbizarre" data-img="images/ivysaur_legendary.png" data-ct="10">
               <div class="drop-thumb"><img src="images/ivysaur_legendary.png" alt="Herbizarre Legendary" /></div>
               <div class="drop-name">Herbizarre</div>
-              <div class="drop-meta"><span>1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
+              <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/venusaur_legendary.png" data-ct="11">
               <div class="drop-thumb"><img src="images/venusaur_legendary.png" alt="Florizarre Legendary" /></div>
               <div class="drop-name">Florizarre</div>
-              <div class="drop-meta"><span>1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
+              <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Plante" data-img="images/plant_legendary.png" data-ct="12">
               <div class="drop-thumb"><img src="images/plant_legendary.png" alt="Plante Legendary" /></div>
               <div class="drop-name">Plante</div>
-              <div class="drop-meta"><span>1% de chance</span><span class="drop-tag legendary">Legendary</span></div>
+              <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Sounds -->
+    <!-- Sounds (on garde, mais on fera le whoosh + polish audio plus tard) -->
     <audio id="sfx-booster" src="sounds/booster_open.mp3" preload="auto"></audio>
     <audio id="sfx-reveal" src="sounds/card_reveal.mp3" preload="auto"></audio>
     <audio id="sfx-legendary" src="sounds/legendary_fx.mp3" preload="auto"></audio>
@@ -979,18 +928,63 @@
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
       const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
 
+      // Wallet local (démo)
       const VS_WALLET_EUR_KEY = "vaultspin_wallet_eur_v1";
-      const VS_WALLET_SPENT_KEY = "vaultspin_wallet_spent_v1";
+      const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
 
       /********************
-       * ECONOMY
+       * ECONOMY (wallet local)
        ********************/
       const PACK_PRICE_EUR = 3.99;
+      const EUR_TO_ETH = 1 / 3500; // approximation visuelle
 
-      // simple estimate, display-only
-      const EUR_PER_ETH = 3200;
+      function getWalletEur(){
+        const raw = localStorage.getItem(VS_WALLET_EUR_KEY);
+        const n = raw ? Number(raw) : 0;
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+      function setWalletEur(v){
+        localStorage.setItem(VS_WALLET_EUR_KEY, String(Math.max(0, Number(v) || 0)));
+      }
+      function getWalletSpent(){
+        const raw = localStorage.getItem(VS_WALLET_SPENT_EUR_KEY);
+        const n = raw ? Number(raw) : 0;
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+      function setWalletSpent(v){
+        localStorage.setItem(VS_WALLET_SPENT_EUR_KEY, String(Math.max(0, Number(v) || 0)));
+      }
 
-      const DEFAULT_WALLET_EUR = 25.00;
+      function fmtEur(n){
+        return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+      }
+      function fmtEthFromEur(eur){
+        const eth = (Number(eur)||0) * EUR_TO_ETH;
+        return "≈ " + eth.toLocaleString("fr-FR", { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " ETH";
+      }
+
+      function renderWallet(){
+        const eur = getWalletEur();
+        const spent = getWalletSpent();
+        document.getElementById("wallet-eur").textContent = fmtEur(eur);
+        document.getElementById("wallet-eth").textContent = fmtEthFromEur(eur);
+
+        document.getElementById("wallet-hint").innerHTML =
+          `Balance : <b>${fmtEur(eur)}</b><br/>Spent : <b>${fmtEur(spent)}</b><br/>Pack : <b>${fmtEur(PACK_PRICE_EUR)}</b>`;
+      }
+
+      function canAffordPack(){
+        return getWalletEur() >= PACK_PRICE_EUR;
+      }
+
+      function debitPack(){
+        const eur = getWalletEur();
+        if (eur < PACK_PRICE_EUR) return false;
+        setWalletEur(eur - PACK_PRICE_EUR);
+        setWalletSpent(getWalletSpent() + PACK_PRICE_EUR);
+        renderWallet();
+        return true;
+      }
 
       /********************
        * Cards config
@@ -1023,7 +1017,6 @@
       const CARD_WEIGHT_BY_INDEX = { 0:7000,1:7000,2:7000, 3:2000,4:2000,5:2000, 6:900,7:900,8:900, 9:100,10:100,11:100,12:100 };
 
       const RARITY_ORDER = ["COMMON","RARE","ULTRA","LEGENDARY"];
-
       function rarityToLabel(num){ return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common"; }
       function rarityKeyFromNum(num){ return (num===0)?"COMMON":(num===1)?"RARE":(num===2)?"ULTRA":(num===3)?"LEGENDARY":"COMMON"; }
 
@@ -1037,68 +1030,6 @@
           if (roll < c) return parseInt(k, 10);
         }
         return 0;
-      }
-
-      /********************
-       * Wallet (local)
-       ********************/
-      function getWalletEur(){
-        const raw = localStorage.getItem(VS_WALLET_EUR_KEY);
-        const n = raw ? Number(raw) : DEFAULT_WALLET_EUR;
-        return Number.isFinite(n) ? Math.max(0, n) : DEFAULT_WALLET_EUR;
-      }
-      function setWalletEur(v){
-        const n = Number(v);
-        const val = Number.isFinite(n) ? Math.max(0, n) : 0;
-        localStorage.setItem(VS_WALLET_EUR_KEY, String(val));
-      }
-      function getWalletSpent(){
-        const raw = localStorage.getItem(VS_WALLET_SPENT_KEY);
-        const n = raw ? Number(raw) : 0;
-        return Number.isFinite(n) ? Math.max(0, n) : 0;
-      }
-      function setWalletSpent(v){
-        const n = Number(v);
-        const val = Number.isFinite(n) ? Math.max(0, n) : 0;
-        localStorage.setItem(VS_WALLET_SPENT_KEY, String(val));
-      }
-      function canAffordPack(){
-        return getWalletEur() >= PACK_PRICE_EUR;
-      }
-      function debitPack(){
-        const bal = getWalletEur();
-        if (bal < PACK_PRICE_EUR) return false;
-        setWalletEur(bal - PACK_PRICE_EUR);
-        setWalletSpent(getWalletSpent() + PACK_PRICE_EUR);
-        return true;
-      }
-
-      function fmtEur(v){
-        return v.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
-      }
-      function fmtEthFromEur(v){
-        const eth = v / EUR_PER_ETH;
-        return "≈ " + eth.toLocaleString("fr-FR", { maximumFractionDigits: 4 }) + " ETH";
-      }
-
-      function renderWallet(){
-        const eur = getWalletEur();
-        document.getElementById("wallet-eur").textContent = fmtEur(eur);
-        document.getElementById("wallet-eth").textContent = fmtEthFromEur(eur);
-
-        const spent = getWalletSpent();
-        document.getElementById("wallet-stat").innerHTML =
-          `<b>Solde :</b> ${fmtEur(eur)}<br/>` +
-          `<b>Spent :</b> ${fmtEur(spent)}<br/>` +
-          `<b>Pack :</b> ${fmtEur(PACK_PRICE_EUR)}<br/>` +
-          `<b>Status :</b> ${eur >= PACK_PRICE_EUR ? "OK" : "Insufficient funds"}`;
-
-        const btn = document.getElementById("open-pack-btn");
-        if (eur >= PACK_PRICE_EUR){
-          btn.disabled = false;
-        } else {
-          btn.disabled = true;
-        }
       }
 
       /********************
@@ -1151,6 +1082,13 @@
         try{ el.pause(); el.currentTime=0; el.play().catch(()=>{}); }catch(_){}
       }
 
+      function stopTickAudio(){
+        try{
+          if (tickA){ tickA.pause(); tickA.currentTime = 0; }
+          if (tickB){ tickB.pause(); tickB.currentTime = 0; }
+        }catch(_){}
+      }
+
       function playTick(){
         const now = performance.now();
         if (now - lastTickAt < 58) return;
@@ -1160,7 +1098,6 @@
         tickFlip = !tickFlip;
         if (!a) return;
         try{
-          a.pause();
           a.currentTime = 0;
           a.play().catch(()=>{});
         }catch(_){}
@@ -1222,7 +1159,8 @@
 
         if (!arr.length){
           const empty = document.createElement("div");
-          empty.className = "caption";
+          empty.style.fontSize = "12px";
+          empty.style.color = "#9ca3af";
           empty.textContent = "Aucun pack ouvert pour l’instant.";
           list.appendChild(empty);
           return;
@@ -1257,7 +1195,7 @@
       }
 
       /********************
-       * Opening overlay helpers
+       * Overlay helpers
        ********************/
       function openOverlay(){
         const o = document.getElementById("open-overlay");
@@ -1274,25 +1212,20 @@
         document.getElementById("reel-section").classList.remove("hidden");
         document.getElementById("result-section").classList.remove("on");
 
-        // ✅ Close hidden while spinning
-        document.getElementById("open-close").disabled = true;
-
-        // ✅ Skip visible while spinning
+        // CLOSE hidden during opening, SKIP visible
+        document.getElementById("open-close").style.display = "none";
         document.getElementById("open-skip").style.display = "inline-flex";
 
         document.getElementById("open-hint").textContent = "Opening…";
-        document.getElementById("open-sub").textContent = "La roulette ralentit et s’arrête sur ta carte.";
       }
 
       function showResult(){
         document.getElementById("reel-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("on");
 
-        // ✅ Close available in result
-        document.getElementById("open-close").disabled = false;
-
-        // ✅ Skip hidden in result
+        // SKIP hidden after result, CLOSE visible (on right)
         document.getElementById("open-skip").style.display = "none";
+        document.getElementById("open-close").style.display = "inline-flex";
       }
 
       /********************
@@ -1400,9 +1333,10 @@
 
       async function spinToStop(){
         spinning = true;
-        setStatus("Ouverture : roulette en cours…", "pending");
+        setStatus("Ouverture…", "pending");
 
-        // ✅ start sounds immediately at spin start
+        // Audio sync: stop old tick + play booster exactly at spin start
+        stopTickAudio();
         playSound(sfxBooster);
 
         const track = document.getElementById("reel-track");
@@ -1451,51 +1385,23 @@
         const targetTranslate = targetCenter - cursorX;
         const finalX = -(targetTranslate);
 
-        track.style.transition = "transform 260ms cubic-bezier(.2,.8,.2,1)";
+        // Not snap: quick ease-out
+        track.style.transition = "transform 420ms cubic-bezier(.16,.84,.2,1)";
         track.style.transform = `translateX(${finalX}px)`;
       }
 
-      function clearBurst(){
-        const b = document.getElementById("rarity-burst");
-        b.style.display = "none";
-        b.className = "rarity-burst";
-        b.innerHTML = "";
-      }
+      function triggerRarityFx(rarityKey){
+        const wrap = document.getElementById("result-imgwrap");
+        wrap.classList.remove("fx-ultra","fx-legendary");
+        void wrap.offsetHeight; // restart anim
 
-      function spawnLegendarySparks(){
-        const b = document.getElementById("rarity-burst");
-        // inject 14 sparks
-        for (let i=0;i<14;i++){
-          const s = document.createElement("span");
-          s.className = "spark" + (i%3===0 ? " gold" : "");
-          const rot = Math.floor(Math.random()*360) + "deg";
-          const dist = (60 + Math.random()*110).toFixed(0) + "px";
-          s.style.setProperty("--rot", rot);
-          s.style.setProperty("--dist", dist);
-          b.appendChild(s);
-        }
-      }
-
-      function playRarityBurst(rarityKey){
-        clearBurst();
-        const b = document.getElementById("rarity-burst");
-        if (rarityKey === "ULTRA"){
-          b.style.display = "block";
-          b.classList.add("ultra");
-          // auto-clear
-          setTimeout(clearBurst, 950);
-        } else if (rarityKey === "LEGENDARY"){
-          b.style.display = "block";
-          b.classList.add("legendary");
-          spawnLegendarySparks();
-          setTimeout(clearBurst, 1150);
-        }
+        if (rarityKey === "ULTRA") wrap.classList.add("fx-ultra");
+        if (rarityKey === "LEGENDARY") wrap.classList.add("fx-legendary");
       }
 
       function fillResultUI(){
         const { rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
 
-        document.getElementById("open-sub").textContent = `✅ Tu as obtenu : ${name} · ${rarityToLabel(rarityNum)}`;
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
         document.getElementById("result-desc").textContent = `${rarityToLabel(rarityNum)} · ${formatDate(ts)}`;
@@ -1504,8 +1410,7 @@
         pill.textContent = rarityKey;
         pill.className = "result-pill " + rarityKey.toLowerCase();
 
-        // ✅ FX at reveal
-        playRarityBurst(rarityKey);
+        triggerRarityFx(rarityKey);
       }
 
       function commitToCollection(){
@@ -1517,15 +1422,11 @@
           rarity: rarityNum,
           rarityLabel: rarityToLabel(rarityNum),
           rarityKey,
-          cardTypeIndex: winningCt,
+          cardTypeIndex: winningCt, // stored only
           img: imgSrc,
           name
         };
         pushToCollection(entry);
-
-        document.getElementById("mint-info").textContent =
-          `Carte ajoutée à ta collection — tokenId ${tokenId} • ${entry.rarityLabel}`;
-
         renderStats();
         renderHistory();
       }
@@ -1533,25 +1434,20 @@
       async function openPackRoulette(){
         if (isBusy()) return;
 
-        // ✅ wallet check
         if (!canAffordPack()){
-          setStatus("Solde insuffisant ❌ Ajoute des fonds dans le wallet.", "error");
+          setStatus("Fonds insuffisants. Ajoute du crédit dans le wallet.", "error");
+          return;
+        }
+
+        // debit at start (wallet logic)
+        if (!debitPack()){
+          setStatus("Fonds insuffisants. Ajoute du crédit dans le wallet.", "error");
           return;
         }
 
         uiState = UI_STATE.OPENING;
         const mainBtn = document.getElementById("open-pack-btn");
         mainBtn.disabled = true;
-
-        // debit first (like real UX)
-        const ok = debitPack();
-        renderWallet();
-        if (!ok){
-          setStatus("Solde insuffisant ❌", "error");
-          uiState = UI_STATE.IDLE;
-          mainBtn.disabled = false;
-          return;
-        }
 
         openOverlay();
         showReel();
@@ -1579,10 +1475,9 @@
         fillResultUI();
 
         uiState = UI_STATE.RESULT;
-
         showResult();
 
-        setStatus("Pack ouvert ✅ Carte ajoutée à ta collection.", "ok");
+        setStatus("Pack ouvert ✅", "ok");
         mainBtn.disabled = false;
       }
 
@@ -1603,27 +1498,16 @@
       function resetAllData(){
         localStorage.removeItem(VS_COLLECTION_KEY);
         localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
-        setStatus("Données reset ✅", "ok");
+        localStorage.removeItem(VS_WALLET_EUR_KEY);
+        localStorage.removeItem(VS_WALLET_SPENT_EUR_KEY);
+        setStatus("Reset ✅", "ok");
+        renderWallet();
         renderStats();
         renderHistory();
       }
 
-      function resetWallet(){
-        setWalletEur(DEFAULT_WALLET_EUR);
-        setWalletSpent(0);
-        renderWallet();
-        setStatus("Wallet reset ✅", "ok");
-        renderStats();
-      }
-
-      function addFunds(eur){
-        setWalletEur(getWalletEur() + eur);
-        renderWallet();
-        setStatus("Fonds ajoutés ✅", "ok");
-      }
-
       /********************
-       * Hover preview float
+       * Hover preview float (NO blink)
        ********************/
       function setPreview({ img, name, rarity }){
         const box = document.getElementById("preview-float");
@@ -1662,11 +1546,15 @@
           }
         }catch(_){}
 
+        // wallet init
         renderWallet();
+
+        // Default status
+        setStatus(canAffordPack() ? "Prêt. Ouvre un pack." : "Ajoute des fonds au wallet, puis ouvre un pack.", "ok");
+
         renderStats();
         renderHistory();
 
-        // buttons
         document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
 
         document.getElementById("open-skip").addEventListener("click", () => {
@@ -1677,10 +1565,9 @@
           await flyThenOpenAnother();
         });
 
-        // Close only works in RESULT
+        // Close only on RESULT
         document.getElementById("open-close").addEventListener("click", () => {
           if (spinning) return;
-          if (uiState !== UI_STATE.RESULT) return;
           closeOverlay();
           uiState = UI_STATE.IDLE;
         });
@@ -1694,10 +1581,23 @@
           }
         });
 
-        // wallet controls
-        document.getElementById("add-10").addEventListener("click", () => addFunds(10));
-        document.getElementById("add-50").addEventListener("click", () => addFunds(50));
-        document.getElementById("reset-wallet").addEventListener("click", resetWallet);
+        // Wallet buttons
+        document.getElementById("wallet-add-20").addEventListener("click", () => {
+          setWalletEur(getWalletEur() + 20);
+          renderWallet();
+          setStatus("Crédit ajouté ✅", "ok");
+        });
+        document.getElementById("wallet-add-100").addEventListener("click", () => {
+          setWalletEur(getWalletEur() + 100);
+          renderWallet();
+          setStatus("Crédit ajouté ✅", "ok");
+        });
+        document.getElementById("wallet-reset").addEventListener("click", () => {
+          setWalletEur(0);
+          setWalletSpent(0);
+          renderWallet();
+          setStatus("Wallet reset ✅", "ok");
+        });
 
         // Reset data
         document.getElementById("reset-data").addEventListener("click", resetAllData);
