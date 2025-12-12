@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Booster Plante (V11.3 – Roulette + Result focus)</title>
+    <title>VaultSpin – Booster Plante (V11.4 – CS:GO Overlay + Result centered + Tick sync)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="animations.css" />
@@ -202,6 +202,7 @@
       }
       .top-left,.top-right{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
       .top-logo{ font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9ca3af; }
+
       .top-link{
         font-size:12px; padding:6px 10px;
         border-radius:999px;
@@ -258,7 +259,7 @@
       }
 
       /* ==============================
-         V11.3 – Hover preview float (NO BLINK)
+         V11.4 – Hover preview float (NO BLINK)
          ============================== */
       .preview-float{
         position:fixed;
@@ -311,7 +312,7 @@
       .pf-tag.legendary{ color:#f97316; }
 
       /* ==============================
-         V11.3 – Opening overlay (spin)
+         V11.4 – Opening overlay (CS:GO-ish bigger)
          ============================== */
       .open-overlay{
         position:fixed; inset:0;
@@ -320,26 +321,34 @@
         z-index:140;
         background:rgba(0,0,0,.62);
         backdrop-filter: blur(12px);
-        padding:18px;
+        padding:14px; /* slightly tighter to let modal grow */
       }
       .open-overlay.on{ display:flex; }
 
       .open-modal{
-        width:min(1060px, 96vw);
-        border-radius:26px;
+        width:min(1140px, 98vw);   /* ✅ bigger window */
+        border-radius:30px;
         border:1px solid rgba(148,163,184,.22);
         background:rgba(2,6,23,.90);
-        box-shadow:0 0 44px rgba(0,0,0,.55);
-        padding:18px;
+        box-shadow:0 0 52px rgba(0,0,0,.60);
+        padding:20px;
         position:relative;
       }
 
       .open-top{
         display:flex;
-        align-items:center;
+        align-items:flex-start;
         justify-content:space-between;
         gap:10px;
         margin-bottom:12px;
+      }
+
+      /* ✅ Title + Close next to each other */
+      .open-top-left{
+        display:flex;
+        align-items:flex-start;
+        gap:12px;
+        min-width:0;
       }
       .open-title{
         font-size:12px;
@@ -347,6 +356,7 @@
         text-transform:uppercase;
         color:#cbd5e1;
         font-weight:800;
+        white-space:nowrap;
       }
       .open-sub{
         font-size:12px;
@@ -354,32 +364,32 @@
         margin-top:3px;
       }
 
-      .open-btn{
+      /* ✅ Close glow like "Ma collection" */
+      .open-close{
+        font-size:12px;
+        padding:6px 10px;
         border-radius:999px;
-        padding:10px 14px;
-        font-size:11px;
+        border:1px solid rgba(148,163,184,.45);
+        color:#e5e7eb;
         letter-spacing:.14em;
         text-transform:uppercase;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(15,23,42,.55);
-        color:#e5e7eb;
+        background:rgba(15,23,42,.85);
         cursor:pointer;
+        box-shadow:0 0 10px rgba(129,140,248,.35);
+        transition: box-shadow .15s ease-out, border-color .15s ease-out, transform .15s ease-out, opacity .15s ease-out;
+        height: fit-content;
       }
-      .open-btn.primary{
-        border:none;
-        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
-        box-shadow: 0 0 18px rgba(168,85,247,.30);
+      .open-close:hover{
+        border-color:#a5b4fc;
+        box-shadow:0 0 12px rgba(129,140,248,.45);
+        transform: translateY(-1px);
       }
-      .open-btn:disabled{ opacity:.45; cursor:default; }
-
-      .open-actions{
-        margin-top:12px;
-        display:flex;
-        justify-content:space-between;
-        gap:10px;
-        align-items:center;
+      .open-close:disabled{
+        opacity:.45;
+        cursor:default;
+        box-shadow:none;
+        transform:none;
       }
-      .open-actions-left{ font-size:12px; color:#9ca3af; }
 
       /* Reel section */
       .reel-section{ display:block; }
@@ -418,14 +428,14 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      /* ✅ Cursor line only over IMAGE area */
+      /* ✅ Cursor line: aligned ONLY on image area (no overlap text) */
       .reel-cursor-line{
         position:absolute;
         left:50%;
-        top:18px;                 /* align with viewport padding */
+        top:0px;                 /* ✅ FIX: was 18px (too low) */
         transform:translateX(-50%);
         width:4px;
-        height:132px;            /* exactly the image height */
+        height:132px;            /* image height */
         border-radius:999px;
         background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
         box-shadow: 0 0 18px rgba(250,204,21,.55);
@@ -498,26 +508,58 @@
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
 
-      /* Result-only view (no reel visible) */
+      .open-actions{
+        margin-top:12px;
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+        align-items:center;
+      }
+      .open-actions-left{ font-size:12px; color:#9ca3af; }
+
+      .open-btn{
+        border-radius:999px;
+        padding:10px 14px;
+        font-size:11px;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        border:1px solid rgba(148,163,184,.20);
+        background:rgba(15,23,42,.55);
+        color:#e5e7eb;
+        cursor:pointer;
+      }
+      .open-btn.primary{
+        border:none;
+        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
+        box-shadow: 0 0 18px rgba(168,85,247,.30);
+      }
+      .open-btn:disabled{ opacity:.45; cursor:default; }
+
+      /* ==============================
+         V11.4 – RESULT view: card centered + buttons under the card
+         ============================== */
       .result-section{ display:none; }
       .result-section.on{ display:block; }
 
-      .result-wrap{
+      .result-centered{
         display:flex;
-        gap:18px;
-        align-items:stretch;
-      }
-      @media (max-width: 860px){
-        .result-wrap{ flex-direction:column; }
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:12px;
+        padding:6px 0 2px;
       }
 
+      /* ✅ slightly higher to allow buttons centered overall */
       .result-card{
-        width:min(460px, 92vw);
+        width:min(480px, 92vw);
         border-radius:22px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.35);
         padding:14px;
+        transform: translateY(-6px); /* ✅ lift a bit */
       }
+
       .result-img{
         width:100%;
         aspect-ratio:3/4;
@@ -565,21 +607,14 @@
       .result-pill.ultra{ color:#a855f7; }
       .result-pill.legendary{ color:#f97316; }
 
-      /* ✅ Right panel smaller + CTAs centered */
-      .result-cta{
-        flex:0.72;
-        border-radius:22px;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(2,6,23,.20);
-        padding:14px;
+      /* ✅ Buttons under the card */
+      .result-btnrow{
         display:flex;
-        flex-direction:column;
-        gap:12px;
+        gap:10px;
+        flex-wrap:wrap;
+        align-items:center;
         justify-content:center;
-        min-height: 520px;
-      }
-      @media (max-width: 860px){
-        .result-cta{ min-height:auto; justify-content:flex-start; }
+        margin-top:-2px;
       }
 
       .result-note{
@@ -587,17 +622,11 @@
         color:#9ca3af;
         line-height:1.45;
         text-align:center;
-      }
-      .result-btnrow{
-        display:flex;
-        gap:10px;
-        flex-wrap:wrap;
-        align-items:center;
-        justify-content:center;
-        margin-top:10px;
+        max-width:560px;
+        padding:0 10px;
       }
       .result-foot{
-        margin-top:14px;
+        margin-top:2px;
         font-size:12px;
         color:#9ca3af;
         text-align:center;
@@ -681,11 +710,20 @@
     <div class="open-overlay" id="open-overlay" aria-hidden="true">
       <div class="open-modal" role="dialog" aria-modal="true">
         <div class="open-top">
-          <div>
-            <div class="open-title">VAULTSPIN · OPENING</div>
-            <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
+          <div class="open-top-left">
+            <div>
+              <div class="open-title">VAULTSPIN · OPENING</div>
+              <div class="open-sub" id="open-sub">La roulette ralentit et s’arrête sur ta carte.</div>
+            </div>
+
+            <!-- ✅ Close next to title + glow like "Ma collection" -->
+            <button class="open-close" id="open-close" disabled>Close</button>
           </div>
-          <button class="open-btn" id="open-close" disabled>Close</button>
+
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="open-btn" id="open-skip">Skip</button>
+            <button class="open-btn primary" id="open-another" disabled>Open another pack</button>
+          </div>
         </div>
 
         <!-- Reel section -->
@@ -703,15 +741,14 @@
           <div class="open-actions">
             <div class="open-actions-left" id="open-hint">Opening…</div>
             <div style="display:flex; gap:10px; align-items:center;">
-              <button class="open-btn" id="open-skip">Skip</button>
-              <button class="open-btn primary" id="open-another" disabled>Open another pack</button>
+              <span style="font-size:11px; color:#94a3b8;">La roulette s’arrête sur ta carte.</span>
             </div>
           </div>
         </div>
 
         <!-- Result-only section -->
         <div class="result-section" id="result-section">
-          <div class="result-wrap">
+          <div class="result-centered">
             <div class="result-card" id="result-card">
               <div class="result-img" id="result-imgwrap">
                 <img id="result-img" src="" alt="Result" />
@@ -725,20 +762,19 @@
               </div>
             </div>
 
-            <div class="result-cta">
-              <div class="result-note" id="result-note">
-                Tu peux observer ta carte. Quand tu veux : ouvre un autre pack, ou ferme.
-              </div>
-
-              <div class="result-btnrow">
-                <button class="open-btn primary" id="result-open-another">Open another pack</button>
-                <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
-                  Ma collection
-                </a>
-              </div>
-
-              <div class="result-foot" id="result-footnote">—</div>
+            <!-- ✅ Buttons now under the card image -->
+            <div class="result-btnrow">
+              <button class="open-btn primary" id="result-open-another">Open another pack</button>
+              <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
+                Ma collection
+              </a>
             </div>
+
+            <div class="result-note" id="result-note">
+              Tu peux observer ta carte. Quand tu veux : ouvre un autre pack, ou ferme.
+            </div>
+
+            <div class="result-foot" id="result-footnote">—</div>
           </div>
         </div>
       </div>
@@ -781,7 +817,7 @@
         <div>
           <h1>Open your VaultSpin Pack</h1>
           <p class="subtitle">
-            V11.3 : résultat clean (pas de ct affiché), CTA centrés, curseur sur image only, hover preview sans clignotement.
+            V11.4 : overlay plus grand (CS:GO), curseur aligné image only, résultat centré + boutons sous la carte, close next-to-title glow, tick audio sync sur chain opens.
           </p>
         </div>
 
@@ -1068,9 +1104,17 @@
         try{ el.currentTime=0; el.play().catch(()=>{}); }catch(_){}
       }
 
-      function playTick(){
+      function hardResetTicks(){
+        lastTickAt = 0;
+        try{
+          if (tickA){ tickA.pause(); tickA.currentTime = 0; }
+          if (tickB){ tickB.pause(); tickB.currentTime = 0; }
+        }catch(_){}
+      }
+
+      function playTick(force=false){
         const now = performance.now();
-        if (now - lastTickAt < 58) return; // slightly slower tick
+        if (!force && (now - lastTickAt < 58)) return; // slightly slower tick
         lastTickAt = now;
 
         const a = tickFlip ? tickA : tickB;
@@ -1177,8 +1221,10 @@
        ********************/
       function openOverlay(){
         const o = document.getElementById("open-overlay");
-        o.classList.add("on");
-        o.setAttribute("aria-hidden","false");
+        if (!o.classList.contains("on")){
+          o.classList.add("on");
+          o.setAttribute("aria-hidden","false");
+        }
       }
       function closeOverlay(){
         const o = document.getElementById("open-overlay");
@@ -1308,11 +1354,11 @@
       async function spinToStop(){
         spinning = true;
         setStatus("Ouverture : roulette en cours…", "pending");
-        playSound(sfxBooster);
 
         const track = document.getElementById("reel-track");
         const viewport = document.getElementById("reel-viewport");
 
+        // Reset transforms
         track.classList.remove("spinning");
         track.style.transition = "";
         track.style.transform = "translateX(0px)";
@@ -1326,6 +1372,11 @@
 
         const jitter = (Math.random()*6) - 3;
         const finalX = -(targetTranslate + jitter);
+
+        // ✅ audio sync: hard reset tick buffers + play booster right at start
+        hardResetTicks();
+        playSound(sfxBooster);
+        playTick(true); // ✅ immediate first tick so it never feels late
 
         startTickLoop();
 
@@ -1367,14 +1418,12 @@
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
 
-        // ✅ remove cardTypeIndex from UI
         document.getElementById("result-desc").textContent = `${rarityToLabel(rarityNum)} · ${formatDate(ts)}`;
 
         const pill = document.getElementById("result-pill");
         pill.textContent = rarityKey;
         pill.className = "result-pill " + rarityKey.toLowerCase();
 
-        // ✅ remove cardTypeIndex from footnote
         document.getElementById("result-footnote").textContent =
           `Ajoutée à ta collection : tokenId ${tokenId} • ${rarityToLabel(rarityNum)}`;
       }
@@ -1411,6 +1460,9 @@
         openOverlay();
         showReel();
 
+        // ✅ make sure tick buffers are ready before any spin
+        hardResetTicks();
+
         const winningCt = pickWeightedCardIndex();
         const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 0;
         const rarityKey = rarityKeyFromNum(rarityNum);
@@ -1424,7 +1476,7 @@
         const reelItems = buildReelItems(winningCt);
         renderReel(reelItems);
 
-        await sleep(70);
+        await sleep(60); // slightly shorter to reduce perceived desync
         await spinToStop();
 
         playSound(sfxReveal);
@@ -1443,6 +1495,9 @@
       }
 
       async function flyThenOpenAnother(){
+        // ✅ prevent any late ticks from previous run
+        hardResetTicks();
+
         const imgwrap = document.getElementById("result-imgwrap");
         imgwrap.classList.add("fly-out");
         await sleep(850);
@@ -1521,11 +1576,11 @@
           await flyThenOpenAnother();
         });
 
-        // ✅ only top-right close remains
         document.getElementById("open-close").addEventListener("click", () => {
           if (spinning) return;
           closeOverlay();
           uiState = UI_STATE.IDLE;
+          hardResetTicks();
         });
 
         document.addEventListener("keydown", (e) => {
@@ -1534,6 +1589,7 @@
           if (overlay.classList.contains("on") && !spinning && uiState === UI_STATE.RESULT){
             closeOverlay();
             uiState = UI_STATE.IDLE;
+            hardResetTicks();
           }
         });
 
@@ -1546,7 +1602,7 @@
           renderHistory();
         });
 
-        // ✅ Hover preview float (NO modal => no blink)
+        // Hover preview float (NO modal => no blink)
         document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
