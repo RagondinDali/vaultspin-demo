@@ -416,14 +416,14 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      /* Cursor line (raised a bit so it doesn’t touch bottom labels) */
+      /* Cursor line */
       .reel-cursor-line{
         position:absolute;
         left:50%;
-        top:14px;                 /* was 18px */
+        top:14px;
         transform:translateX(-50%);
         width:4px;
-        height:126px;            /* was 132px */
+        height:126px;
         border-radius:999px;
         background: linear-gradient(to bottom, transparent, rgba(250,204,21,.95), transparent);
         box-shadow: 0 0 18px rgba(250,204,21,.55);
@@ -661,10 +661,7 @@
           </div>
 
           <div class="open-right">
-            <!-- SKIP only during reel -->
             <button class="open-btn" id="open-skip">Skip</button>
-
-            <!-- CLOSE only during result (right side) -->
             <button class="open-btn close-glow" id="open-close">Close</button>
           </div>
         </div>
@@ -731,9 +728,7 @@
 
           <div class="wallet-pop">
             <h3>Wallet (démo)</h3>
-            <div class="wallet-hint" id="wallet-hint">
-              —
-            </div>
+            <div class="wallet-hint" id="wallet-hint">—</div>
             <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
               <button class="btn-mini" id="wallet-add-20">+20€</button>
               <button class="btn-mini" id="wallet-add-100">+100€</button>
@@ -788,7 +783,9 @@
           <div class="stat">
             <div class="k">Best pull</div>
             <div class="best-pull">
-              <div class="best-thumb"><img id="stat-best-img" src="images/venusaur_common.png" alt="Best" /></div>
+              <div class="best-thumb">
+                <img id="stat-best-img" src="images/germignon.png" alt="Best" />
+              </div>
               <div class="best-meta">
                 <div class="line1" id="stat-best-line1">—</div>
                 <div class="line2" id="stat-best-line2">—</div>
@@ -830,84 +827,98 @@
 
           <div class="drop-grid" id="drop-grid">
             <!-- COMMON -->
-            <div class="drop-item" data-rarity="COMMON" data-name="Bulbizarre" data-img="images/bulbasaur_common.png" data-ct="0">
-              <div class="drop-thumb"><img src="images/bulbasaur_common.png" alt="Bulbizarre Common" /></div>
-              <div class="drop-name">Bulbizarre</div>
+            <div class="drop-item" data-rarity="COMMON" data-name="Phyllali PCA" data-img="images/phyllali_PCA.png" data-ct="0">
+              <div class="drop-thumb"><img src="images/phyllali_PCA.png" alt="Phyllali PCA Common" /></div>
+              <div class="drop-name">Phyllali PCA</div>
               <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="COMMON" data-name="Herbizarre" data-img="images/ivysaur_common.png" data-ct="1">
-              <div class="drop-thumb"><img src="images/ivysaur_common.png" alt="Herbizarre Common" /></div>
-              <div class="drop-name">Herbizarre</div>
+            <div class="drop-item" data-rarity="COMMON" data-name="Aéromite" data-img="images/aeromite.png" data-ct="1">
+              <div class="drop-thumb"><img src="images/aeromite.png" alt="Aéromite Common" /></div>
+              <div class="drop-name">Aéromite</div>
               <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="COMMON" data-name="Florizarre" data-img="images/venusaur_common.png" data-ct="2">
-              <div class="drop-thumb"><img src="images/venusaur_common.png" alt="Florizarre Common" /></div>
-              <div class="drop-name">Florizarre</div>
+            <div class="drop-item" data-rarity="COMMON" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
+              <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon Common" /></div>
+              <div class="drop-name">Germignon</div>
+              <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
+            </div>
+
+            <!-- NEW COMMON -->
+            <div class="drop-item" data-rarity="COMMON" data-name="Paras" data-img="images/paras.png" data-ct="13">
+              <div class="drop-thumb"><img src="images/paras.png" alt="Paras Common" /></div>
+              <div class="drop-name">Paras</div>
               <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
             </div>
 
             <!-- RARE -->
-            <div class="drop-item" data-rarity="RARE" data-name="Bulbizarre" data-img="images/bulbasaur_rare.png" data-ct="3">
-              <div class="drop-thumb"><img src="images/bulbasaur_rare.png" alt="Bulbizarre Rare" /></div>
-              <div class="drop-name">Bulbizarre</div>
+            <div class="drop-item" data-rarity="RARE" data-name="Astronelle" data-img="images/astronelle.png" data-ct="3">
+              <div class="drop-thumb"><img src="images/astronelle.png" alt="Astronelle Rare" /></div>
+              <div class="drop-name">Astronelle</div>
               <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="RARE" data-name="Herbizarre" data-img="images/ivysaur_rare.png" data-ct="4">
-              <div class="drop-thumb"><img src="images/ivysaur_rare.png" alt="Herbizarre Rare" /></div>
-              <div class="drop-name">Herbizarre</div>
+            <div class="drop-item" data-rarity="RARE" data-name="Chétiflor" data-img="images/chetiflor.png" data-ct="4">
+              <div class="drop-thumb"><img src="images/chetiflor.png" alt="Chétiflor Rare" /></div>
+              <div class="drop-name">Chétiflor</div>
               <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="RARE" data-name="Florizarre" data-img="images/venusaur_rare.png" data-ct="5">
-              <div class="drop-thumb"><img src="images/venusaur_rare.png" alt="Florizarre Rare" /></div>
-              <div class="drop-name">Florizarre</div>
+            <div class="drop-item" data-rarity="RARE" data-name="Jungko" data-img="images/jungko.png" data-ct="5">
+              <div class="drop-thumb"><img src="images/jungko.png" alt="Jungko Rare" /></div>
+              <div class="drop-name">Jungko</div>
+              <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
+            </div>
+
+            <!-- NEW RARE -->
+            <div class="drop-item" data-rarity="RARE" data-name="Phyllali" data-img="images/phyllali.png" data-ct="14">
+              <div class="drop-thumb"><img src="images/phyllali.png" alt="Phyllali Rare" /></div>
+              <div class="drop-name">Phyllali</div>
               <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
             <!-- ULTRA -->
-            <div class="drop-item" data-rarity="ULTRA" data-name="Bulbizarre" data-img="images/bulbasaur_ultra.png" data-ct="6">
-              <div class="drop-thumb"><img src="images/bulbasaur_ultra.png" alt="Bulbizarre Ultra" /></div>
-              <div class="drop-name">Bulbizarre</div>
+            <div class="drop-item" data-rarity="ULTRA" data-name="Chenipan" data-img="images/chenipan.png" data-ct="6">
+              <div class="drop-thumb"><img src="images/chenipan.png" alt="Chenipan Ultra" /></div>
+              <div class="drop-name">Chenipan</div>
               <div class="drop-meta"><span>9%</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="ULTRA" data-name="Herbizarre" data-img="images/ivysaur_ultra.png" data-ct="7">
-              <div class="drop-thumb"><img src="images/ivysaur_ultra.png" alt="Herbizarre Ultra" /></div>
-              <div class="drop-name">Herbizarre</div>
+            <div class="drop-item" data-rarity="ULTRA" data-name="Énergie Plante" data-img="images/energie_plante.png" data-ct="7">
+              <div class="drop-thumb"><img src="images/energie_plante.png" alt="Énergie Plante Ultra" /></div>
+              <div class="drop-name">Énergie</div>
               <div class="drop-meta"><span>9%</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="ULTRA" data-name="Florizarre" data-img="images/venusaur_ultra.png" data-ct="8">
-              <div class="drop-thumb"><img src="images/venusaur_ultra.png" alt="Florizarre Ultra" /></div>
-              <div class="drop-name">Florizarre</div>
+            <div class="drop-item" data-rarity="ULTRA" data-name="Majaspic" data-img="images/majaspic.png" data-ct="8">
+              <div class="drop-thumb"><img src="images/majaspic.png" alt="Majaspic Ultra" /></div>
+              <div class="drop-name">Majaspic</div>
               <div class="drop-meta"><span>9%</span><span class="drop-tag ultra">Ultra</span></div>
             </div>
 
             <!-- LEGENDARY -->
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Bulbizarre" data-img="images/bulbasaur_legendary.png" data-ct="9">
-              <div class="drop-thumb"><img src="images/bulbasaur_legendary.png" alt="Bulbizarre Legendary" /></div>
-              <div class="drop-name">Bulbizarre</div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Mimitoss" data-img="images/mimitoss.png" data-ct="9">
+              <div class="drop-thumb"><img src="images/mimitoss.png" alt="Mimitoss Legendary" /></div>
+              <div class="drop-name">Mimitoss</div>
               <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Herbizarre" data-img="images/ivysaur_legendary.png" data-ct="10">
-              <div class="drop-thumb"><img src="images/ivysaur_legendary.png" alt="Herbizarre Legendary" /></div>
-              <div class="drop-name">Herbizarre</div>
-              <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
-            </div>
-
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/venusaur_legendary.png" data-ct="11">
-              <div class="drop-thumb"><img src="images/venusaur_legendary.png" alt="Florizarre Legendary" /></div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
+              <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre Legendary" /></div>
               <div class="drop-name">Florizarre</div>
               <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Plante" data-img="images/plant_legendary.png" data-ct="12">
-              <div class="drop-thumb"><img src="images/plant_legendary.png" alt="Plante Legendary" /></div>
-              <div class="drop-name">Plante</div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
+              <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking Legendary" /></div>
+              <div class="drop-name">Nidoking</div>
+              <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
+            </div>
+
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Noeufnoeuf" data-img="images/noeufnoeuf.png" data-ct="12">
+              <div class="drop-thumb"><img src="images/noeufnoeuf.png" alt="Noeufnoeuf Legendary" /></div>
+              <div class="drop-name">Noeufnoeuf</div>
               <div class="drop-meta"><span>1%</span><span class="drop-tag legendary">Legendary</span></div>
             </div>
           </div>
@@ -915,7 +926,7 @@
       </div>
     </div>
 
-    <!-- Sounds (on garde, mais on fera le whoosh + polish audio plus tard) -->
+    <!-- Sounds -->
     <audio id="sfx-booster" src="sounds/booster_open.mp3" preload="auto"></audio>
     <audio id="sfx-reveal" src="sounds/card_reveal.mp3" preload="auto"></audio>
     <audio id="sfx-legendary" src="sounds/legendary_fx.mp3" preload="auto"></audio>
@@ -987,34 +998,75 @@
       }
 
       /********************
-       * Cards config
+       * Cards config (UPDATED + 2 new cards)
        ********************/
       const CARD_IMAGE_BY_INDEX = {
-        0:"images/bulbasaur_common.png",
-        1:"images/ivysaur_common.png",
-        2:"images/venusaur_common.png",
-        3:"images/bulbasaur_rare.png",
-        4:"images/ivysaur_rare.png",
-        5:"images/venusaur_rare.png",
-        6:"images/bulbasaur_ultra.png",
-        7:"images/ivysaur_ultra.png",
-        8:"images/venusaur_ultra.png",
-        9:"images/bulbasaur_legendary.png",
-        10:"images/ivysaur_legendary.png",
-        11:"images/venusaur_legendary.png",
-        12:"images/plant_legendary.png",
+        0:"images/phyllali_PCA.png",
+        1:"images/aeromite.png",
+        2:"images/germignon.png",
+
+        3:"images/astronelle.png",
+        4:"images/chetiflor.png",
+        5:"images/jungko.png",
+
+        6:"images/chenipan.png",
+        7:"images/energie_plante.png",
+        8:"images/majaspic.png",
+
+        9:"images/mimitoss.png",
+        10:"images/florizarre.png",
+        11:"images/nidoking.png",
+        12:"images/noeufnoeuf.png",
+
+        // NEW
+        13:"images/paras.png",
+        14:"images/phyllali.png",
       };
 
       const CARD_NAME_BY_INDEX = {
-        0:"Bulbizarre", 1:"Herbizarre", 2:"Florizarre",
-        3:"Bulbizarre", 4:"Herbizarre", 5:"Florizarre",
-        6:"Bulbizarre", 7:"Herbizarre", 8:"Florizarre",
-        9:"Bulbizarre", 10:"Herbizarre", 11:"Florizarre",
-        12:"Plante",
+        0:"Phyllali PCA",
+        1:"Aéromite",
+        2:"Germignon",
+
+        3:"Astronelle",
+        4:"Chétiflor",
+        5:"Jungko",
+
+        6:"Chenipan",
+        7:"Énergie Plante",
+        8:"Majaspic",
+
+        9:"Mimitoss",
+        10:"Florizarre",
+        11:"Nidoking",
+        12:"Noeufnoeuf",
+
+        // NEW
+        13:"Paras",
+        14:"Phyllali",
       };
 
-      const CARD_RARITY_BY_INDEX = { 0:0,1:0,2:0, 3:1,4:1,5:1, 6:2,7:2,8:2, 9:3,10:3,11:3,12:3 };
-      const CARD_WEIGHT_BY_INDEX = { 0:7000,1:7000,2:7000, 3:2000,4:2000,5:2000, 6:900,7:900,8:900, 9:100,10:100,11:100,12:100 };
+      // rarity: 0=COMMON 1=RARE 2=ULTRA 3=LEGENDARY
+      const CARD_RARITY_BY_INDEX = {
+        0:0, 1:0, 2:0,
+        3:1, 4:1, 5:1,
+        6:2, 7:2, 8:2,
+        9:3, 10:3, 11:3, 12:3,
+        // NEW
+        13:0,   // Paras => COMMON
+        14:1,   // Phyllali => RARE
+      };
+
+      // weights (kept consistent with your original rarity buckets)
+      const CARD_WEIGHT_BY_INDEX = {
+        0:7000, 1:7000, 2:7000,
+        3:2000, 4:2000, 5:2000,
+        6:900,  7:900,  8:900,
+        9:100, 10:100, 11:100, 12:100,
+        // NEW
+        13:7000,  // Paras COMMON
+        14:2000,  // Phyllali RARE
+      };
 
       const RARITY_ORDER = ["COMMON","RARE","ULTRA","LEGENDARY"];
       function rarityToLabel(num){ return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common"; }
@@ -1211,19 +1263,14 @@
       function showReel(){
         document.getElementById("reel-section").classList.remove("hidden");
         document.getElementById("result-section").classList.remove("on");
-
-        // CLOSE hidden during opening, SKIP visible
         document.getElementById("open-close").style.display = "none";
         document.getElementById("open-skip").style.display = "inline-flex";
-
         document.getElementById("open-hint").textContent = "Opening…";
       }
 
       function showResult(){
         document.getElementById("reel-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("on");
-
-        // SKIP hidden after result, CLOSE visible (on right)
         document.getElementById("open-skip").style.display = "none";
         document.getElementById("open-close").style.display = "inline-flex";
       }
@@ -1335,7 +1382,6 @@
         spinning = true;
         setStatus("Ouverture…", "pending");
 
-        // Audio sync: stop old tick + play booster exactly at spin start
         stopTickAudio();
         playSound(sfxBooster);
 
@@ -1385,7 +1431,6 @@
         const targetTranslate = targetCenter - cursorX;
         const finalX = -(targetTranslate);
 
-        // Not snap: quick ease-out
         track.style.transition = "transform 420ms cubic-bezier(.16,.84,.2,1)";
         track.style.transform = `translateX(${finalX}px)`;
       }
@@ -1393,8 +1438,7 @@
       function triggerRarityFx(rarityKey){
         const wrap = document.getElementById("result-imgwrap");
         wrap.classList.remove("fx-ultra","fx-legendary");
-        void wrap.offsetHeight; // restart anim
-
+        void wrap.offsetHeight;
         if (rarityKey === "ULTRA") wrap.classList.add("fx-ultra");
         if (rarityKey === "LEGENDARY") wrap.classList.add("fx-legendary");
       }
@@ -1422,7 +1466,7 @@
           rarity: rarityNum,
           rarityLabel: rarityToLabel(rarityNum),
           rarityKey,
-          cardTypeIndex: winningCt, // stored only
+          cardTypeIndex: winningCt,
           img: imgSrc,
           name
         };
@@ -1439,7 +1483,6 @@
           return;
         }
 
-        // debit at start (wallet logic)
         if (!debitPack()){
           setStatus("Fonds insuffisants. Ajoute du crédit dans le wallet.", "error");
           return;
@@ -1507,7 +1550,7 @@
       }
 
       /********************
-       * Hover preview float (NO blink)
+       * Hover preview float
        ********************/
       function setPreview({ img, name, rarity }){
         const box = document.getElementById("preview-float");
@@ -1546,26 +1589,16 @@
           }
         }catch(_){}
 
-        // wallet init
         renderWallet();
-
-        // Default status
         setStatus(canAffordPack() ? "Prêt. Ouvre un pack." : "Ajoute des fonds au wallet, puis ouvre un pack.", "ok");
 
         renderStats();
         renderHistory();
 
         document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
+        document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
+        document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
 
-        document.getElementById("open-skip").addEventListener("click", () => {
-          skipSpinNow();
-        });
-
-        document.getElementById("result-open-another").addEventListener("click", async () => {
-          await flyThenOpenAnother();
-        });
-
-        // Close only on RESULT
         document.getElementById("open-close").addEventListener("click", () => {
           if (spinning) return;
           closeOverlay();
@@ -1599,7 +1632,6 @@
           setStatus("Wallet reset ✅", "ok");
         });
 
-        // Reset data
         document.getElementById("reset-data").addEventListener("click", resetAllData);
         document.getElementById("clear-history").addEventListener("click", () => {
           localStorage.removeItem(VS_COLLECTION_KEY);
