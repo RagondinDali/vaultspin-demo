@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – Collection (V10)</title>
+    <title>VaultSpin – Collection (V11)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <style>
@@ -191,14 +191,14 @@
         color:#9ca3af;
       }
 
-      /* ✅ V10 : LISTE VERTICALE (au lieu de grid horizontal) */
+      /* LISTE VERTICALE */
       .grid{
         display:flex;
         flex-direction:column;
         gap:12px;
       }
 
-      /* ✅ Cards en “row” */
+      /* Cards en “row” */
       .card{
         border-radius:20px;
         border:1px solid rgba(148,163,184,.18);
@@ -218,7 +218,7 @@
         box-shadow: 0 0 16px rgba(129,140,248,.18);
       }
 
-      /* ✅ Thumb fixe */
+      /* Thumb fixe */
       .thumb{
         width:92px;
         flex:0 0 auto;
@@ -230,7 +230,7 @@
       }
       .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-      /* ✅ Meta prend la place */
+      /* Meta prend la place */
       .meta{
         flex:1;
         display:flex;
@@ -395,7 +395,6 @@
       .chip a{ color:#a5b4fc; text-decoration: underline; }
       .chip a:hover{ color:#c4b5fd; }
 
-      /* ✅ Mobile : badges à droite mais mieux “stackés” */
       @media (max-width: 520px){
         .card{ gap:10px; }
         .thumb{ width:84px; }
@@ -440,7 +439,7 @@
               Vue “Stacks” : cartes groupées par <b>cardTypeIndex</b>. Clique sur le badge
               <b>Owned</b> pour filtrer. Le filtre est aussi supporté via <b>?ct=</b>.
               <br/>
-              ✅ V10 : affichage <b>vertical</b> (liste) pour éviter les sorties d’écran.
+              ✅ V11 : fallback catalogue (ct → name/img/rarity) si une entrée est incomplète.
             </div>
           </div>
 
@@ -497,10 +496,13 @@
 
     <script>
       /********************
-       * Compatible avec V9/V10
+       * STORAGE
        ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
 
+      /********************
+       * RARITY
+       ********************/
       const RARITY_ORDER = ["COMMON","RARE","ULTRA","LEGENDARY"];
       const RARITY_LABEL = { COMMON:"Common", RARE:"Rare", ULTRA:"Ultra", LEGENDARY:"Legendary" };
 
@@ -510,6 +512,36 @@
         if (num === 2) return "ULTRA";
         if (num === 3) return "LEGENDARY";
         return "COMMON";
+      }
+
+      /********************
+       * ✅ Local catalog (ct -> card meta)
+       * (permet d'afficher correctement même si une entrée est incomplète)
+       ********************/
+      const CARD_CATALOG = {
+        0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png",  rarityKey:"COMMON" },
+        1:  { name:"Aéromite",       img:"images/aeromite.png",      rarityKey:"COMMON" },
+        2:  { name:"Germignon",      img:"images/germignon.png",     rarityKey:"COMMON" },
+
+        3:  { name:"Astronelle",     img:"images/astronelle.png",    rarityKey:"RARE" },
+        4:  { name:"Chétiflor",      img:"images/chetiflor.png",     rarityKey:"RARE" },
+        5:  { name:"Jungko",         img:"images/jungko.png",        rarityKey:"RARE" },
+
+        6:  { name:"Chenipan",       img:"images/chenipan.png",      rarityKey:"ULTRA" },
+        7:  { name:"Énergie Plante", img:"images/energie_plante.png",rarityKey:"ULTRA" },
+        8:  { name:"Majaspic",       img:"images/majaspic.png",      rarityKey:"ULTRA" },
+
+        9:  { name:"Mimitoss",       img:"images/mimitoss.png",      rarityKey:"LEGENDARY" },
+        10: { name:"Florizarre",     img:"images/florizarre.png",    rarityKey:"LEGENDARY" },
+        11: { name:"Nidoking",       img:"images/nidoking.png",      rarityKey:"LEGENDARY" },
+        12: { name:"Noeunoeuf",      img:"images/noeufnoeuf.png",    rarityKey:"LEGENDARY" },
+
+        13: { name:"Paras",          img:"images/paras.png",         rarityKey:"COMMON" },
+        14: { name:"Phyllali",       img:"images/phyllali.png",      rarityKey:"RARE" },
+      };
+
+      function catalogForCt(ct){
+        return CARD_CATALOG[Number(ct)] || null;
       }
 
       function getCollection(){
@@ -559,29 +591,52 @@
 
       function groupByCardType(arr){
         const map = new Map();
+
         for (const x of arr){
           const ct = Number(x.cardTypeIndex ?? -1);
+          if (!Number.isFinite(ct) || ct < 0) continue;
+
+          const cat = catalogForCt(ct);
+
+          // rarity fallback: priorité entrée -> catalogue -> num
+          const rk =
+            x.rarityKey ||
+            (cat && cat.rarityKey) ||
+            rarityKeyFromNum(x.rarity || 0);
+
           if (!map.has(ct)){
-            const rk = x.rarityKey || rarityKeyFromNum(x.rarity || 0);
             map.set(ct, {
               cardTypeIndex: ct,
               rarityKey: rk,
               rarityLabel: x.rarityLabel || RARITY_LABEL[rk] || "Common",
-              img: x.img || "",
-              name: x.name || ("Card #" + ct),
+              img: x.img || (cat && cat.img) || "",
+              name: x.name || (cat && cat.name) || ("Card #" + ct),
               owned: 0,
               lastTs: 0,
               lastTokenId: null
             });
           }
+
           const g = map.get(ct);
           g.owned += 1;
+
+          // si un item plus récent a une image/name mieux renseignée, on peut “améliorer” le stack
+          const betterImg = x.img || (cat && cat.img) || "";
+          const betterName = x.name || (cat && cat.name) || "";
+          if (!g.img && betterImg) g.img = betterImg;
+          if (!g.name || g.name.startsWith("Card #")) if (betterName) g.name = betterName;
+
           if ((x.ts || 0) > g.lastTs){
             g.lastTs = x.ts || 0;
             g.lastTokenId = x.tokenId ?? null;
+
+            // en dernier resort, si rarityLabel manquant, on régénère
+            g.rarityKey = rk;
+            g.rarityLabel = x.rarityLabel || RARITY_LABEL[rk] || "Common";
           }
         }
-        return Array.from(map.values()).filter(x => x.cardTypeIndex >= 0);
+
+        return Array.from(map.values());
       }
 
       function rarityClass(k){
@@ -642,7 +697,6 @@
 
         // Group stacks
         let stacks = groupByCardType(items);
-
         document.getElementById("stat-unique").textContent = String(stacks.length);
 
         // Search on stacks
@@ -690,7 +744,7 @@
           return;
         }
 
-        // Render stack cards (✅ vertical list rows)
+        // Render stack cards (vertical list rows)
         for (const s of stacks){
           const card = document.createElement("div");
           card.className = "card";
@@ -701,7 +755,7 @@
 
           const thumb = document.createElement("div");
           thumb.className = "thumb";
-          thumb.innerHTML = `<img src="${s.img}" alt="${s.name}"/>`;
+          thumb.innerHTML = `<img src="${escapeAttr(s.img)}" alt="${escapeAttr(s.name)}"/>`;
 
           const meta = document.createElement("div");
           meta.className = "meta";
@@ -725,7 +779,6 @@
           owned.type = "button";
           owned.textContent = "Owned · " + s.owned;
 
-          // Owned badge click => filter on this card
           owned.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -741,7 +794,6 @@
           card.appendChild(thumb);
           card.appendChild(meta);
 
-          // Click = preview persistent
           card.addEventListener("click", () => {
             openModal({
               img: s.img,
@@ -753,12 +805,13 @@
           grid.appendChild(card);
         }
 
-        // Update filter pill UI
+        // Update filter pill UI (✅ affiche aussi le nom si connu)
         const pill = document.getElementById("filter-pill");
         const clearBtn = document.getElementById("clear-filter");
         if (ctFilter !== null){
+          const cat = catalogForCt(ctFilter);
           pill.style.display = "inline-flex";
-          pill.textContent = "Filter: ct=" + ctFilter;
+          pill.textContent = cat ? `Filter: ct=${ctFilter} · ${cat.name}` : `Filter: ct=${ctFilter}`;
           clearBtn.style.display = "inline-flex";
         } else {
           pill.style.display = "none";
@@ -770,6 +823,10 @@
         return String(s || "").replace(/[&<>"']/g, (c) => ({
           "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
         }[c]));
+      }
+
+      function escapeAttr(s){
+        return String(s || "").replace(/"/g, "&quot;");
       }
 
       /********************
@@ -798,7 +855,6 @@
        * Init
        ********************/
       document.addEventListener("DOMContentLoaded", () => {
-        // buttons
         document.getElementById("back-packs").addEventListener("click", () => {
           window.location.href = "index.html";
         });
@@ -808,7 +864,6 @@
         document.getElementById("export-json").addEventListener("click", exportJson);
         document.getElementById("reset-data").addEventListener("click", resetData);
 
-        // modal
         document.getElementById("modal-close").addEventListener("click", closeModal);
         document.getElementById("modal").addEventListener("click", (e) => {
           if (e.target.id === "modal") closeModal();
@@ -817,7 +872,6 @@
           if (e.key === "Escape") closeModal();
         });
 
-        // filters
         document.getElementById("search").addEventListener("input", render);
         document.getElementById("sort").addEventListener("change", render);
 
