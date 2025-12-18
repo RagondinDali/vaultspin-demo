@@ -538,16 +538,15 @@
         margin-top:10px;
         font-size:12px;
         font-weight:900;
-        border:1px solid rgba(34,197,94,.25);
+        border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.35);
         padding:8px 10px;
         border-radius:999px;
         display:inline-flex;
         align-items:center;
         gap:8px;
+        color:#e5e7eb;
       }
-      .profit-pos{ color:#22c55e; border-color:rgba(34,197,94,.25); }
-      .profit-neg{ color:#f97373; border-color:rgba(249,115,115,.22); }
 
       .result-btnrow{
         display:flex;
@@ -662,13 +661,14 @@
                   <div>
                     <div class="result-name" id="result-name">—</div>
                     <div class="result-sub" id="result-desc">—</div>
-                    <div class="result-profit profit-pos" id="result-profit">+0,00 €</div>
+                    <div class="result-profit" id="result-profit">Valeur : 0,00 €</div>
                   </div>
                   <div class="result-pill epic" id="result-pill">EPIC</div>
                 </div>
               </div>
 
               <div class="result-btnrow">
+                <button class="open-btn" id="result-sell">Revendre</button>
                 <button class="open-btn primary" id="result-open-another">Open another pack</button>
                 <a class="top-link glow" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
                   Ma collection
@@ -689,14 +689,15 @@
         <div class="wallet-wrap">
           <div class="wallet-pill" title="Wallet local (démo)">
             <span class="wallet-label">Wallet</span>
-            <span class="wallet-main" id="wallet-eur">∞ €</span>
-            <span class="wallet-sub" id="wallet-eth">≈ ∞ ETH</span>
+            <span class="wallet-main" id="wallet-eur">0,00 €</span>
+            <span class="wallet-sub" id="wallet-eth">≈ 0,0000 ETH</span>
           </div>
 
           <div class="wallet-pop">
             <h3>Wallet (démo)</h3>
-            <div class="wallet-hint" id="wallet-hint">∞ wallet (démo)<br/>Pack : <b>24,99 €</b></div>
+            <div class="wallet-hint" id="wallet-hint">Balance : <b>0,00 €</b><br/>Spent : <b>0,00 €</b><br/>Pack : <b>24,99 €</b></div>
             <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn-mini" id="wallet-topup-100">+100€</button>
               <button class="btn-mini" id="reset-data">Reset data</button>
             </div>
           </div>
@@ -787,7 +788,6 @@
         <div class="drop-table">
           <div class="drop-title">Cartes potentiellement obtenables</div>
 
-          <!-- ✅ Pas de PCA ici. Nidoking affiché ULTRA. -->
           <div class="drop-grid" id="drop-grid">
             <!-- EPIC -->
             <div class="drop-item" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
@@ -893,6 +893,7 @@
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
       const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
       const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
+      const VS_WALLET_BALANCE_EUR_KEY = "vaultspin_wallet_balance_eur_v1";
 
       /********************
        * ECONOMY
@@ -909,23 +910,42 @@
         localStorage.setItem(VS_WALLET_SPENT_EUR_KEY, String(Math.max(0, Number(v) || 0)));
       }
 
+      function getWalletBalance(){
+        const raw = localStorage.getItem(VS_WALLET_BALANCE_EUR_KEY);
+        const n = raw ? Number(raw) : 0;
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+      function setWalletBalance(v){
+        localStorage.setItem(VS_WALLET_BALANCE_EUR_KEY, String(Math.max(0, Number(v) || 0)));
+      }
+      function creditWallet(amount){
+        setWalletBalance(getWalletBalance() + (Number(amount) || 0));
+        renderWallet();
+      }
+
       function fmtEur(n){
         return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
       }
       function fmtEthFromEur(eur){
-        if (eur === Infinity) return "≈ ∞ ETH";
         const eth = (Number(eur)||0) * EUR_TO_ETH;
         return "≈ " + eth.toLocaleString("fr-FR", { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " ETH";
       }
 
       function renderWallet(){
-        document.getElementById("wallet-eur").textContent = "∞ €";
-        document.getElementById("wallet-eth").textContent = "≈ ∞ ETH";
+        const bal = getWalletBalance();
+        document.getElementById("wallet-eur").textContent = fmtEur(bal);
+        document.getElementById("wallet-eth").textContent = fmtEthFromEur(bal);
         document.getElementById("wallet-hint").innerHTML =
-          `Balance : <b>∞ €</b><br/>Spent : <b>${fmtEur(getWalletSpent())}</b><br/>Pack : <b>${fmtEur(PACK_PRICE_EUR)}</b>`;
+          `Balance : <b>${fmtEur(bal)}</b><br/>Spent : <b>${fmtEur(getWalletSpent())}</b><br/>Pack : <b>${fmtEur(PACK_PRICE_EUR)}</b>`;
       }
 
       function debitPack(){
+        const bal = getWalletBalance();
+        if (bal < PACK_PRICE_EUR){
+          setStatus("Fonds insuffisants. Ajoute +100€ dans le wallet.", "error");
+          return false;
+        }
+        setWalletBalance(bal - PACK_PRICE_EUR);
         setWalletSpent(getWalletSpent() + PACK_PRICE_EUR);
         renderWallet();
         return true;
@@ -1069,6 +1089,15 @@
         setCollection(arr);
       }
 
+      function removeTokenFromCollection(tokenId){
+        const arr = getCollection();
+        const i = arr.findIndex(x => Number(x.tokenId) === Number(tokenId));
+        if (i >= 0){
+          arr.splice(i, 1);
+          setCollection(arr);
+        }
+      }
+
       function formatDate(ts){
         const d = new Date(ts);
         return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
@@ -1153,7 +1182,6 @@
 
         if (last){
           document.getElementById("stat-last").textContent = "#" + last.tokenId;
-          // ✅ ne pas afficher "HIDDEN"
           document.getElementById("stat-last-sub").textContent =
             (last.rarityKey === "HIDDEN") ? "PCA" : last.rarityKey;
         } else {
@@ -1199,7 +1227,6 @@
           const l1 = document.createElement("div");
           l1.className = "hist-line1";
 
-          // ✅ pas de "HIDDEN" visible
           const label = (c.rarityKey === "HIDDEN") ? "PCA" : c.rarityKey;
           l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${label}</span>`;
 
@@ -1288,7 +1315,6 @@
             </div>
             <div class="reel-meta">
               <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}</div>
-              <!-- ✅ jamais afficher HIDDEN -->
               <div class="reel-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "" : rk}</div>
             </div>
           `;
@@ -1410,7 +1436,6 @@
       function fillResultUI(){
         const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
         const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
-        const profit = price - PACK_PRICE_EUR;
 
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
@@ -1422,7 +1447,6 @@
           : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
         document.getElementById("result-desc").textContent = desc;
 
-        // Pill : cachée si PCA
         const pill = document.getElementById("result-pill");
         if (isHidden){
           pill.style.display = "none";
@@ -1432,14 +1456,16 @@
           pill.className = "result-pill " + rarityKey.toLowerCase();
         }
 
-        // Profit (sans ROI label)
         const p = document.getElementById("result-profit");
-        p.textContent =
-          (profit >= 0 ? "+" : "") + profit.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
-        p.classList.remove("profit-pos","profit-neg");
-        p.classList.add(profit >= 0 ? "profit-pos" : "profit-neg");
+        p.textContent = "Valeur : " + fmtEur(price);
 
         triggerHiddenPullFx(isHidden);
+
+        const sellBtn = document.getElementById("result-sell");
+        if (sellBtn){
+          sellBtn.disabled = false;
+          sellBtn.textContent = "Revendre · " + fmtEur(price);
+        }
       }
 
       function commitToCollection(){
@@ -1459,10 +1485,27 @@
         renderHistory();
       }
 
+      function sellCurrentPull(){
+        if (!currentOpen) return;
+        const { winningCt, tokenId } = currentOpen;
+        const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+
+        removeTokenFromCollection(tokenId);
+        creditWallet(price);
+
+        renderStats();
+        renderHistory();
+
+        setStatus(`Revendu ✅ +${fmtEur(price)}`, "ok");
+
+        const btn = document.getElementById("result-sell");
+        if (btn) btn.disabled = true;
+      }
+
       async function openPackRoulette(){
         if (isBusy()) return;
 
-        debitPack();
+        if (!debitPack()) return;
 
         uiState = UI_STATE.OPENING;
         const mainBtn = document.getElementById("open-pack-btn");
@@ -1517,6 +1560,7 @@
         localStorage.removeItem(VS_COLLECTION_KEY);
         localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
         localStorage.removeItem(VS_WALLET_SPENT_EUR_KEY);
+        localStorage.removeItem(VS_WALLET_BALANCE_EUR_KEY);
         setStatus("Reset ✅", "ok");
         renderWallet();
         renderStats();
@@ -1573,6 +1617,7 @@
         document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
         document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
         document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
+        document.getElementById("result-sell").addEventListener("click", sellCurrentPull);
 
         document.getElementById("open-close").addEventListener("click", () => {
           if (spinning) return;
@@ -1587,6 +1632,11 @@
             closeOverlay();
             uiState = UI_STATE.IDLE;
           }
+        });
+
+        document.getElementById("wallet-topup-100").addEventListener("click", () => {
+          creditWallet(100);
+          setStatus("+100€ ajoutés ✅", "ok");
         });
 
         document.getElementById("reset-data").addEventListener("click", resetAllData);
