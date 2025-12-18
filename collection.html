@@ -89,7 +89,7 @@
         box-shadow: 0 0 22px rgba(168,85,247,.55);
       }
 
-      /* Panels */
+      /* Header cards */
       .panel{
         background: radial-gradient(circle at top left, #020617, #020617 70%);
         border-radius:26px;
@@ -119,7 +119,7 @@
         font-size:13px;
         color:#9ca3af;
         line-height:1.4;
-        max-width:780px;
+        max-width:760px;
         margin-top:4px;
       }
 
@@ -170,7 +170,7 @@
         border:1px solid rgba(148,163,184,.14);
         background: rgba(2,6,23,.28);
         padding:12px;
-        min-width:220px;
+        min-width:200px;
         flex:1;
       }
       .stat .k{
@@ -191,13 +191,14 @@
         color:#9ca3af;
       }
 
-      /* Grid list */
+      /* LISTE VERTICALE */
       .grid{
         display:flex;
         flex-direction:column;
         gap:12px;
       }
 
+      /* Cards en “row” */
       .card{
         border-radius:20px;
         border:1px solid rgba(148,163,184,.18);
@@ -217,6 +218,7 @@
         box-shadow: 0 0 16px rgba(129,140,248,.18);
       }
 
+      /* Thumb fixe */
       .thumb{
         width:92px;
         flex:0 0 auto;
@@ -224,18 +226,11 @@
         border-radius:16px;
         overflow:hidden;
         border:1px solid rgba(148,163,184,.18);
-        background:#020617;
+        background: rgba(2,6,23,.35);
       }
-      .thumb img{
-        width:100%;
-        height:100%;
-        object-fit:contain;
-        object-position:center;
-        display:block;
-        padding:4px;
-        background:#020617;
-      }
+      .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
 
+      /* Meta prend la place */
       .meta{
         flex:1;
         display:flex;
@@ -254,7 +249,6 @@
         line-height:1.2;
         min-width:0;
       }
-
       .ct{
         font-size:11px;
         color:#9ca3af;
@@ -263,14 +257,12 @@
         overflow:hidden;
         text-overflow:ellipsis;
       }
-
-      .price-line{
-        font-size:12px;
+      .price{
         margin-top:6px;
+        font-size:11px;
         color:#cbd5e1;
-        letter-spacing:.08em;
+        letter-spacing:.06em;
       }
-      .price-line b{ color:#f9fafb; }
 
       .badges{
         display:flex;
@@ -295,12 +287,6 @@
       .tag.ultra{ color:#a855f7; }
       .tag.legendary{ color:#f97316; }
 
-      .tag.hiddenpull{
-        color:#cbd5e1;
-        border-color: rgba(148,163,184,.22);
-        background: rgba(2,6,23,.28);
-      }
-
       .owned{
         font-size:10px;
         letter-spacing:.14em;
@@ -323,7 +309,7 @@
         line-height:1.45;
       }
 
-      /* Modal */
+      /* Modal preview (center) */
       .modal{
         position:fixed;
         inset:0;
@@ -353,30 +339,16 @@
         border-radius:18px;
         overflow:hidden;
         border:1px solid rgba(148,163,184,.22);
-        background:#020617;
+        background: rgba(15,23,42,.45);
       }
-      .modal-img img{
-        width:100%;
-        height:100%;
-        object-fit:contain;
-        object-position:center;
-        display:block;
-        padding:6px;
-        background:#020617;
-      }
+      .modal-img img{ width:100%; height:100%; object-fit:cover; display:block; }
 
       .modal-meta{
         display:flex;
         justify-content:space-between;
-        align-items:flex-start;
+        align-items:center;
         gap:10px;
         margin-top:10px;
-      }
-      .modal-left{
-        display:flex;
-        flex-direction:column;
-        gap:6px;
-        min-width:0;
       }
       .modal-name{
         font-size:12px;
@@ -385,12 +357,6 @@
         font-weight:900;
         color:#e5e7eb;
       }
-      .modal-price{
-        font-size:12px;
-        color:#cbd5e1;
-      }
-      .modal-price b{ color:#f9fafb; }
-
       .modal-tag{
         font-size:11px;
         letter-spacing:.14em;
@@ -400,13 +366,13 @@
         border:1px solid rgba(148,163,184,.20);
         background: rgba(15,23,42,.55);
         color:#e5e7eb;
-        white-space:nowrap;
-        align-self:flex-start;
       }
-      .modal-tag.epic{ color:#38bdf8; }
-      .modal-tag.ultra{ color:#a855f7; }
-      .modal-tag.legendary{ color:#f97316; }
-      .modal-tag.hiddenpull{ color:#cbd5e1; }
+      .modal-price{
+        margin-top:10px;
+        font-size:12px;
+        color:#cbd5e1;
+        letter-spacing:.08em;
+      }
 
       .modal-close{
         position:absolute;
@@ -422,7 +388,7 @@
       }
       .modal-close:hover{
         border-color: rgba(165,180,252,.7);
-        box-shadow:0 0 10px rgba(129,140,248,.25);
+        box-shadow: 0 0 10px rgba(129,140,248,.25);
       }
 
       .chip{
@@ -449,6 +415,7 @@
   </head>
 
   <body>
+    <!-- Top bar -->
     <div class="top-bar">
       <div class="top-left">
         <div class="top-logo">VAULTSPIN · COLLECTION</div>
@@ -460,6 +427,7 @@
       </div>
     </div>
 
+    <!-- Modal -->
     <div class="modal" id="modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true">
         <button class="modal-close" id="modal-close">✕</button>
@@ -467,12 +435,10 @@
           <img id="modal-img" src="" alt="Preview" />
         </div>
         <div class="modal-meta">
-          <div class="modal-left">
-            <div class="modal-name" id="modal-name">—</div>
-            <div class="modal-price" id="modal-price">—</div>
-          </div>
-          <div class="modal-tag" id="modal-tag">—</div>
+          <div class="modal-name" id="modal-name">—</div>
+          <div class="modal-tag" id="modal-tag" style="display:none;">—</div>
         </div>
+        <div class="modal-price" id="modal-price">Valeur estimée : —</div>
       </div>
     </div>
 
@@ -482,9 +448,10 @@
           <div>
             <h1>Ma collection</h1>
             <div class="sub">
-              Rareté auto basée sur la <b>valeur</b> : EPIC (50–120€) → ULTRA (121–300€) → LEGENDARY (&gt;300€).
+              Vue “Stacks” : cartes groupées par <b>cardTypeIndex</b>.
+              Clique sur <b>Owned</b> pour filtrer. Filtre aussi via <b>?ct=</b>.
               <br/>
-              ⚠️ Phyllali PCA (ct 0) = <b>Hidden Pull</b> : aucune rareté affichée, uniquement le prix.
+              ✅ Rareté basée sur le prix (EPIC / ULTRA / LEGENDARY). PCA : aucun tag affiché.
             </div>
           </div>
 
@@ -520,34 +487,43 @@
             <div class="s">cardTypeIndex distincts</div>
           </div>
           <div class="stat">
-            <div class="k">Best rarity</div>
+            <div class="k">Best pull</div>
             <div class="v" id="stat-best">—</div>
             <div class="s" id="stat-best-sub">—</div>
           </div>
           <div class="stat">
-            <div class="k">Vault value (est.)</div>
+            <div class="k">Vault value</div>
             <div class="v" id="stat-vault">0€</div>
             <div class="s">Somme des valeurs estimées</div>
           </div>
         </div>
 
-        <div class="hint">Astuce : clique sur une carte pour la voir en grand.</div>
+        <div class="hint" id="hint">
+          Astuce : clique sur une carte pour la voir en grand.
+        </div>
       </div>
 
       <div class="panel">
         <div class="chip" id="empty-state" style="display:none;">
-          Aucune carte pour l’instant. Retourne ouvrir un pack sur <a href="index.html">la page packs</a>.
+          Aucune carte pour l’instant. Retourne ouvrir un pack sur
+          <a href="index.html">la page packs</a>.
         </div>
+
         <div class="grid" id="grid"></div>
       </div>
     </div>
 
     <script>
+      /********************
+       * STORAGE
+       ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
 
-      // Prix (source of truth)
-      const CARD_PRICE_EUR = {
-        0: 5.50,
+      /********************
+       * PRICES (source of truth — identique à index)
+       ********************/
+      const CARD_PRICE_EUR_BY_INDEX = {
+        0: 5.50,   // Phyllali PCA
         1: 135,
         2: 60,
         3: 70,
@@ -557,14 +533,51 @@
         7: 129,
         8: 70,
         9: 109,
-        10: 1350,
-        11: 199,
+        10: 1350,  // Florizarre
+        11: 199,   // Nidoking (ULTRA)
         12: 109,
         13: 109,
         14: 77
       };
 
-      // Catalog (name/img)
+      function fmtEur(n){
+        return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+      }
+
+      /********************
+       * RARITY (value-based)
+       * EPIC: <=120
+       * ULTRA: 121–300
+       * LEGENDARY: >300
+       * PCA (ct=0): aucune rareté affichée
+       ********************/
+      const CT_PCA = 0;
+      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"]; // PCA = en dessous de tout (hors tri)
+      const RARITY_LABEL = { EPIC:"EPIC", ULTRA:"ULTRA", LEGENDARY:"LEGENDARY" };
+
+      function rarityKeyForCt(ct){
+        if (ct === CT_PCA) return ""; // ✅ rien
+        const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
+        if (price > 300) return "LEGENDARY";
+        if (price >= 121) return "ULTRA";
+        return "EPIC";
+      }
+
+      function rarityRank(rk){
+        if (!rk) return -1; // PCA : plus bas
+        return RARITY_ORDER.indexOf(rk);
+      }
+
+      function rarityClass(k){
+        if (k === "LEGENDARY") return "legendary";
+        if (k === "ULTRA") return "ultra";
+        if (k === "EPIC") return "epic";
+        return ""; // PCA
+      }
+
+      /********************
+       * ✅ Local catalog (ct -> card meta)
+       ********************/
       const CARD_CATALOG = {
         0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
         1:  { name:"Aéromite",       img:"images/aeromite.png" },
@@ -580,37 +593,11 @@
         11: { name:"Nidoking",       img:"images/nidoking.png" },
         12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
         13: { name:"Paras",          img:"images/paras.png" },
-        14: { name:"Phyllali",       img:"images/phyllali.png" }
+        14: { name:"Phyllali",       img:"images/phyllali.png" },
       };
-
-      // Rareté par prix (logique croissante)
-      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"];
-      const RARITY_LABEL = { EPIC:"Epic", ULTRA:"Ultra", LEGENDARY:"Legendary" };
-
-      function rarityFromPrice(priceEur){
-        const p = Number(priceEur) || 0;
-        if (p > 300) return "LEGENDARY";
-        if (p >= 121) return "ULTRA";
-        return "EPIC";
-      }
-
-      function rarityClass(k){
-        if (k === "LEGENDARY") return "legendary";
-        if (k === "ULTRA") return "ultra";
-        return "epic";
-      }
-
-      function fmtEur(n){
-        const v = Number(n) || 0;
-        return v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-      }
 
       function catalogForCt(ct){
         return CARD_CATALOG[Number(ct)] || null;
-      }
-
-      function priceForCt(ct){
-        return CARD_PRICE_EUR[Number(ct)] ?? 0;
       }
 
       function getCollection(){
@@ -647,27 +634,32 @@
         return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
       }
 
-      function calcVaultValueFromItems(items){
-        let sum = 0;
-        for (const x of items){
-          const ct = Number(x.cardTypeIndex ?? -1);
-          if (!Number.isFinite(ct) || ct < 0) continue;
-          sum += priceForCt(ct);
-        }
-        return sum;
-      }
-
       function bestPull(arr){
         if (!arr.length) return null;
         let best = arr[0];
         for (const c of arr){
-          const ctA = Number(c.cardTypeIndex ?? -1);
-          const ctB = Number(best.cardTypeIndex ?? -1);
-          const ra = rarityFromPrice(priceForCt(ctA));
-          const rb = rarityFromPrice(priceForCt(ctB));
-          if (RARITY_ORDER.indexOf(ra) > RARITY_ORDER.indexOf(rb)) best = c;
+          const aCt = Number(c.cardTypeIndex ?? -1);
+          const bCt = Number(best.cardTypeIndex ?? -1);
+          const aR = rarityRank(rarityKeyForCt(aCt));
+          const bR = rarityRank(rarityKeyForCt(bCt));
+          if (aR > bR) best = c;
+          else if (aR === bR){
+            const ap = CARD_PRICE_EUR_BY_INDEX[aCt] ?? 0;
+            const bp = CARD_PRICE_EUR_BY_INDEX[bCt] ?? 0;
+            if (ap > bp) best = c;
+          }
         }
         return best;
+      }
+
+      function vaultValue(arr){
+        let sum = 0;
+        for (const x of arr){
+          const ct = Number(x.cardTypeIndex ?? -1);
+          if (!Number.isFinite(ct) || ct < 0) continue;
+          sum += (CARD_PRICE_EUR_BY_INDEX[ct] ?? 0);
+        }
+        return sum;
       }
 
       function groupByCardType(arr){
@@ -678,22 +670,20 @@
           if (!Number.isFinite(ct) || ct < 0) continue;
 
           const cat = catalogForCt(ct);
-          const isHiddenPull = (ct === 0);
-          const priceEur = priceForCt(ct);
-          const rk = rarityFromPrice(priceEur);
+          const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
+          const rk = rarityKeyForCt(ct);
 
           if (!map.has(ct)){
             map.set(ct, {
               cardTypeIndex: ct,
+              rarityKey: rk,                              // "" for PCA
+              rarityLabel: rk ? (RARITY_LABEL[rk] || rk) : "",
               img: x.img || (cat && cat.img) || "",
               name: x.name || (cat && cat.name) || ("Card #" + ct),
               owned: 0,
               lastTs: 0,
               lastTokenId: null,
-              priceEur,
-              rarityKey: rk,
-              rarityLabel: RARITY_LABEL[rk],
-              isHiddenPull
+              price
             });
           }
 
@@ -709,26 +699,33 @@
             g.lastTs = x.ts || 0;
             g.lastTokenId = x.tokenId ?? null;
           }
+
+          // prix (si jamais modifié dans le temps, on garde source of truth)
+          g.price = price;
+          g.rarityKey = rk;
+          g.rarityLabel = rk ? (RARITY_LABEL[rk] || rk) : "";
         }
 
         return Array.from(map.values());
       }
 
-      function openModal({ img, name, rarityKey, rarityLabel, priceEur, isHiddenPull }){
+      /********************
+       * Modal preview
+       ********************/
+      function openModal({ img, name, rarity, price }){
         document.getElementById("modal-img").src = img || "";
         document.getElementById("modal-name").textContent = name || "—";
-        document.getElementById("modal-price").innerHTML = `<b>Valeur estimée :</b> ${fmtEur(priceEur)}`;
 
         const tag = document.getElementById("modal-tag");
-
-        // Hidden Pull (ct=0) : pas de rareté affichée
-        if (isHiddenPull){
-          tag.textContent = "Hidden Pull";
-          tag.className = "modal-tag hiddenpull";
+        if (rarity){
+          tag.style.display = "inline-flex";
+          tag.textContent = rarity;
         } else {
-          tag.textContent = rarityLabel || "Epic";
-          tag.className = "modal-tag " + rarityClass(rarityKey);
+          tag.style.display = "none"; // ✅ PCA : aucun tag
+          tag.textContent = "";
         }
+
+        document.getElementById("modal-price").textContent = "Valeur estimée : " + fmtEur(price || 0);
 
         const modal = document.getElementById("modal");
         modal.classList.add("on");
@@ -741,16 +738,9 @@
         modal.setAttribute("aria-hidden", "true");
       }
 
-      function escapeHtml(s){
-        return String(s || "").replace(/[&<>"']/g, (c) => ({
-          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
-        }[c]));
-      }
-
-      function escapeAttr(s){
-        return String(s || "").replace(/"/g, "&quot;");
-      }
-
+      /********************
+       * Rendering
+       ********************/
       function render(){
         const grid = document.getElementById("grid");
         const empty = document.getElementById("empty-state");
@@ -765,42 +755,45 @@
           items = items.filter(x => Number(x.cardTypeIndex) === ctFilter);
         }
 
+        // Stats base
         document.getElementById("stat-total").textContent = String(items.length);
+        document.getElementById("stat-vault").textContent = (vaultValue(items)).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
 
         const best = bestPull(items);
         if (best){
           const ct = Number(best.cardTypeIndex ?? -1);
-          const rk = rarityFromPrice(priceForCt(ct));
-          document.getElementById("stat-best").textContent = RARITY_LABEL[rk] || "Epic";
+          const rk = rarityKeyForCt(ct);
+          const label = rk ? rk : "—";
+          document.getElementById("stat-best").textContent = label;
           document.getElementById("stat-best-sub").textContent = fmtDate(best.ts || Date.now());
         } else {
           document.getElementById("stat-best").textContent = "—";
           document.getElementById("stat-best-sub").textContent = "—";
         }
 
-        document.getElementById("stat-vault").textContent = fmtEur(calcVaultValueFromItems(items));
-
+        // Group stacks
         let stacks = groupByCardType(items);
         document.getElementById("stat-unique").textContent = String(stacks.length);
 
+        // Search
         if (search){
           stacks = stacks.filter(s => {
             const hay = [
               String(s.cardTypeIndex),
               (s.name || "").toLowerCase(),
-              (s.isHiddenPull ? "hidden pull" : ""),
               (s.rarityKey || "").toLowerCase(),
               (s.rarityLabel || "").toLowerCase(),
-              String(s.priceEur || 0),
+              String(s.price || 0),
               "owned " + String(s.owned)
             ].join(" ");
             return hay.includes(search);
           });
         }
 
+        // Sort
         stacks.sort((a,b) => {
-          const ra = RARITY_ORDER.indexOf(a.rarityKey);
-          const rb = RARITY_ORDER.indexOf(b.rarityKey);
+          const ra = rarityRank(a.rarityKey);
+          const rb = rarityRank(b.rarityKey);
 
           if (sort === "rarity_desc") return rb - ra;
           if (sort === "rarity_asc") return ra - rb;
@@ -808,13 +801,14 @@
           if (sort === "owned_desc") return (b.owned - a.owned) || (rb - ra);
           if (sort === "owned_asc") return (a.owned - b.owned) || (rb - ra);
 
-          if (sort === "price_desc") return (b.priceEur - a.priceEur) || (rb - ra);
-          if (sort === "price_asc") return (a.priceEur - b.priceEur) || (rb - ra);
+          if (sort === "price_desc") return (b.price - a.price) || (rb - ra);
+          if (sort === "price_asc") return (a.price - b.price) || (rb - ra);
 
           if (sort === "index_desc") return b.cardTypeIndex - a.cardTypeIndex;
           return a.cardTypeIndex - b.cardTypeIndex;
         });
 
+        // Empty state
         grid.innerHTML = "";
         if (!getCollection().length){
           empty.style.display = "inline-flex";
@@ -833,6 +827,7 @@
         for (const s of stacks){
           const card = document.createElement("div");
           card.className = "card";
+          card.setAttribute("data-ct", String(s.cardTypeIndex));
 
           const thumb = document.createElement("div");
           thumb.className = "thumb";
@@ -846,19 +841,18 @@
           left.innerHTML = `
             <div class="name">${escapeHtml(s.name)}</div>
             <div class="ct">cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"} · ${s.lastTs ? fmtDate(s.lastTs) : "—"}</div>
-            <div class="price-line"><b>Valeur estimée :</b> ${fmtEur(s.priceEur)}</div>
+            <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
           `;
 
           const badges = document.createElement("div");
           badges.className = "badges";
 
-          const tag = document.createElement("div");
-          if (s.isHiddenPull){
-            tag.className = "tag hiddenpull";
-            tag.textContent = "Hidden Pull";
-          } else {
+          // ✅ PCA : aucun tag
+          if (s.rarityKey){
+            const tag = document.createElement("div");
             tag.className = "tag " + rarityClass(s.rarityKey);
             tag.textContent = s.rarityLabel;
+            badges.appendChild(tag);
           }
 
           const owned = document.createElement("button");
@@ -872,7 +866,6 @@
             setCtInUrl(s.cardTypeIndex);
           });
 
-          badges.appendChild(tag);
           badges.appendChild(owned);
 
           meta.appendChild(left);
@@ -885,16 +878,15 @@
             openModal({
               img: s.img,
               name: s.name + " (ct " + s.cardTypeIndex + ")",
-              rarityKey: s.rarityKey,
-              rarityLabel: s.rarityLabel,
-              priceEur: s.priceEur,
-              isHiddenPull: s.isHiddenPull
+              rarity: s.rarityLabel,     // "" for PCA => hidden
+              price: s.price
             });
           });
 
           grid.appendChild(card);
         }
 
+        // Filter pill UI
         const pill = document.getElementById("filter-pill");
         const clearBtn = document.getElementById("clear-filter");
         if (ctFilter !== null){
@@ -908,6 +900,19 @@
         }
       }
 
+      function escapeHtml(s){
+        return String(s || "").replace(/[&<>"']/g, (c) => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+        }[c]));
+      }
+
+      function escapeAttr(s){
+        return String(s || "").replace(/"/g, "&quot;");
+      }
+
+      /********************
+       * Actions
+       ********************/
       function exportJson(){
         const data = getCollection();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
@@ -927,6 +932,9 @@
         render();
       }
 
+      /********************
+       * Init
+       ********************/
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("back-packs").addEventListener("click", () => {
           window.location.href = "index.html";
