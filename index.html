@@ -2,9 +2,8 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>VaultSpin – CS:GO Opening</title>
+    <title>VaultSpin – Pack Opening</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <link rel="stylesheet" href="animations.css" />
 
     <style>
@@ -15,7 +14,6 @@
         font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
         color:#e5e7eb;
       }
-
       .page{
         width:100%; max-width:1200px;
         padding:96px 16px 40px;
@@ -36,7 +34,6 @@
         font-size:28px; font-weight:650; letter-spacing:.08em; text-transform:uppercase;
         color:#f9fafb;
       }
-
       .tag{
         display:inline-flex; align-items:center; gap:8px;
         border-radius:999px; border:1px solid rgba(148,163,184,.30);
@@ -80,8 +77,7 @@
         grid-template-columns: repeat(5, 1fr);
         gap:10px;
       }
-      @media (max-width: 900px){ .stats{ grid-template-columns: repeat(2, 1fr); } }
-
+      @media (max-width: 860px){ .stats{ grid-template-columns: repeat(2, 1fr); } }
       .stat{
         border-radius:16px;
         border:1px solid rgba(148,163,184,.14);
@@ -142,11 +138,10 @@
         background:rgba(15,23,42,.28);
         padding:8px 10px;
       }
-      .hist-dot{ width:10px; height:10px; border-radius:999px; background:#38bdf8; flex:0 0 auto; box-shadow:0 0 14px rgba(56,189,248,.25); }
-      .hist-dot.ultra{ background:#a855f7; box-shadow:0 0 14px rgba(168,85,247,.25); }
-      .hist-dot.legendary{ background:#f97316; box-shadow:0 0 16px rgba(249,115,22,.28); }
-      .hist-dot.hidden{ background:#94a3b8; box-shadow:0 0 14px rgba(148,163,184,.22); }
-
+      .hist-dot{ width:10px; height:10px; border-radius:999px; background:#38bdf8; flex:0 0 auto; box-shadow:0 0 14px rgba(56,189,248,.18); }
+      .hist-dot.ultra{ background:#a855f7; box-shadow:0 0 14px rgba(168,85,247,.22); }
+      .hist-dot.legendary{ background:#f97316; box-shadow:0 0 16px rgba(249,115,22,.25); }
+      .hist-dot.hidden{ background:#cbd5e1; box-shadow:0 0 14px rgba(203,213,225,.18); }
       .hist-main{ display:flex; flex-direction:column; gap:1px; min-width:0; }
       .hist-line1{
         font-size:12px; font-weight:800; color:#f9fafb;
@@ -214,6 +209,7 @@
         box-shadow: 0 0 14px rgba(129,140,248,.28);
       }
 
+      /* Wallet */
       .wallet-wrap{ position:relative; pointer-events:auto; }
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
@@ -229,12 +225,12 @@
 
       .wallet-pop{
         position:absolute; right:0; top:44px;
-        width:260px;
-        border-radius:16px;
+        width:260px;                 /* réduit */
+        border-radius:16px;          /* réduit */
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.92);
         backdrop-filter:blur(10px);
-        padding:12px;
+        padding:10px;                /* réduit */
         display:none;
         box-shadow:0 0 24px rgba(0,0,0,.35);
       }
@@ -247,7 +243,7 @@
       .wallet-hint{ margin-top:8px; font-size:11px; color:#9ca3af; line-height:1.35; }
       .btn-mini{
         border-radius:999px;
-        padding:9px 12px;
+        padding:8px 10px;
         font-size:11px; letter-spacing:.14em; text-transform:uppercase;
         border:1px solid rgba(148,163,184,.20);
         cursor:pointer;
@@ -259,13 +255,13 @@
         box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
-      /* Passive hover preview (bigger + contain) */
+      /* Hover preview float */
       .preview-float{
         position:fixed;
         top:50%;
         right:28px;
         transform:translateY(-50%);
-        width:340px;
+        width:320px;                 /* plus large */
         aspect-ratio:3/4;
         border-radius:18px;
         overflow:hidden;
@@ -278,7 +274,7 @@
         z-index:120;
       }
       .preview-float.on{ opacity:1; }
-      .preview-float img{ width:100%; height:100%; object-fit:contain; display:block; background:#020617; }
+      .preview-float img{ width:100%; height:100%; object-fit:contain; background:#020617; padding:8px; display:block; }
       .preview-float-meta{
         position:absolute;
         left:10px; right:10px; bottom:10px;
@@ -307,7 +303,7 @@
       .pf-tag.epic{ color:#38bdf8; }
       .pf-tag.ultra{ color:#a855f7; }
       .pf-tag.legendary{ color:#f97316; }
-      .pf-tag.hidden{ color:#94a3b8; }
+      .pf-tag.hidden{ color:#cbd5e1; }
 
       /* Opening overlay */
       .open-overlay{
@@ -330,7 +326,6 @@
         padding:18px;
         position:relative;
       }
-
       .open-top{
         display:flex;
         align-items:center;
@@ -369,9 +364,9 @@
       }
       .open-btn:disabled{ opacity:.45; cursor:default; }
 
+      /* Reel */
       .reel-section{ display:block; }
       .reel-section.hidden{ display:none; }
-
       .reel-viewport{
         position:relative;
         border-radius:22px;
@@ -380,14 +375,12 @@
         overflow:hidden;
         padding:18px 12px;
       }
-
       .reel-strip{
         position:relative;
         height:188px;
         display:flex;
         align-items:center;
       }
-
       .reel-fade-left,
       .reel-fade-right{
         position:absolute;
@@ -404,7 +397,6 @@
         right:0;
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
-
       .reel-cursor-line{
         position:absolute;
         left:50%;
@@ -419,7 +411,6 @@
         pointer-events:none;
         opacity:.98;
       }
-
       .reel-track{
         display:flex;
         align-items:center;
@@ -430,7 +421,6 @@
       .reel-track.spinning{
         transition: transform 7.1s cubic-bezier(0.08, 0.84, 0.12, 1);
       }
-
       .reel-item{
         width:168px;
         height:184px;
@@ -448,7 +438,8 @@
         border-bottom:1px solid rgba(148,163,184,.12);
         background:#020617;
       }
-      .reel-thumb img{ width:100%; height:100%; object-fit:contain; display:block; background:#020617; }
+      /* ✅ CONTAIN (pas de crop) */
+      .reel-thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; background:#020617; }
 
       .reel-meta{
         padding:10px 12px 12px;
@@ -482,64 +473,32 @@
       .reel-tag.epic{ color:#38bdf8; }
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
-      .reel-tag.hidden{ color:#94a3b8; }
+      .reel-tag.hidden{ color:#cbd5e1; }
 
-      /* Result-only view */
+      /* Result-only */
       .result-section{ display:none; }
       .result-section.on{ display:block; }
-
-      .result-wrap{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:8px 0;
-      }
-
-      .result-center{
-        width:min(560px, 94vw);
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        gap:14px;
-      }
-
+      .result-wrap{ display:flex; align-items:center; justify-content:center; padding:8px 0; }
+      /* ✅ fenêtre réduite */
+      .result-center{ width:min(420px, 92vw); display:flex; flex-direction:column; align-items:center; gap:10px; }
       .result-card{
         width:100%;
         border-radius:22px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.35);
-        padding:14px;
-        position:relative;
-        overflow:hidden;
+        padding:10px;
       }
-
-      /* Hidden pull FX discreet */
-      .result-card.hidden-pull::before{
-        content:"";
-        position:absolute;
-        inset:-40%;
-        background: radial-gradient(circle at 25% 20%, rgba(148,163,184,.35), rgba(148,163,184,0) 55%);
-        opacity:.85;
-        mix-blend-mode: screen;
-        animation: hiddenShimmer 900ms ease-out forwards;
-        pointer-events:none;
-      }
-      @keyframes hiddenShimmer{
-        0%{ transform: scale(.92); opacity:0; }
-        30%{ opacity:.9; }
-        100%{ transform: scale(1.08); opacity:0; }
-      }
-
       .result-img{
         width:100%;
         aspect-ratio:3/4;
-        border-radius:18px;
+        border-radius:16px;
         overflow:hidden;
         border:1px solid rgba(148,163,184,.22);
         background:#020617;
         position:relative;
       }
-      .result-img img{ width:100%; height:100%; object-fit:contain; display:block; background:#020617; }
+      /* ✅ CONTAIN (pas de crop) */
+      .result-img img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:8px; background:#020617; }
 
       .result-meta{
         margin-top:10px;
@@ -556,7 +515,7 @@
         color:#f9fafb;
       }
       .result-sub{
-        margin-top:6px;
+        margin-top:4px;
         font-size:12px;
         color:#9ca3af;
         line-height:1.35;
@@ -575,24 +534,21 @@
       .result-pill.epic{ color:#38bdf8; }
       .result-pill.ultra{ color:#a855f7; }
       .result-pill.legendary{ color:#f97316; }
-      .result-pill.hidden{ color:#94a3b8; }
 
-      .roi-pill{
+      .result-profit{
         margin-top:10px;
+        font-size:12px;
+        font-weight:900;
+        border:1px solid rgba(34,197,94,.25);
+        background:rgba(2,6,23,.35);
+        padding:8px 10px;
+        border-radius:999px;
         display:inline-flex;
         align-items:center;
         gap:8px;
-        font-size:11px;
-        letter-spacing:.14em;
-        text-transform:uppercase;
-        padding:8px 10px;
-        border-radius:999px;
-        border:1px solid rgba(148,163,184,.20);
-        background:rgba(2,6,23,.35);
-        font-weight:900;
       }
-      .roi-pill.positive{ color:#22c55e; border-color: rgba(34,197,94,.35); box-shadow:0 0 14px rgba(34,197,94,.12); }
-      .roi-pill.negative{ color:#f97373; border-color: rgba(249,115,115,.35); box-shadow:0 0 14px rgba(249,115,115,.10); }
+      .profit-pos{ color:#22c55e; border-color:rgba(34,197,94,.25); }
+      .profit-neg{ color:#f97373; border-color:rgba(249,115,115,.22); }
 
       .result-btnrow{
         display:flex;
@@ -602,11 +558,7 @@
         justify-content:center;
       }
 
-      /* Fly to collection animation */
-      .fly-out{
-        animation: flyToCollection .85s ease-in forwards;
-        transform-origin:center;
-      }
+      .fly-out{ animation: flyToCollection .85s ease-in forwards; transform-origin:center; }
       @keyframes flyToCollection{
         0%{ transform:translate(0,0) scale(1); opacity:1; }
         60%{ transform:translate(120px,-90px) scale(.92); opacity:.95; }
@@ -646,25 +598,24 @@
         background:#020617;
         transition:transform .16s ease-out, box-shadow .16s ease-out;
       }
-      .drop-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-      .drop-name{
-        font-size:10px; letter-spacing:.10em; text-transform:uppercase;
-        color:#e5e7eb;
-      }
+      /* ✅ CONTAIN (pas de crop) */
+      .drop-thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; background:#020617; }
+
+      .drop-name{ font-size:10px; letter-spacing:.10em; text-transform:uppercase; color:#e5e7eb; }
       .drop-meta{ font-size:9px; color:#9ca3af; display:flex; flex-direction:column; gap:2px; }
       .drop-tag{ letter-spacing:.14em; text-transform:uppercase; font-weight:700; }
       .drop-tag.epic{ color:#38bdf8; }
       .drop-tag.ultra{ color:#a855f7; }
       .drop-tag.legendary{ color:#f97316; }
 
-      .drop-item[data-rarity="EPIC"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(56,189,248,.35); }
-      .drop-item[data-rarity="ULTRA"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 16px rgba(168,85,247,.38); }
-      .drop-item[data-rarity="LEGENDARY"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 18px rgba(249,115,22,.42); }
+      .drop-item[data-rarity="EPIC"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(56,189,248,.28); }
+      .drop-item[data-rarity="ULTRA"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 16px rgba(168,85,247,.30); }
+      .drop-item[data-rarity="LEGENDARY"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 18px rgba(249,115,22,.33); }
     </style>
   </head>
 
   <body>
-    <!-- Passive hover preview -->
+    <!-- Hover preview -->
     <div class="preview-float" id="preview-float" aria-hidden="true">
       <img id="preview-img" src="" alt="Preview" />
       <div class="preview-float-meta">
@@ -679,38 +630,32 @@
         <div class="open-top">
           <div>
             <div class="open-title">VAULTSPIN · OPENING</div>
-            <div class="open-sub" id="open-sub" style="display:none;"></div>
           </div>
-
           <div class="open-right">
             <button class="open-btn" id="open-skip">Skip</button>
             <button class="open-btn close-glow" id="open-close">Close</button>
           </div>
         </div>
 
-        <!-- Reel section -->
         <div class="reel-section" id="reel-section">
           <div class="reel-viewport" id="reel-viewport">
             <div class="reel-fade-left"></div>
             <div class="reel-fade-right"></div>
-
             <div class="reel-strip">
               <div class="reel-cursor-line"></div>
               <div class="reel-track" id="reel-track"></div>
             </div>
           </div>
-
           <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
             <div style="font-size:12px; color:#9ca3af;" id="open-hint">Opening…</div>
             <div></div>
           </div>
         </div>
 
-        <!-- Result-only section -->
         <div class="result-section" id="result-section">
           <div class="result-wrap">
             <div class="result-center">
-              <div class="result-card" id="result-card">
+              <div class="result-card">
                 <div class="result-img" id="result-imgwrap">
                   <img id="result-img" src="" alt="Result" />
                 </div>
@@ -719,7 +664,7 @@
                   <div>
                     <div class="result-name" id="result-name">—</div>
                     <div class="result-sub" id="result-desc">—</div>
-                    <div class="roi-pill positive" id="roi-pill" style="display:none;">ROI</div>
+                    <div class="result-profit profit-pos" id="result-profit">+0,00 €</div>
                   </div>
                   <div class="result-pill epic" id="result-pill">EPIC</div>
                 </div>
@@ -741,7 +686,7 @@
     <!-- Top bar -->
     <div class="top-bar">
       <div class="top-right">
-        <a class="top-link glow" href="collection.html" id="collection-toplink">Ma collection</a>
+        <a class="top-link glow" href="collection.html">Ma collection</a>
 
         <div class="wallet-wrap">
           <div class="wallet-pill" title="Wallet local (démo)">
@@ -752,11 +697,8 @@
 
           <div class="wallet-pop">
             <h3>Wallet (démo)</h3>
-            <div class="wallet-hint" id="wallet-hint">∞ funds (démo)</div>
+            <div class="wallet-hint" id="wallet-hint">∞ wallet (démo)<br/>Pack : <b>3,99 €</b></div>
             <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="btn-mini" id="wallet-reset">Reset spent</button>
-            </div>
-            <div style="margin-top:10px; display:flex; gap:10px;">
               <button class="btn-mini" id="reset-data">Reset data</button>
             </div>
           </div>
@@ -767,11 +709,8 @@
     <div class="page">
       <!-- LEFT -->
       <div class="left-panel">
-        <div class="tag" style="align-self:flex-start;">VAULTSPIN · DÉMO (OFF-CHAIN)</div>
-
-        <div>
-          <h1>Open your VaultSpin Pack</h1>
-        </div>
+        <div class="tag" style="align-self:flex-start;">VAULTSPIN · DÉMO</div>
+        <div><h1>Open your VaultSpin Pack</h1></div>
 
         <div class="btn-row">
           <button id="open-pack-btn" class="btn-primary">Open VaultSpin Pack — 3,99 €</button>
@@ -782,7 +721,6 @@
           <span id="status-text">Prêt. Ouvre un pack.</span>
         </div>
 
-        <!-- Stats -->
         <div class="stats">
           <div class="stat">
             <div class="k">Packs opened</div>
@@ -793,7 +731,7 @@
           <div class="stat">
             <div class="k">Spent</div>
             <div class="v" id="stat-spent">0€</div>
-            <div class="s">Wallet</div>
+            <div class="s">Packs</div>
           </div>
 
           <div class="stat">
@@ -822,7 +760,6 @@
           </div>
         </div>
 
-        <!-- Timeline -->
         <div class="history">
           <div class="history-title">
             <span>Pack history</span>
@@ -835,7 +772,7 @@
       <!-- RIGHT -->
       <div class="right-panel">
         <div class="card-zone">
-          <div id="card-frame" class="card-frame">
+          <div class="card-frame">
             <div class="card-inner">
               <div id="booster-closed" class="booster-closed booster-mode-idle">
                 <div class="booster-label">
@@ -849,29 +786,15 @@
           </div>
         </div>
 
-        <!-- Drops (NO rates / NO prices) -->
         <div class="drop-table">
           <div class="drop-title">Cartes potentiellement obtenables</div>
 
+          <!-- ✅ Pas de taux, pas de prix. Ordre EPIC -> ULTRA -> LEGENDARY. Nidoking avant Florizarre -->
           <div class="drop-grid" id="drop-grid">
-            <!-- ✅ PCA (ct=0) intentionally NOT shown here -->
-
-            <!-- EPIC (was common/rare in previous system, now just "marketing tier") -->
-            <div class="drop-item" data-rarity="EPIC" data-name="Aéromite" data-img="images/aeromite.png" data-ct="1">
-              <div class="drop-thumb"><img src="images/aeromite.png" alt="Aéromite" /></div>
-              <div class="drop-name">Aéromite</div>
-              <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
-            </div>
-
+            <!-- EPIC (50–120) -->
             <div class="drop-item" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
               <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon" /></div>
               <div class="drop-name">Germignon</div>
-              <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
-            </div>
-
-            <div class="drop-item" data-rarity="EPIC" data-name="Paras" data-img="images/paras.png" data-ct="13">
-              <div class="drop-thumb"><img src="images/paras.png" alt="Paras" /></div>
-              <div class="drop-name">Paras</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
@@ -881,15 +804,15 @@
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="EPIC" data-name="Chétiflor" data-img="images/chetiflor.png" data-ct="4">
-              <div class="drop-thumb"><img src="images/chetiflor.png" alt="Chétiflor" /></div>
-              <div class="drop-name">Chétiflor</div>
+            <div class="drop-item" data-rarity="EPIC" data-name="Majaspic" data-img="images/majaspic.png" data-ct="8">
+              <div class="drop-thumb"><img src="images/majaspic.png" alt="Majaspic" /></div>
+              <div class="drop-name">Majaspic</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="EPIC" data-name="Jungko" data-img="images/jungko.png" data-ct="5">
-              <div class="drop-thumb"><img src="images/jungko.png" alt="Jungko" /></div>
-              <div class="drop-name">Jungko</div>
+            <div class="drop-item" data-rarity="EPIC" data-name="Chenipan" data-img="images/chenipan.png" data-ct="6">
+              <div class="drop-thumb"><img src="images/chenipan.png" alt="Chenipan" /></div>
+              <div class="drop-name">Chenipan</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
@@ -899,47 +822,59 @@
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
-            <!-- ULTRA -->
-            <div class="drop-item" data-rarity="ULTRA" data-name="Chenipan" data-img="images/chenipan.png" data-ct="6">
-              <div class="drop-thumb"><img src="images/chenipan.png" alt="Chenipan" /></div>
-              <div class="drop-name">Chenipan</div>
-              <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+            <div class="drop-item" data-rarity="EPIC" data-name="Paras" data-img="images/paras.png" data-ct="13">
+              <div class="drop-thumb"><img src="images/paras.png" alt="Paras" /></div>
+              <div class="drop-name">Paras</div>
+              <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
+            <div class="drop-item" data-rarity="EPIC" data-name="Chétiflor" data-img="images/chetiflor.png" data-ct="4">
+              <div class="drop-thumb"><img src="images/chetiflor.png" alt="Chétiflor" /></div>
+              <div class="drop-name">Chétiflor</div>
+              <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+            </div>
+
+            <div class="drop-item" data-rarity="EPIC" data-name="Mimitoss" data-img="images/mimitoss.png" data-ct="9">
+              <div class="drop-thumb"><img src="images/mimitoss.png" alt="Mimitoss" /></div>
+              <div class="drop-name">Mimitoss</div>
+              <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+            </div>
+
+            <div class="drop-item" data-rarity="EPIC" data-name="Noeufnoeuf" data-img="images/noeufnoeuf.png" data-ct="12">
+              <div class="drop-thumb"><img src="images/noeufnoeuf.png" alt="Noeufnoeuf" /></div>
+              <div class="drop-name">Noeufnoeuf</div>
+              <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+            </div>
+
+            <!-- ULTRA (121–300) -->
             <div class="drop-item" data-rarity="ULTRA" data-name="Énergie Plante" data-img="images/energie_plante.png" data-ct="7">
               <div class="drop-thumb"><img src="images/energie_plante.png" alt="Énergie Plante" /></div>
               <div class="drop-name">Énergie</div>
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="ULTRA" data-name="Majaspic" data-img="images/majaspic.png" data-ct="8">
-              <div class="drop-thumb"><img src="images/majaspic.png" alt="Majaspic" /></div>
-              <div class="drop-name">Majaspic</div>
+            <div class="drop-item" data-rarity="ULTRA" data-name="Aéromite" data-img="images/aeromite.png" data-ct="1">
+              <div class="drop-thumb"><img src="images/aeromite.png" alt="Aéromite" /></div>
+              <div class="drop-name">Aéromite</div>
+              <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+            </div>
+
+            <div class="drop-item" data-rarity="ULTRA" data-name="Jungko" data-img="images/jungko.png" data-ct="5">
+              <div class="drop-thumb"><img src="images/jungko.png" alt="Jungko" /></div>
+              <div class="drop-name">Jungko</div>
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
             <!-- LEGENDARY -->
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Mimitoss" data-img="images/mimitoss.png" data-ct="9">
-              <div class="drop-thumb"><img src="images/mimitoss.png" alt="Mimitoss" /></div>
-              <div class="drop-name">Mimitoss</div>
-              <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
-            </div>
-
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
-              <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" /></div>
-              <div class="drop-name">Florizarre</div>
-              <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
-            </div>
-
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
               <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking" /></div>
               <div class="drop-name">Nidoking</div>
               <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
             </div>
 
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Noeufnoeuf" data-img="images/noeufnoeuf.png" data-ct="12">
-              <div class="drop-thumb"><img src="images/noeufnoeuf.png" alt="Noeufnoeuf" /></div>
-              <div class="drop-name">Noeufnoeuf</div>
+            <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
+              <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" /></div>
+              <div class="drop-name">Florizarre</div>
               <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
             </div>
           </div>
@@ -965,6 +900,7 @@
        * ECONOMY
        ********************/
       const PACK_PRICE_EUR = 3.99;
+      const EUR_TO_ETH = 1 / 3500;
 
       function getWalletSpent(){
         const raw = localStorage.getItem(VS_WALLET_SPENT_EUR_KEY);
@@ -978,6 +914,11 @@
       function fmtEur(n){
         return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
       }
+      function fmtEthFromEur(eur){
+        if (eur === Infinity) return "≈ ∞ ETH";
+        const eth = (Number(eur)||0) * EUR_TO_ETH;
+        return "≈ " + eth.toLocaleString("fr-FR", { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " ETH";
+      }
 
       function renderWallet(){
         document.getElementById("wallet-eur").textContent = "∞ €";
@@ -986,7 +927,6 @@
           `Balance : <b>∞ €</b><br/>Spent : <b>${fmtEur(getWalletSpent())}</b><br/>Pack : <b>${fmtEur(PACK_PRICE_EUR)}</b>`;
       }
 
-      function canAffordPack(){ return true; } // infinite funds
       function debitPack(){
         setWalletSpent(getWalletSpent() + PACK_PRICE_EUR);
         renderWallet();
@@ -994,10 +934,10 @@
       }
 
       /********************
-       * PRICES (single source)
+       * PRICES (source of truth)
        ********************/
       const CARD_PRICE_EUR_BY_INDEX = {
-        0: 5.50,
+        0: 5.50,   // Phyllali PCA (Hidden Pull)
         1: 135,
         2: 60,
         3: 70,
@@ -1007,15 +947,15 @@
         7: 129,
         8: 70,
         9: 109,
-        10: 1350,
-        11: 199,
+        10: 1350,  // Florizarre
+        11: 199,   // Nidoking
         12: 109,
         13: 109,
         14: 77
       };
 
       /********************
-       * Cards config
+       * Cards meta
        ********************/
       const CARD_IMAGE_BY_INDEX = {
         0:"images/phyllali_PCA.png",
@@ -1053,48 +993,65 @@
         14:"Phyllali",
       };
 
-      // internal rarity: 0=HIDDEN (PCA) 1=EPIC 2=ULTRA 3=LEGENDARY
-      const CARD_RARITY_BY_INDEX = {
-        0:0, // hidden pull
-        1:1, 2:1, 3:1, 4:1, 5:1, 13:1, 14:1,
-        6:2, 7:2, 8:2,
-        9:3, 10:3, 11:3, 12:3
-      };
+      /********************
+       * RARITY (value-based)
+       * EPIC: 50–120
+       * ULTRA: 121–300
+       * LEGENDARY: special (Nidoking + Florizarre)
+       * Hidden Pull: ct=0 (no rarity displayed)
+       ********************/
+      const CT_HIDDEN_PCA = 0;
+      const CT_FLORIZARRE = 10;
+      const CT_NIDOKING = 11;
 
-      // weights (you can tweak later)
-      const CARD_WEIGHT_BY_INDEX = {
-        0: 1800,   // hidden pull (not shown, still dropable)
-        1: 4200, 2: 4200, 3: 2600, 4: 2600, 5: 2200, 13: 3200, 14: 2400,
-        6: 900, 7: 900, 8: 900,
-        9: 110, 10: 60, 11: 110, 12: 110
-      };
-
-      function rarityKeyFromNum(num){
-        if (num === 0) return "HIDDEN";
-        if (num === 1) return "EPIC";
-        if (num === 2) return "ULTRA";
-        if (num === 3) return "LEGENDARY";
+      function rarityKeyForCt(ct){
+        if (ct === CT_HIDDEN_PCA) return "HIDDEN";
+        if (ct === CT_FLORIZARRE || ct === CT_NIDOKING) return "LEGENDARY";
+        const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
+        if (price >= 121 && price <= 300) return "ULTRA";
         return "EPIC";
       }
 
-      function rarityToLabel(num){
-        if (num === 0) return ""; // PCA => no rarity label shown
-        if (num === 1) return "Epic";
-        if (num === 2) return "Ultra";
-        if (num === 3) return "Legendary";
+      function rarityLabelForKey(k){
+        if (k === "ULTRA") return "Ultra";
+        if (k === "LEGENDARY") return "Legendary";
+        if (k === "HIDDEN") return ""; // Hidden Pull => pas de rareté affichée
         return "Epic";
       }
 
-      function pickWeightedCardIndex(){
-        let total = 0;
-        for (const k in CARD_WEIGHT_BY_INDEX) total += CARD_WEIGHT_BY_INDEX[k];
-        const roll = Math.floor(Math.random() * total);
-        let c = 0;
-        for (const k in CARD_WEIGHT_BY_INDEX){
-          c += CARD_WEIGHT_BY_INDEX[k];
-          if (roll < c) return parseInt(k, 10);
-        }
-        return 1;
+      function dotClassForRarityKey(k){
+        if (k==="LEGENDARY") return "legendary";
+        if (k==="ULTRA") return "ultra";
+        if (k==="HIDDEN") return "hidden";
+        return ""; // epic default
+      }
+
+      /********************
+       * Drop logic (as requested)
+       * Florizarre: 1/5000
+       * Nidoking: 1/50
+       * ULTRA: 1/20
+       * Else: EPIC
+       * Hidden PCA: frequent pack filler (cheap) -> 35% of EPIC outcomes
+       ********************/
+      const POOL_EPIC_VISIBLE = [2,3,4,6,8,9,12,13,14];
+      const POOL_ULTRA = [1,5,7];
+
+      function pickFrom(arr){
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function pickCardIndex(){
+        const roll = Math.floor(Math.random() * 5000) + 1;
+
+        if (roll === 1) return CT_FLORIZARRE;      // 1/5000
+        if (roll <= 101) return CT_NIDOKING;       // 100/5000 => 1/50
+
+        if (roll <= 351) return pickFrom(POOL_ULTRA); // 250/5000 => 1/20
+
+        // EPIC bucket
+        if (Math.random() < 0.35) return CT_HIDDEN_PCA; // cheap, frequent, hidden
+        return pickFrom(POOL_EPIC_VISIBLE);
       }
 
       /********************
@@ -1120,19 +1077,33 @@
         setCollection(arr);
       }
 
+      function formatDate(ts){
+        const d = new Date(ts);
+        return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }
+
+      function bestPullFromCollection(arr){
+        if (!arr.length) return null;
+        const score = (rk) => rk==="LEGENDARY" ? 3 : rk==="ULTRA" ? 2 : rk==="EPIC" ? 1 : 0;
+        let best = arr[0];
+        for (const c of arr){
+          if (score(c.rarityKey) > score(best.rarityKey)) best = c;
+        }
+        return best;
+      }
+
       function vaultValueFromCollection(arr){
         let sum = 0;
         for (const x of arr){
-          const ct = Number(x.cardTypeIndex);
-          const v = Number(x.estimatedValueEur);
-          if (Number.isFinite(v)) sum += v;
-          else if (Number.isFinite(ct) && Number.isFinite(CARD_PRICE_EUR_BY_INDEX[ct])) sum += CARD_PRICE_EUR_BY_INDEX[ct];
+          const ct = Number(x.cardTypeIndex ?? -1);
+          if (!Number.isFinite(ct) || ct < 0) continue;
+          sum += (CARD_PRICE_EUR_BY_INDEX[ct] ?? 0);
         }
         return sum;
       }
 
       /********************
-       * UI state
+       * UI
        ********************/
       const UI_STATE = { IDLE:"idle", OPENING:"opening", RESULT:"result" };
       let uiState = UI_STATE.IDLE;
@@ -1169,33 +1140,11 @@
         const now = performance.now();
         if (now - lastTickAt < 58) return;
         lastTickAt = now;
+
         const a = tickFlip ? tickA : tickB;
         tickFlip = !tickFlip;
         if (!a) return;
         try{ a.currentTime = 0; a.play().catch(()=>{}); }catch(_){}
-      }
-
-      function formatDate(ts){
-        const d = new Date(ts);
-        return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
-      }
-
-      function bestPullFromCollection(arr){
-        if (!arr.length) return null;
-        const score = (k) => (k==="LEGENDARY")?3:(k==="ULTRA")?2:(k==="EPIC")?1:0;
-        let best = arr[0];
-        for (const c of arr){
-          const bk = best.rarityKey || "EPIC";
-          const ck = c.rarityKey || "EPIC";
-          if (score(ck) > score(bk)) best = c;
-          // if same rarity, higher value wins
-          if (score(ck) === score(bk)){
-            const bv = Number(best.estimatedValueEur || 0);
-            const cv = Number(c.estimatedValueEur || 0);
-            if (cv > bv) best = c;
-          }
-        }
-        return best;
       }
 
       function renderStats(){
@@ -1212,12 +1161,8 @@
 
         if (last){
           document.getElementById("stat-last").textContent = "#" + last.tokenId;
-          // PCA: show value only
-          if (Number(last.cardTypeIndex) === 0){
-            document.getElementById("stat-last-sub").textContent = "≈ " + fmtEur(last.estimatedValueEur || CARD_PRICE_EUR_BY_INDEX[0]);
-          } else {
-            document.getElementById("stat-last-sub").textContent = last.rarityKey || "EPIC";
-          }
+          document.getElementById("stat-last-sub").textContent =
+            last.rarityKey === "HIDDEN" ? "Hidden Pull" : last.rarityKey;
         } else {
           document.getElementById("stat-last").textContent = "—";
           document.getElementById("stat-last-sub").textContent = "—";
@@ -1225,20 +1170,13 @@
 
         if (best){
           document.getElementById("stat-best-img").src = best.img;
-          const bestLabel = (Number(best.cardTypeIndex)===0) ? ("Hidden · ≈ " + fmtEur(best.estimatedValueEur || CARD_PRICE_EUR_BY_INDEX[0])) : (best.rarityKey + " · ≈ " + fmtEur(best.estimatedValueEur || 0));
-          document.getElementById("stat-best-line1").textContent = bestLabel;
+          document.getElementById("stat-best-line1").textContent =
+            (best.rarityKey === "HIDDEN" ? "Hidden" : best.rarityKey) + " #" + best.tokenId;
           document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
         } else {
           document.getElementById("stat-best-line1").textContent = "—";
           document.getElementById("stat-best-line2").textContent = "—";
         }
-      }
-
-      function dotClassForRarityKey(k, isHidden=false){
-        if (isHidden) return "hidden";
-        if (k==="LEGENDARY") return "legendary";
-        if (k==="ULTRA") return "ultra";
-        return "";
       }
 
       function renderHistory(){
@@ -1256,21 +1194,19 @@
         }
 
         for (const c of arr){
-          const isHidden = Number(c.cardTypeIndex) === 0;
-
           const row = document.createElement("div");
           row.className = "hist-item";
 
           const dot = document.createElement("div");
-          dot.className = "hist-dot " + dotClassForRarityKey(c.rarityKey, isHidden);
+          dot.className = "hist-dot " + dotClassForRarityKey(c.rarityKey);
 
           const main = document.createElement("div");
           main.className = "hist-main";
 
           const l1 = document.createElement("div");
           l1.className = "hist-line1";
-          const pillText = isHidden ? ("≈ " + fmtEur(c.estimatedValueEur || CARD_PRICE_EUR_BY_INDEX[0])) : (c.rarityKey || "EPIC");
-          l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${pillText}</span>`;
+          const label = (c.rarityKey === "HIDDEN") ? "Hidden Pull" : c.rarityKey;
+          l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${label}</span>`;
 
           const l2 = document.createElement("div");
           l2.className = "hist-line2";
@@ -1286,9 +1222,6 @@
         }
       }
 
-      /********************
-       * Overlay helpers
-       ********************/
       function openOverlay(){
         const o = document.getElementById("open-overlay");
         o.classList.add("on");
@@ -1327,7 +1260,7 @@
 
       function buildReelItems(winningCt){
         const arr = [];
-        for (let i=0;i<REEL_TOTAL_ITEMS;i++) arr.push(pickWeightedCardIndex());
+        for (let i=0;i<REEL_TOTAL_ITEMS;i++) arr.push(pickCardIndex());
         stopIndex = Math.max(20, REEL_TOTAL_ITEMS - 10);
         arr[stopIndex] = winningCt;
         return arr;
@@ -1349,10 +1282,7 @@
 
         for (let i=0;i<reelItems.length;i++){
           const ct = reelItems[i];
-          const rarityNum = CARD_RARITY_BY_INDEX[ct] ?? 1;
-          const rk = rarityKeyFromNum(rarityNum);
-
-          const isHidden = (ct === 0);
+          const rk = rarityKeyForCt(ct);
 
           const el = document.createElement("div");
           el.className = "reel-item";
@@ -1363,7 +1293,7 @@
             </div>
             <div class="reel-meta">
               <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}</div>
-              <div class="reel-tag ${isHidden ? "hidden" : rk.toLowerCase()}">${isHidden ? "HIDDEN" : rk}</div>
+              <div class="reel-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "HIDDEN" : rk}</div>
             </div>
           `;
           track.appendChild(el);
@@ -1391,7 +1321,6 @@
       function startTickLoop(){
         const track = document.getElementById("reel-track");
         const viewport = document.getElementById("reel-viewport");
-
         lastIndexUnderCursor = -1;
 
         const loop = () => {
@@ -1408,10 +1337,8 @@
             lastIndexUnderCursor = idx;
             playTick();
           }
-
           rafId = requestAnimationFrame(loop);
         };
-
         rafId = requestAnimationFrame(loop);
       }
 
@@ -1477,67 +1404,61 @@
         track.style.transform = `translateX(${finalX}px)`;
       }
 
-      function triggerRarityFx(rarityKey){ /* kept in animations.css (ultra/legendary) */ }
+      function triggerHiddenPullFx(isHidden){
+        const wrap = document.getElementById("result-imgwrap");
+        wrap.classList.remove("fx-ultra","fx-legendary","fx-hidden");
+        void wrap.offsetHeight;
+        if (isHidden) wrap.classList.add("fx-hidden");
+      }
 
       function fillResultUI(){
-        const { rarityNum, rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
-        const isHidden = (winningCt === 0);
-
-        const estValue = Number(CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0);
-        const roi = estValue - PACK_PRICE_EUR;
-
-        // hidden FX on card container
-        const resultCard = document.getElementById("result-card");
-        resultCard.classList.remove("hidden-pull");
-        if (isHidden) resultCard.classList.add("hidden-pull");
+        const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
+        const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+        const profit = price - PACK_PRICE_EUR;
 
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
 
-        // PCA: no rarity label shown
-        const rarityLine = isHidden ? "" : `${rarityToLabel(rarityNum)} · `;
-        document.getElementById("result-desc").innerHTML = `
-          ${rarityLine}${formatDate(ts)}
-          <br/>
-          <b>Valeur estimée :</b> ${fmtEur(estValue)}
-        `;
+        const isHidden = (winningCt === CT_HIDDEN_PCA);
 
-        // pill: hide rarity for PCA
+        // Description : pas de rareté pour Hidden Pull
+        const desc = isHidden
+          ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
+          : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
+        document.getElementById("result-desc").textContent = desc;
+
+        // Pill
         const pill = document.getElementById("result-pill");
         if (isHidden){
-          pill.textContent = "HIDDEN";
-          pill.className = "result-pill hidden";
+          pill.style.display = "none";
         } else {
+          pill.style.display = "inline-flex";
           pill.textContent = rarityKey;
           pill.className = "result-pill " + rarityKey.toLowerCase();
         }
 
-        // ROI pill
-        const roiPill = document.getElementById("roi-pill");
-        roiPill.style.display = "inline-flex";
-        const sign = roi >= 0 ? "+" : "−";
-        const abs = Math.abs(roi);
-        roiPill.textContent = `ROI : ${sign}${fmtEur(abs)}`;
-        roiPill.className = "roi-pill " + (roi >= 0 ? "positive" : "negative");
+        // Profit (sans ROI label)
+        const p = document.getElementById("result-profit");
+        p.textContent =
+          (profit >= 0 ? "+" : "") + profit.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
+        p.classList.remove("profit-pos","profit-neg");
+        p.classList.add(profit >= 0 ? "profit-pos" : "profit-neg");
 
-        if (!isHidden) triggerRarityFx(rarityKey);
+        // FX
+        triggerHiddenPullFx(isHidden);
       }
 
       function commitToCollection(){
-        const { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
-        const estValue = Number(CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0);
-
+        const { winningCt, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
         const entry = {
           tokenId,
           ts,
           priceEur: PACK_PRICE_EUR,
-          rarity: rarityNum,
-          rarityKey: (winningCt === 0 ? "" : rarityKey),
-          rarityLabel: (winningCt === 0 ? "" : rarityToLabel(rarityNum)),
+          rarityKey,
+          rarityLabel: rarityLabelForKey(rarityKey),
           cardTypeIndex: winningCt,
           img: imgSrc,
-          name,
-          estimatedValueEur: estValue
+          name
         };
         pushToCollection(entry);
         renderStats();
@@ -1547,15 +1468,7 @@
       async function openPackRoulette(){
         if (isBusy()) return;
 
-        if (!canAffordPack()){
-          setStatus("Fonds insuffisants.", "error");
-          return;
-        }
-
-        if (!debitPack()){
-          setStatus("Erreur wallet.", "error");
-          return;
-        }
+        debitPack();
 
         uiState = UI_STATE.OPENING;
         const mainBtn = document.getElementById("open-pack-btn");
@@ -1564,15 +1477,14 @@
         openOverlay();
         showReel();
 
-        const winningCt = pickWeightedCardIndex();
-        const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 1;
-        const rarityKey = rarityKeyFromNum(rarityNum);
-        const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[1];
+        const winningCt = pickCardIndex();
+        const rarityKey = rarityKeyForCt(winningCt);
+        const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[2];
         const name = CARD_NAME_BY_INDEX[winningCt] || ("Card");
         const tokenId = nextLocalTokenId();
         const ts = Date.now();
 
-        currentOpen = { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts };
+        currentOpen = { winningCt, rarityKey, imgSrc, name, tokenId, ts };
 
         const reelItems = buildReelItems(winningCt);
         renderReel(reelItems);
@@ -1618,15 +1530,17 @@
       }
 
       /********************
-       * Hover preview float
+       * Hover preview
        ********************/
-      function setPreview({ img, name, rarity, isHidden }){
+      function setPreview({ img, name, rarity }){
         const box = document.getElementById("preview-float");
         document.getElementById("preview-img").src = img || "";
         document.getElementById("preview-name").textContent = name || "—";
+
         const tag = document.getElementById("preview-tag");
-        tag.textContent = isHidden ? "HIDDEN" : (rarity || "EPIC");
-        tag.className = "pf-tag " + (isHidden ? "hidden" : String(rarity || "EPIC").toLowerCase());
+        tag.textContent = rarity || "EPIC";
+        tag.className = "pf-tag " + String(rarity || "EPIC").toLowerCase();
+
         box.classList.add("on");
         box.setAttribute("aria-hidden","false");
       }
@@ -1658,10 +1572,9 @@
         }catch(_){}
 
         renderWallet();
-        setStatus("Prêt. Ouvre un pack.", "ok");
-
         renderStats();
         renderHistory();
+        setStatus("Prêt. Ouvre un pack.", "ok");
 
         document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
         document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
@@ -1682,14 +1595,6 @@
           }
         });
 
-        // Wallet buttons
-        document.getElementById("wallet-reset").addEventListener("click", () => {
-          setWalletSpent(0);
-          renderWallet();
-          setStatus("Spent reset ✅", "ok");
-          renderStats();
-        });
-
         document.getElementById("reset-data").addEventListener("click", resetAllData);
         document.getElementById("clear-history").addEventListener("click", () => {
           localStorage.removeItem(VS_COLLECTION_KEY);
@@ -1708,7 +1613,7 @@
           let timer = null;
 
           el.addEventListener("mouseenter", () => {
-            timer = setTimeout(() => setPreview({ img, name, rarity, isHidden:false }), 90);
+            timer = setTimeout(() => setPreview({ img, name, rarity }), 90);
           });
           el.addEventListener("mouseleave", () => {
             if (timer) clearTimeout(timer);
@@ -1723,5 +1628,27 @@
         });
       });
     </script>
+
+    <!-- Hidden Pull FX discret (sans toucher animations.css si tu veux) -->
+    <style>
+      #result-imgwrap.fx-hidden{
+        box-shadow: 0 0 0 1px rgba(203,213,225,.22), 0 0 26px rgba(203,213,225,.12) inset;
+      }
+      #result-imgwrap.fx-hidden::after{
+        content:"";
+        position:absolute;
+        inset:-20%;
+        background: radial-gradient(circle, rgba(203,213,225,.25) 0, rgba(203,213,225,0) 60%);
+        mix-blend-mode: screen;
+        opacity:.9;
+        animation: hiddenPulse 900ms ease-out forwards;
+        pointer-events:none;
+      }
+      @keyframes hiddenPulse{
+        0%{ transform: scale(.7); opacity:0; }
+        20%{ opacity:.9; }
+        100%{ transform: scale(1.15); opacity:0; }
+      }
+    </style>
   </body>
 </html>
