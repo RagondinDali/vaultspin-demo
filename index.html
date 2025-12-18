@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="animations.css" />
 
+    <!-- ✅ Preload images visibles dès le chargement (sans WebP) -->
+    <link rel="preload" as="image" href="images/germignon.png">
+    <link rel="preload" as="image" href="images/astronelle.png">
+    <link rel="preload" as="image" href="images/majaspic.png">
+    <link rel="preload" as="image" href="images/chenipan.png">
+    <link rel="preload" as="image" href="images/phyllali.png">
+
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body{
@@ -98,9 +105,6 @@
         flex:0 0 auto;
       }
       .best-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-      .best-meta{ display:flex; flex-direction:column; gap:1px; }
-      .best-meta .line1{ font-size:12px; font-weight:800; color:#f9fafb; }
-      .best-meta .line2{ font-size:11px; color:#9ca3af; }
 
       /* History */
       .history{
@@ -210,7 +214,11 @@
       }
 
       /* Wallet */
-      .wallet-wrap{ position:relative; pointer-events:auto; }
+      .wallet-wrap{
+        position:relative;
+        pointer-events:auto;
+        padding-bottom:14px; /* ✅ pont hover vers le menu */
+      }
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
         border-radius:999px;
@@ -231,10 +239,22 @@
         background:rgba(2,6,23,.92);
         backdrop-filter:blur(10px);
         padding:10px;
-        display:none;
         box-shadow:0 0 24px rgba(0,0,0,.35);
+
+        /* ✅ stable au survol (au lieu de display:none) */
+        opacity:0;
+        visibility:hidden;
+        transform: translateY(-6px);
+        pointer-events:none;
+        transition: opacity .12s ease, transform .12s ease, visibility .12s ease;
       }
-      .wallet-wrap:hover .wallet-pop{ display:block; }
+      .wallet-wrap:hover .wallet-pop{
+        opacity:1;
+        visibility:visible;
+        transform: translateY(0);
+        pointer-events:auto;
+      }
+
       .wallet-pop h3{
         margin:0 0 8px 0;
         font-size:11px; letter-spacing:.18em; text-transform:uppercase;
@@ -303,6 +323,7 @@
       .pf-tag.epic{ color:#38bdf8; }
       .pf-tag.ultra{ color:#a855f7; }
       .pf-tag.legendary{ color:#f97316; }
+      .pf-tag.hidden{ display:none; } /* ✅ jamais de pill vide */
 
       /* Opening overlay */
       .open-overlay{
@@ -473,7 +494,7 @@
       .reel-tag.epic{ color:#38bdf8; }
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
-      .reel-tag.hidden{ color:#cbd5e1; }
+      .reel-tag.hidden{ display:none; } /* ✅ supprime la pill vide noire */
 
       /* Result-only */
       .result-section{ display:none; }
@@ -614,7 +635,7 @@
   <body>
     <!-- Hover preview -->
     <div class="preview-float" id="preview-float" aria-hidden="true">
-      <img id="preview-img" src="" alt="Preview" />
+      <img id="preview-img" src="" alt="Preview" loading="lazy" decoding="async" />
       <div class="preview-float-meta">
         <div class="pf-name" id="preview-name">—</div>
         <div class="pf-tag epic" id="preview-tag">EPIC</div>
@@ -654,7 +675,7 @@
             <div class="result-center">
               <div class="result-card">
                 <div class="result-img" id="result-imgwrap">
-                  <img id="result-img" src="" alt="Result" />
+                  <img id="result-img" src="" alt="Result" decoding="async" />
                 </div>
 
                 <div class="result-meta">
@@ -695,7 +716,7 @@
 
           <div class="wallet-pop">
             <h3>Wallet (démo)</h3>
-            <div class="wallet-hint" id="wallet-hint">Balance : <b>0,00 €</b><br/>Spent : <b>0,00 €</b><br/>Pack : <b>24,99 €</b></div>
+            <div class="wallet-hint" id="wallet-hint">Balance : <b>0,00 €</b></div>
             <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
               <button class="btn-mini" id="wallet-topup-100">+100€</button>
               <button class="btn-mini" id="reset-data">Reset data</button>
@@ -749,7 +770,7 @@
             <div class="k">Best pull</div>
             <div class="best-pull">
               <div class="best-thumb">
-                <img id="stat-best-img" src="images/germignon.png" alt="Best" />
+                <img id="stat-best-img" src="images/germignon.png" alt="Best" loading="lazy" decoding="async" />
               </div>
               <div class="best-meta">
                 <div class="line1" id="stat-best-line1">—</div>
@@ -791,87 +812,87 @@
           <div class="drop-grid" id="drop-grid">
             <!-- EPIC -->
             <div class="drop-item" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
-              <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon" /></div>
+              <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Germignon</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Astronelle" data-img="images/astronelle.png" data-ct="3">
-              <div class="drop-thumb"><img src="images/astronelle.png" alt="Astronelle" /></div>
+              <div class="drop-thumb"><img src="images/astronelle.png" alt="Astronelle" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Astronelle</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Majaspic" data-img="images/majaspic.png" data-ct="8">
-              <div class="drop-thumb"><img src="images/majaspic.png" alt="Majaspic" /></div>
+              <div class="drop-thumb"><img src="images/majaspic.png" alt="Majaspic" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Majaspic</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Chenipan" data-img="images/chenipan.png" data-ct="6">
-              <div class="drop-thumb"><img src="images/chenipan.png" alt="Chenipan" /></div>
+              <div class="drop-thumb"><img src="images/chenipan.png" alt="Chenipan" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Chenipan</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Phyllali" data-img="images/phyllali.png" data-ct="14">
-              <div class="drop-thumb"><img src="images/phyllali.png" alt="Phyllali" /></div>
+              <div class="drop-thumb"><img src="images/phyllali.png" alt="Phyllali" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Phyllali</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Paras" data-img="images/paras.png" data-ct="13">
-              <div class="drop-thumb"><img src="images/paras.png" alt="Paras" /></div>
+              <div class="drop-thumb"><img src="images/paras.png" alt="Paras" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Paras</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Chétiflor" data-img="images/chetiflor.png" data-ct="4">
-              <div class="drop-thumb"><img src="images/chetiflor.png" alt="Chétiflor" /></div>
+              <div class="drop-thumb"><img src="images/chetiflor.png" alt="Chétiflor" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Chétiflor</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Mimitoss" data-img="images/mimitoss.png" data-ct="9">
-              <div class="drop-thumb"><img src="images/mimitoss.png" alt="Mimitoss" /></div>
+              <div class="drop-thumb"><img src="images/mimitoss.png" alt="Mimitoss" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Mimitoss</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <div class="drop-item" data-rarity="EPIC" data-name="Noeufnoeuf" data-img="images/noeufnoeuf.png" data-ct="12">
-              <div class="drop-thumb"><img src="images/noeufnoeuf.png" alt="Noeufnoeuf" /></div>
+              <div class="drop-thumb"><img src="images/noeufnoeuf.png" alt="Noeufnoeuf" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Noeufnoeuf</div>
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
             <!-- ULTRA -->
             <div class="drop-item" data-rarity="ULTRA" data-name="Énergie Plante" data-img="images/energie_plante.png" data-ct="7">
-              <div class="drop-thumb"><img src="images/energie_plante.png" alt="Énergie Plante" /></div>
+              <div class="drop-thumb"><img src="images/energie_plante.png" alt="Énergie Plante" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Énergie</div>
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
             <div class="drop-item" data-rarity="ULTRA" data-name="Aéromite" data-img="images/aeromite.png" data-ct="1">
-              <div class="drop-thumb"><img src="images/aeromite.png" alt="Aéromite" /></div>
+              <div class="drop-thumb"><img src="images/aeromite.png" alt="Aéromite" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Aéromite</div>
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
             <div class="drop-item" data-rarity="ULTRA" data-name="Jungko" data-img="images/jungko.png" data-ct="5">
-              <div class="drop-thumb"><img src="images/jungko.png" alt="Jungko" /></div>
+              <div class="drop-thumb"><img src="images/jungko.png" alt="Jungko" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Jungko</div>
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
             <div class="drop-item" data-rarity="ULTRA" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
-              <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking" /></div>
+              <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Nidoking</div>
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
             <!-- LEGENDARY -->
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
-              <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" /></div>
+              <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" loading="lazy" decoding="async" /></div>
               <div class="drop-name">Florizarre</div>
               <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
             </div>
@@ -1013,9 +1034,6 @@
 
       /********************
        * RARITY (display rules)
-       * - Hidden PCA: never display "HIDDEN"
-       * - Legendary only Florizarre
-       * - Ultra = price 121–300 (includes Nidoking)
        ********************/
       const CT_HIDDEN_PCA = 0;
       const CT_FLORIZARRE = 10;
@@ -1031,7 +1049,7 @@
       function rarityLabelForKey(k){
         if (k === "ULTRA") return "Ultra";
         if (k === "LEGENDARY") return "Legendary";
-        if (k === "HIDDEN") return ""; // ✅ jamais afficher “HIDDEN”
+        if (k === "HIDDEN") return ""; // ✅ jamais afficher
         return "Epic";
       }
 
@@ -1039,17 +1057,13 @@
         if (k==="LEGENDARY") return "legendary";
         if (k==="ULTRA") return "ultra";
         if (k==="HIDDEN") return "hidden";
-        return ""; // epic default
+        return "";
       }
 
       /********************
        * Drop logic (bucketed)
-       * Florizarre: 1/5000
-       * ULTRA bucket: 1/50
-       * EPIC bucket:  1/20
-       * Rest: HIDDEN (PCA)
        ********************/
-      const POOL_ULTRA = [11, 1, 7, 5]; // Nidoking, Aéromite, Énergie Plante, Jungko
+      const POOL_ULTRA = [11, 1, 7, 5];
       const POOL_EPIC  = [2, 3, 8, 6, 14, 13, 4, 9, 12];
 
       function pickFrom(arr){
@@ -1311,7 +1325,7 @@
           el.setAttribute("data-i", String(i));
           el.innerHTML = `
             <div class="reel-thumb">
-              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}"/>
+              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}" loading="lazy" decoding="async"/>
             </div>
             <div class="reel-meta">
               <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}</div>
@@ -1447,6 +1461,7 @@
           : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
         document.getElementById("result-desc").textContent = desc;
 
+        // Pill : cachée si PCA
         const pill = document.getElementById("result-pill");
         if (isHidden){
           pill.style.display = "none";
@@ -1456,16 +1471,18 @@
           pill.className = "result-pill " + rarityKey.toLowerCase();
         }
 
+        // ✅ afficher uniquement la valeur
         const p = document.getElementById("result-profit");
         p.textContent = "Valeur : " + fmtEur(price);
 
-        triggerHiddenPullFx(isHidden);
-
+        // bouton revendre label + reset disable
         const sellBtn = document.getElementById("result-sell");
         if (sellBtn){
           sellBtn.disabled = false;
           sellBtn.textContent = "Revendre · " + fmtEur(price);
         }
+
+        triggerHiddenPullFx(isHidden);
       }
 
       function commitToCollection(){
@@ -1572,7 +1589,11 @@
        ********************/
       function setPreview({ img, name, rarity }){
         const box = document.getElementById("preview-float");
-        document.getElementById("preview-img").src = img || "";
+        const im = document.getElementById("preview-img");
+        im.src = img || "";
+        im.loading = "lazy";
+        im.decoding = "async";
+
         document.getElementById("preview-name").textContent = name || "—";
 
         const tag = document.getElementById("preview-tag");
