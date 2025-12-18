@@ -89,7 +89,7 @@
         box-shadow: 0 0 22px rgba(168,85,247,.55);
       }
 
-      /* Header cards */
+      /* Panels */
       .panel{
         background: radial-gradient(circle at top left, #020617, #020617 70%);
         border-radius:26px;
@@ -191,7 +191,7 @@
         color:#9ca3af;
       }
 
-      /* LISTE VERTICALE */
+      /* Grid list */
       .grid{
         display:flex;
         flex-direction:column;
@@ -224,9 +224,17 @@
         border-radius:16px;
         overflow:hidden;
         border:1px solid rgba(148,163,184,.18);
-        background: rgba(2,6,23,.35);
+        background:#020617;
       }
-      .thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:4px; background:#020617; }
+      .thumb img{
+        width:100%;
+        height:100%;
+        object-fit:contain;
+        object-position:center;
+        display:block;
+        padding:4px;
+        background:#020617;
+      }
 
       .meta{
         flex:1;
@@ -315,7 +323,7 @@
         line-height:1.45;
       }
 
-      /* Modal preview */
+      /* Modal */
       .modal{
         position:fixed;
         inset:0;
@@ -347,7 +355,15 @@
         border:1px solid rgba(148,163,184,.22);
         background:#020617;
       }
-      .modal-img img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; background:#020617; }
+      .modal-img img{
+        width:100%;
+        height:100%;
+        object-fit:contain;
+        object-position:center;
+        display:block;
+        padding:6px;
+        background:#020617;
+      }
 
       .modal-meta{
         display:flex;
@@ -433,7 +449,6 @@
   </head>
 
   <body>
-    <!-- Top bar -->
     <div class="top-bar">
       <div class="top-left">
         <div class="top-logo">VAULTSPIN · COLLECTION</div>
@@ -445,7 +460,6 @@
       </div>
     </div>
 
-    <!-- Modal -->
     <div class="modal" id="modal" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true">
         <button class="modal-close" id="modal-close">✕</button>
@@ -468,12 +482,9 @@
           <div>
             <h1>Ma collection</h1>
             <div class="sub">
-              Vue “Stacks” : cartes groupées par <b>cardTypeIndex</b>. Clique sur le badge <b>Owned</b> pour filtrer.
-              Le filtre est aussi supporté via <b>?ct=</b>.
+              Rareté auto basée sur la <b>valeur</b> : EPIC (50–120€) → ULTRA (121–300€) → LEGENDARY (&gt;300€).
               <br/>
-              ✅ Prix synchronisés + Vault value estimée.
-              <br/>
-              ⚠️ Phyllali PCA (ct 0) = <b>Hidden Pull</b> : aucune rareté affichée.
+              ⚠️ Phyllali PCA (ct 0) = <b>Hidden Pull</b> : aucune rareté affichée, uniquement le prix.
             </div>
           </div>
 
@@ -520,30 +531,21 @@
           </div>
         </div>
 
-        <div class="hint" id="hint">
-          Astuce : clique sur une carte pour la voir en grand.
-        </div>
+        <div class="hint">Astuce : clique sur une carte pour la voir en grand.</div>
       </div>
 
       <div class="panel">
         <div class="chip" id="empty-state" style="display:none;">
-          Aucune carte pour l’instant. Retourne ouvrir un pack sur
-          <a href="index.html">la page packs</a>.
+          Aucune carte pour l’instant. Retourne ouvrir un pack sur <a href="index.html">la page packs</a>.
         </div>
-
         <div class="grid" id="grid"></div>
       </div>
     </div>
 
     <script>
-      /********************
-       * STORAGE
-       ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
 
-      /********************
-       * PRICES (source of truth)
-       ********************/
+      // Prix (source of truth)
       const CARD_PRICE_EUR = {
         0: 5.50,
         1: 135,
@@ -562,52 +564,53 @@
         14: 77
       };
 
+      // Catalog (name/img)
+      const CARD_CATALOG = {
+        0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
+        1:  { name:"Aéromite",       img:"images/aeromite.png" },
+        2:  { name:"Germignon",      img:"images/germignon.png" },
+        3:  { name:"Astronelle",     img:"images/astronelle.png" },
+        4:  { name:"Chétiflor",      img:"images/chetiflor.png" },
+        5:  { name:"Jungko",         img:"images/jungko.png" },
+        6:  { name:"Chenipan",       img:"images/chenipan.png" },
+        7:  { name:"Énergie Plante", img:"images/energie_plante.png" },
+        8:  { name:"Majaspic",       img:"images/majaspic.png" },
+        9:  { name:"Mimitoss",       img:"images/mimitoss.png" },
+        10: { name:"Florizarre",     img:"images/florizarre.png" },
+        11: { name:"Nidoking",       img:"images/nidoking.png" },
+        12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
+        13: { name:"Paras",          img:"images/paras.png" },
+        14: { name:"Phyllali",       img:"images/phyllali.png" }
+      };
+
+      // Rareté par prix (logique croissante)
+      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"];
+      const RARITY_LABEL = { EPIC:"Epic", ULTRA:"Ultra", LEGENDARY:"Legendary" };
+
+      function rarityFromPrice(priceEur){
+        const p = Number(priceEur) || 0;
+        if (p > 300) return "LEGENDARY";
+        if (p >= 121) return "ULTRA";
+        return "EPIC";
+      }
+
+      function rarityClass(k){
+        if (k === "LEGENDARY") return "legendary";
+        if (k === "ULTRA") return "ultra";
+        return "epic";
+      }
+
       function fmtEur(n){
         const v = Number(n) || 0;
         return v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
       }
 
-      /********************
-       * RARITY (EPIC / ULTRA / LEGENDARY)
-       ********************/
-      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"];
-      const RARITY_LABEL = { EPIC:"Epic", ULTRA:"Ultra", LEGENDARY:"Legendary" };
-
-      function rarityKeyFromNum(num){
-        if (num === 1) return "EPIC";
-        if (num === 2) return "ULTRA";
-        if (num === 3) return "LEGENDARY";
-        // si jamais un vieux item traîne avec 0 -> EPIC (on ne veut pas COMMON)
-        return "EPIC";
-      }
-
-      /********************
-       * Catalog local (ct -> meta)
-       ********************/
-      const CARD_CATALOG = {
-        0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png",  rarityKey:"EPIC" },
-        1:  { name:"Aéromite",       img:"images/aeromite.png",      rarityKey:"EPIC" },
-        2:  { name:"Germignon",      img:"images/germignon.png",     rarityKey:"EPIC" },
-
-        3:  { name:"Astronelle",     img:"images/astronelle.png",    rarityKey:"EPIC" },
-        4:  { name:"Chétiflor",      img:"images/chetiflor.png",     rarityKey:"EPIC" },
-        5:  { name:"Jungko",         img:"images/jungko.png",        rarityKey:"EPIC" },
-
-        6:  { name:"Chenipan",       img:"images/chenipan.png",      rarityKey:"ULTRA" },
-        7:  { name:"Énergie Plante", img:"images/energie_plante.png",rarityKey:"ULTRA" },
-        8:  { name:"Majaspic",       img:"images/majaspic.png",      rarityKey:"ULTRA" },
-
-        9:  { name:"Mimitoss",       img:"images/mimitoss.png",      rarityKey:"LEGENDARY" },
-        10: { name:"Florizarre",     img:"images/florizarre.png",    rarityKey:"LEGENDARY" },
-        11: { name:"Nidoking",       img:"images/nidoking.png",      rarityKey:"LEGENDARY" },
-        12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png",    rarityKey:"LEGENDARY" },
-
-        13: { name:"Paras",          img:"images/paras.png",         rarityKey:"EPIC" },
-        14: { name:"Phyllali",       img:"images/phyllali.png",      rarityKey:"EPIC" },
-      };
-
       function catalogForCt(ct){
         return CARD_CATALOG[Number(ct)] || null;
+      }
+
+      function priceForCt(ct){
+        return CARD_PRICE_EUR[Number(ct)] ?? 0;
       }
 
       function getCollection(){
@@ -644,27 +647,6 @@
         return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
       }
 
-      function bestPull(arr){
-        if (!arr.length) return null;
-        let best = arr[0];
-        for (const c of arr){
-          const ak = c.rarityKey || rarityKeyFromNum(c.rarity || 1);
-          const bk = best.rarityKey || rarityKeyFromNum(best.rarity || 1);
-          if (RARITY_ORDER.indexOf(ak) > RARITY_ORDER.indexOf(bk)) best = c;
-        }
-        return best;
-      }
-
-      function rarityClass(k){
-        if (k === "LEGENDARY") return "legendary";
-        if (k === "ULTRA") return "ultra";
-        return "epic";
-      }
-
-      function priceForCt(ct){
-        return CARD_PRICE_EUR[Number(ct)] ?? 0;
-      }
-
       function calcVaultValueFromItems(items){
         let sum = 0;
         for (const x of items){
@@ -673,6 +655,19 @@
           sum += priceForCt(ct);
         }
         return sum;
+      }
+
+      function bestPull(arr){
+        if (!arr.length) return null;
+        let best = arr[0];
+        for (const c of arr){
+          const ctA = Number(c.cardTypeIndex ?? -1);
+          const ctB = Number(best.cardTypeIndex ?? -1);
+          const ra = rarityFromPrice(priceForCt(ctA));
+          const rb = rarityFromPrice(priceForCt(ctB));
+          if (RARITY_ORDER.indexOf(ra) > RARITY_ORDER.indexOf(rb)) best = c;
+        }
+        return best;
       }
 
       function groupByCardType(arr){
@@ -684,23 +679,20 @@
 
           const cat = catalogForCt(ct);
           const isHiddenPull = (ct === 0);
-
-          const rk =
-            x.rarityKey ||
-            (cat && cat.rarityKey) ||
-            rarityKeyFromNum(x.rarity || 1);
+          const priceEur = priceForCt(ct);
+          const rk = rarityFromPrice(priceEur);
 
           if (!map.has(ct)){
             map.set(ct, {
               cardTypeIndex: ct,
-              rarityKey: rk,
-              rarityLabel: x.rarityLabel || RARITY_LABEL[rk] || "Epic",
               img: x.img || (cat && cat.img) || "",
               name: x.name || (cat && cat.name) || ("Card #" + ct),
               owned: 0,
               lastTs: 0,
               lastTokenId: null,
-              priceEur: priceForCt(ct),
+              priceEur,
+              rarityKey: rk,
+              rarityLabel: RARITY_LABEL[rk],
               isHiddenPull
             });
           }
@@ -716,17 +708,12 @@
           if ((x.ts || 0) > g.lastTs){
             g.lastTs = x.ts || 0;
             g.lastTokenId = x.tokenId ?? null;
-            g.rarityKey = rk;
-            g.rarityLabel = x.rarityLabel || RARITY_LABEL[rk] || "Epic";
           }
         }
 
         return Array.from(map.values());
       }
 
-      /********************
-       * Modal preview
-       ********************/
       function openModal({ img, name, rarityKey, rarityLabel, priceEur, isHiddenPull }){
         document.getElementById("modal-img").src = img || "";
         document.getElementById("modal-name").textContent = name || "—";
@@ -739,7 +726,7 @@
           tag.textContent = "Hidden Pull";
           tag.className = "modal-tag hiddenpull";
         } else {
-          tag.textContent = (rarityLabel || RARITY_LABEL[rarityKey] || "Epic");
+          tag.textContent = rarityLabel || "Epic";
           tag.className = "modal-tag " + rarityClass(rarityKey);
         }
 
@@ -764,9 +751,6 @@
         return String(s || "").replace(/"/g, "&quot;");
       }
 
-      /********************
-       * Rendering
-       ********************/
       function render(){
         const grid = document.getElementById("grid");
         const empty = document.getElementById("empty-state");
@@ -781,27 +765,24 @@
           items = items.filter(x => Number(x.cardTypeIndex) === ctFilter);
         }
 
-        // Stats base
         document.getElementById("stat-total").textContent = String(items.length);
 
         const best = bestPull(items);
         if (best){
-          const rk = best.rarityKey || rarityKeyFromNum(best.rarity || 1);
-          document.getElementById("stat-best").textContent = RARITY_LABEL[rk] || best.rarityLabel || "Epic";
+          const ct = Number(best.cardTypeIndex ?? -1);
+          const rk = rarityFromPrice(priceForCt(ct));
+          document.getElementById("stat-best").textContent = RARITY_LABEL[rk] || "Epic";
           document.getElementById("stat-best-sub").textContent = fmtDate(best.ts || Date.now());
         } else {
           document.getElementById("stat-best").textContent = "—";
           document.getElementById("stat-best-sub").textContent = "—";
         }
 
-        // Vault value (est.)
         document.getElementById("stat-vault").textContent = fmtEur(calcVaultValueFromItems(items));
 
-        // Group stacks
         let stacks = groupByCardType(items);
         document.getElementById("stat-unique").textContent = String(stacks.length);
 
-        // Search stacks
         if (search){
           stacks = stacks.filter(s => {
             const hay = [
@@ -817,7 +798,6 @@
           });
         }
 
-        // Sort
         stacks.sort((a,b) => {
           const ra = RARITY_ORDER.indexOf(a.rarityKey);
           const rb = RARITY_ORDER.indexOf(b.rarityKey);
@@ -853,7 +833,6 @@
         for (const s of stacks){
           const card = document.createElement("div");
           card.className = "card";
-          card.setAttribute("data-ct", String(s.cardTypeIndex));
 
           const thumb = document.createElement("div");
           thumb.className = "thumb";
@@ -874,14 +853,12 @@
           badges.className = "badges";
 
           const tag = document.createElement("div");
-
-          // Hidden Pull (ct=0) : pas de rareté affichée
           if (s.isHiddenPull){
             tag.className = "tag hiddenpull";
             tag.textContent = "Hidden Pull";
           } else {
             tag.className = "tag " + rarityClass(s.rarityKey);
-            tag.textContent = s.rarityLabel || RARITY_LABEL[s.rarityKey] || "Epic";
+            tag.textContent = s.rarityLabel;
           }
 
           const owned = document.createElement("button");
@@ -918,7 +895,6 @@
           grid.appendChild(card);
         }
 
-        // Update filter pill UI
         const pill = document.getElementById("filter-pill");
         const clearBtn = document.getElementById("clear-filter");
         if (ctFilter !== null){
@@ -932,9 +908,6 @@
         }
       }
 
-      /********************
-       * Actions
-       ********************/
       function exportJson(){
         const data = getCollection();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
@@ -954,9 +927,6 @@
         render();
       }
 
-      /********************
-       * Init
-       ********************/
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("back-packs").addEventListener("click", () => {
           window.location.href = "index.html";
