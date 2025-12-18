@@ -225,12 +225,12 @@
 
       .wallet-pop{
         position:absolute; right:0; top:44px;
-        width:260px;                 /* réduit */
-        border-radius:16px;          /* réduit */
+        width:260px;
+        border-radius:16px;
         border:1px solid rgba(148,163,184,.20);
         background:rgba(2,6,23,.92);
         backdrop-filter:blur(10px);
-        padding:10px;                /* réduit */
+        padding:10px;
         display:none;
         box-shadow:0 0 24px rgba(0,0,0,.35);
       }
@@ -261,7 +261,7 @@
         top:50%;
         right:28px;
         transform:translateY(-50%);
-        width:320px;                 /* plus large */
+        width:320px;
         aspect-ratio:3/4;
         border-radius:18px;
         overflow:hidden;
@@ -303,7 +303,6 @@
       .pf-tag.epic{ color:#38bdf8; }
       .pf-tag.ultra{ color:#a855f7; }
       .pf-tag.legendary{ color:#f97316; }
-      .pf-tag.hidden{ color:#cbd5e1; }
 
       /* Opening overlay */
       .open-overlay{
@@ -438,7 +437,6 @@
         border-bottom:1px solid rgba(148,163,184,.12);
         background:#020617;
       }
-      /* ✅ CONTAIN (pas de crop) */
       .reel-thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; background:#020617; }
 
       .reel-meta{
@@ -473,13 +471,11 @@
       .reel-tag.epic{ color:#38bdf8; }
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
-      .reel-tag.hidden{ color:#cbd5e1; }
 
       /* Result-only */
       .result-section{ display:none; }
       .result-section.on{ display:block; }
       .result-wrap{ display:flex; align-items:center; justify-content:center; padding:8px 0; }
-      /* ✅ fenêtre réduite */
       .result-center{ width:min(420px, 92vw); display:flex; flex-direction:column; align-items:center; gap:10px; }
       .result-card{
         width:100%;
@@ -497,7 +493,6 @@
         background:#020617;
         position:relative;
       }
-      /* ✅ CONTAIN (pas de crop) */
       .result-img img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:8px; background:#020617; }
 
       .result-meta{
@@ -519,6 +514,7 @@
         font-size:12px;
         color:#9ca3af;
         line-height:1.35;
+        white-space:pre-line;
       }
       .result-pill{
         font-size:11px;
@@ -598,7 +594,6 @@
         background:#020617;
         transition:transform .16s ease-out, box-shadow .16s ease-out;
       }
-      /* ✅ CONTAIN (pas de crop) */
       .drop-thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; background:#020617; }
 
       .drop-name{ font-size:10px; letter-spacing:.10em; text-transform:uppercase; color:#e5e7eb; }
@@ -611,6 +606,26 @@
       .drop-item[data-rarity="EPIC"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(56,189,248,.28); }
       .drop-item[data-rarity="ULTRA"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 16px rgba(168,85,247,.30); }
       .drop-item[data-rarity="LEGENDARY"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 18px rgba(249,115,22,.33); }
+
+      /* Hidden Pull FX discret (PCA) */
+      #result-imgwrap.fx-hidden{
+        box-shadow: 0 0 0 1px rgba(203,213,225,.22), 0 0 26px rgba(203,213,225,.12) inset;
+      }
+      #result-imgwrap.fx-hidden::after{
+        content:"";
+        position:absolute;
+        inset:-20%;
+        background: radial-gradient(circle, rgba(203,213,225,.25) 0, rgba(203,213,225,0) 60%);
+        mix-blend-mode: screen;
+        opacity:.9;
+        animation: hiddenPulse 900ms ease-out forwards;
+        pointer-events:none;
+      }
+      @keyframes hiddenPulse{
+        0%{ transform: scale(.7); opacity:0; }
+        20%{ opacity:.9; }
+        100%{ transform: scale(1.15); opacity:0; }
+      }
     </style>
   </head>
 
@@ -789,9 +804,9 @@
         <div class="drop-table">
           <div class="drop-title">Cartes potentiellement obtenables</div>
 
-          <!-- ✅ Pas de taux, pas de prix. Ordre EPIC -> ULTRA -> LEGENDARY. Nidoking avant Florizarre -->
+          <!-- ✅ Pas de taux, pas de prix. Ordre EPIC -> ULTRA -> LEGENDARY. Nidoking = ULTRA -->
           <div class="drop-grid" id="drop-grid">
-            <!-- EPIC (50–120) -->
+            <!-- EPIC (≤120) -->
             <div class="drop-item" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
               <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon" /></div>
               <div class="drop-name">Germignon</div>
@@ -865,13 +880,14 @@
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
-            <!-- LEGENDARY -->
-            <div class="drop-item" data-rarity="LEGENDARY" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
+            <!-- ✅ Nidoking = ULTRA (pas Legendary) -->
+            <div class="drop-item" data-rarity="ULTRA" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
               <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking" /></div>
               <div class="drop-name">Nidoking</div>
-              <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+              <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
+            <!-- LEGENDARY (>300) -->
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
               <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" /></div>
               <div class="drop-name">Florizarre</div>
@@ -995,10 +1011,10 @@
 
       /********************
        * RARITY (value-based)
-       * EPIC: 50–120
+       * EPIC: <=120
        * ULTRA: 121–300
-       * LEGENDARY: special (Nidoking + Florizarre)
-       * Hidden Pull: ct=0 (no rarity displayed)
+       * LEGENDARY: >300
+       * HIDDEN: ct=0 (no label shown anywhere)
        ********************/
       const CT_HIDDEN_PCA = 0;
       const CT_FLORIZARRE = 10;
@@ -1006,16 +1022,16 @@
 
       function rarityKeyForCt(ct){
         if (ct === CT_HIDDEN_PCA) return "HIDDEN";
-        if (ct === CT_FLORIZARRE || ct === CT_NIDOKING) return "LEGENDARY";
         const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
-        if (price >= 121 && price <= 300) return "ULTRA";
+        if (price > 300) return "LEGENDARY";
+        if (price >= 121) return "ULTRA";
         return "EPIC";
       }
 
       function rarityLabelForKey(k){
         if (k === "ULTRA") return "Ultra";
         if (k === "LEGENDARY") return "Legendary";
-        if (k === "HIDDEN") return ""; // Hidden Pull => pas de rareté affichée
+        if (k === "HIDDEN") return ""; // rien
         return "Epic";
       }
 
@@ -1030,9 +1046,9 @@
        * Drop logic (as requested)
        * Florizarre: 1/5000
        * Nidoking: 1/50
-       * ULTRA: 1/20
+       * ULTRA bucket: 1/20
        * Else: EPIC
-       * Hidden PCA: frequent pack filler (cheap) -> 35% of EPIC outcomes
+       * Hidden PCA: frequent filler inside EPIC outcomes (cheap)
        ********************/
       const POOL_EPIC_VISIBLE = [2,3,4,6,8,9,12,13,14];
       const POOL_ULTRA = [1,5,7];
@@ -1050,7 +1066,7 @@
         if (roll <= 351) return pickFrom(POOL_ULTRA); // 250/5000 => 1/20
 
         // EPIC bucket
-        if (Math.random() < 0.35) return CT_HIDDEN_PCA; // cheap, frequent, hidden
+        if (Math.random() < 0.35) return CT_HIDDEN_PCA; // PCA plus fréquent (cheap)
         return pickFrom(POOL_EPIC_VISIBLE);
       }
 
@@ -1084,7 +1100,7 @@
 
       function bestPullFromCollection(arr){
         if (!arr.length) return null;
-        const score = (rk) => rk==="LEGENDARY" ? 3 : rk==="ULTRA" ? 2 : rk==="EPIC" ? 1 : 0;
+        const score = (rk) => rk==="LEGENDARY" ? 3 : rk==="ULTRA" ? 2 : rk==="EPIC" ? 1 : 0; // HIDDEN => 0
         let best = arr[0];
         for (const c of arr){
           if (score(c.rarityKey) > score(best.rarityKey)) best = c;
@@ -1161,8 +1177,7 @@
 
         if (last){
           document.getElementById("stat-last").textContent = "#" + last.tokenId;
-          document.getElementById("stat-last-sub").textContent =
-            last.rarityKey === "HIDDEN" ? "Hidden Pull" : last.rarityKey;
+          document.getElementById("stat-last-sub").textContent = (last.rarityKey === "HIDDEN") ? "—" : last.rarityKey;
         } else {
           document.getElementById("stat-last").textContent = "—";
           document.getElementById("stat-last-sub").textContent = "—";
@@ -1171,7 +1186,7 @@
         if (best){
           document.getElementById("stat-best-img").src = best.img;
           document.getElementById("stat-best-line1").textContent =
-            (best.rarityKey === "HIDDEN" ? "Hidden" : best.rarityKey) + " #" + best.tokenId;
+            (best.rarityKey === "HIDDEN") ? ("#" + best.tokenId) : (best.rarityKey + " #" + best.tokenId);
           document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
         } else {
           document.getElementById("stat-best-line1").textContent = "—";
@@ -1205,8 +1220,13 @@
 
           const l1 = document.createElement("div");
           l1.className = "hist-line1";
-          const label = (c.rarityKey === "HIDDEN") ? "Hidden Pull" : c.rarityKey;
-          l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${label}</span>`;
+
+          // ✅ PCA: rien (pas de "Hidden Pull")
+          if (c.rarityKey === "HIDDEN"){
+            l1.innerHTML = `<span>#${c.tokenId}</span>`;
+          } else {
+            l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${c.rarityKey}</span>`;
+          }
 
           const l2 = document.createElement("div");
           l2.className = "hist-line2";
@@ -1284,6 +1304,11 @@
           const ct = reelItems[i];
           const rk = rarityKeyForCt(ct);
 
+          // ✅ PCA: rien (pas de tag)
+          const tagHtml = (rk === "HIDDEN")
+            ? `<div class="reel-tag" style="display:none;"></div>`
+            : `<div class="reel-tag ${rk.toLowerCase()}">${rk}</div>`;
+
           const el = document.createElement("div");
           el.className = "reel-item";
           el.setAttribute("data-i", String(i));
@@ -1293,7 +1318,7 @@
             </div>
             <div class="reel-meta">
               <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}</div>
-              <div class="reel-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "HIDDEN" : rk}</div>
+              ${tagHtml}
             </div>
           `;
           track.appendChild(el);
@@ -1421,7 +1446,7 @@
 
         const isHidden = (winningCt === CT_HIDDEN_PCA);
 
-        // Description : pas de rareté pour Hidden Pull
+        // ✅ PCA: uniquement date + valeur (pas de rareté)
         const desc = isHidden
           ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
           : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
@@ -1603,7 +1628,7 @@
           renderHistory();
         });
 
-        // Hover preview + click filter
+        // Hover preview + click filter (uniquement les cartes visibles)
         document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
@@ -1628,27 +1653,5 @@
         });
       });
     </script>
-
-    <!-- Hidden Pull FX discret (sans toucher animations.css si tu veux) -->
-    <style>
-      #result-imgwrap.fx-hidden{
-        box-shadow: 0 0 0 1px rgba(203,213,225,.22), 0 0 26px rgba(203,213,225,.12) inset;
-      }
-      #result-imgwrap.fx-hidden::after{
-        content:"";
-        position:absolute;
-        inset:-20%;
-        background: radial-gradient(circle, rgba(203,213,225,.25) 0, rgba(203,213,225,0) 60%);
-        mix-blend-mode: screen;
-        opacity:.9;
-        animation: hiddenPulse 900ms ease-out forwards;
-        pointer-events:none;
-      }
-      @keyframes hiddenPulse{
-        0%{ transform: scale(.7); opacity:0; }
-        20%{ opacity:.9; }
-        100%{ transform: scale(1.15); opacity:0; }
-      }
-    </style>
   </body>
 </html>
