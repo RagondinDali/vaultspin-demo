@@ -228,7 +228,7 @@
         border:1px solid rgba(148,163,184,.18);
         background: rgba(2,6,23,.55);
       }
-      /* ✅ PAS DE CROP */
+      /* ✅ PAS DE CROP + ✅ fond transparent pour enlever le “petit rectangle noir” */
       .thumb img{
         width:100%;
         height:100%;
@@ -236,7 +236,7 @@
         object-position:center;
         display:block;
         padding:6px;
-        background:transparent; /* ✅ CHANGÉ (avant: #020617) */
+        background: transparent; /* ✅ CHANGÉ (avant: #020617) */
       }
 
       /* Meta prend la place */
@@ -350,7 +350,7 @@
         border:1px solid rgba(148,163,184,.22);
         background: rgba(2,6,23,.55);
       }
-      /* ✅ PAS DE CROP */
+      /* ✅ PAS DE CROP + ✅ fond transparent pour enlever le “petit rectangle noir” */
       .modal-img img{
         width:100%;
         height:100%;
@@ -358,7 +358,7 @@
         object-position:center;
         display:block;
         padding:10px;
-        background:transparent; /* ✅ CHANGÉ (avant: #020617) */
+        background: transparent; /* ✅ CHANGÉ (avant: #020617) */
       }
 
       .modal-meta{
@@ -555,7 +555,13 @@
         11: 199,   // Nidoking (ULTRA)
         12: 109,
         13: 109,
-        14: 77
+        14: 77,
+
+        /* ✅ NOUVEAUX HIDDEN */
+        15: 15.50, // Boskara
+        16: 4.00,  // Filentrappe
+        17: 3.00,  // Peterson
+        18: 7.00   // Scovilain
       };
 
       function fmtEur(n){
@@ -564,27 +570,39 @@
 
       /********************
        * ✅ RARITY SYNC AVEC INDEX (bucket logic)
-       * - PCA ct=0 : pas de tag (jamais “HIDDEN”)
+       * - HIDDEN : aucun tag affiché (jamais “HIDDEN”)
        * - Florizarre ct=10 : LEGENDARY
        * - ULTRA bucket : ct 1,5,7,11
        * - EPIC bucket  : ct 2,3,4,6,8,9,12,13,14
        ********************/
-      const CT_PCA = 0;
       const CT_FLORIZARRE = 10;
+
+      /* ✅ HIDDEN SET (PCA + 4 nouvelles) */
+      const CT_PCA = 0;
+      const CT_BOSKARA = 15;
+      const CT_FILENTRAPPE = 16;
+      const CT_PETERSON = 17;
+      const CT_SCOVILAIN = 18;
+
+      const HIDDEN_SET = new Set([CT_PCA, CT_BOSKARA, CT_FILENTRAPPE, CT_PETERSON, CT_SCOVILAIN]);
 
       const ULTRA_BUCKET = new Set([1, 5, 7, 11]);
       const EPIC_BUCKET  = new Set([2, 3, 4, 6, 8, 9, 12, 13, 14]);
 
-      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"]; // PCA = plus bas
+      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"]; // HIDDEN = plus bas
       const RARITY_LABEL = { EPIC:"EPIC", ULTRA:"ULTRA", LEGENDARY:"LEGENDARY" };
 
       function rarityKeyForCt(ct){
         const n = Number(ct);
-        if (n === CT_PCA) return "";                 // ✅ rien
+
+        /* ✅ HIDDEN : aucun tag */
+        if (HIDDEN_SET.has(n)) return "";
+
         if (n === CT_FLORIZARRE) return "LEGENDARY";
         if (ULTRA_BUCKET.has(n)) return "ULTRA";
         if (EPIC_BUCKET.has(n)) return "EPIC";
-        // fallback sécurité (si tu ajoutes d’autres cartes plus tard)
+
+        // fallback sécurité
         const price = CARD_PRICE_EUR_BY_INDEX[n] ?? 0;
         if (price > 300) return "LEGENDARY";
         if (price >= 121) return "ULTRA";
@@ -592,7 +610,7 @@
       }
 
       function rarityRank(rk){
-        if (!rk) return -1; // PCA : plus bas
+        if (!rk) return -1; // HIDDEN : plus bas
         return RARITY_ORDER.indexOf(rk);
       }
 
@@ -600,7 +618,7 @@
         if (k === "LEGENDARY") return "legendary";
         if (k === "ULTRA") return "ultra";
         if (k === "EPIC") return "epic";
-        return ""; // PCA
+        return ""; // HIDDEN
       }
 
       /********************
@@ -622,6 +640,12 @@
         12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
         13: { name:"Paras",          img:"images/paras.png" },
         14: { name:"Phyllali",       img:"images/phyllali.png" },
+
+        /* ✅ NOUVEAUX HIDDEN */
+        15: { name:"Boskara",        img:"images/boskara.png" },
+        16: { name:"Filentrappe",    img:"images/filentrappe.png" },
+        17: { name:"Peterson",       img:"images/peterson.png" },
+        18: { name:"Scovilain",      img:"images/scovilain.png" }
       };
 
       function catalogForCt(ct){
@@ -704,7 +728,7 @@
           if (!map.has(ct)){
             map.set(ct, {
               cardTypeIndex: ct,
-              rarityKey: rk,                              // "" for PCA
+              rarityKey: rk,                              // "" for HIDDEN
               rarityLabel: rk ? (RARITY_LABEL[rk] || rk) : "",
               img: x.img || (cat && cat.img) || "",
               name: x.name || (cat && cat.name) || ("Card #" + ct),
@@ -748,7 +772,7 @@
           tag.style.display = "inline-flex";
           tag.textContent = rarity;
         } else {
-          tag.style.display = "none"; // ✅ PCA : aucun tag
+          tag.style.display = "none"; // ✅ HIDDEN : aucun tag
           tag.textContent = "";
         }
 
@@ -791,7 +815,9 @@
         if (best){
           const ct = Number(best.cardTypeIndex ?? -1);
           const rk = rarityKeyForCt(ct);
-          // ✅ pas “HIDDEN” : pour PCA on met juste "PCA"
+          // ✅ pas “HIDDEN” : pour HIDDEN on met juste "PCA" (comportement original)
+          // Ici, on garde ton comportement : HIDDEN => "PCA" dans best pull label
+          // (Si tu veux “HIDDEN” vide ou un label différent, dis-moi)
           document.getElementById("stat-best").textContent = rk ? rk : "PCA";
           document.getElementById("stat-best-sub").textContent = fmtDate(best.ts || Date.now());
         } else {
@@ -813,7 +839,8 @@
               (s.rarityLabel || "").toLowerCase(),
               String(s.price || 0),
               "owned " + String(s.owned),
-              (s.cardTypeIndex === CT_PCA ? "pca" : "")
+              // ✅ mot-clé "pca" pour tous HIDDEN
+              (HIDDEN_SET.has(s.cardTypeIndex) ? "pca" : "")
             ].join(" ");
             return hay.includes(search);
           });
@@ -876,7 +903,7 @@
           const badges = document.createElement("div");
           badges.className = "badges";
 
-          // ✅ PCA : aucun tag
+          // ✅ HIDDEN : aucun tag
           if (s.rarityKey){
             const tag = document.createElement("div");
             tag.className = "tag " + rarityClass(s.rarityKey);
@@ -907,7 +934,7 @@
             openModal({
               img: s.img,
               name: s.name + " (ct " + s.cardTypeIndex + ")",
-              rarity: s.rarityLabel,     // "" for PCA => hidden
+              rarity: s.rarityLabel,     // "" for HIDDEN => hidden
               price: s.price
             });
           });
