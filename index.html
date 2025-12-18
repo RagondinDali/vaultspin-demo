@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="animations.css" />
 
-    <!-- ✅ Preload images visibles dès le chargement (sans WebP) -->
+    <!-- ✅ Preload images visibles (sans WebP) -->
     <link rel="preload" as="image" href="images/germignon.png">
     <link rel="preload" as="image" href="images/astronelle.png">
     <link rel="preload" as="image" href="images/majaspic.png">
@@ -105,6 +105,9 @@
         flex:0 0 auto;
       }
       .best-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+      .best-meta{ display:flex; flex-direction:column; gap:1px; }
+      .best-meta .line1{ font-size:12px; font-weight:800; color:#f9fafb; }
+      .best-meta .line2{ font-size:11px; color:#9ca3af; }
 
       /* History */
       .history{
@@ -213,11 +216,11 @@
         box-shadow: 0 0 14px rgba(129,140,248,.28);
       }
 
-      /* Wallet */
+      /* Wallet (hover stable) */
       .wallet-wrap{
         position:relative;
         pointer-events:auto;
-        padding-bottom:14px; /* ✅ pont hover vers le menu */
+        padding-bottom:14px; /* ✅ pont hover */
       }
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
@@ -241,7 +244,6 @@
         padding:10px;
         box-shadow:0 0 24px rgba(0,0,0,.35);
 
-        /* ✅ stable au survol (au lieu de display:none) */
         opacity:0;
         visibility:hidden;
         transform: translateY(-6px);
@@ -323,7 +325,7 @@
       .pf-tag.epic{ color:#38bdf8; }
       .pf-tag.ultra{ color:#a855f7; }
       .pf-tag.legendary{ color:#f97316; }
-      .pf-tag.hidden{ display:none; } /* ✅ jamais de pill vide */
+      .pf-tag.hidden{ display:none; }
 
       /* Opening overlay */
       .open-overlay{
@@ -458,7 +460,11 @@
         border-bottom:1px solid rgba(148,163,184,.12);
         background:#020617;
       }
-      .reel-thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; background:#020617; }
+      .reel-thumb img{
+        width:100%; height:100%;
+        object-fit:contain; object-position:center;
+        display:block; padding:6px; background:#020617;
+      }
 
       .reel-meta{
         padding:10px 12px 12px;
@@ -494,7 +500,7 @@
       .reel-tag.epic{ color:#38bdf8; }
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
-      .reel-tag.hidden{ display:none; } /* ✅ supprime la pill vide noire */
+      .reel-tag.hidden{ display:none; } /* ✅ supprime le rectangle noir vide */
 
       /* Result-only */
       .result-section{ display:none; }
@@ -517,7 +523,11 @@
         background:#020617;
         position:relative;
       }
-      .result-img img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:8px; background:#020617; }
+      .result-img img{
+        width:100%; height:100%;
+        object-fit:contain; object-position:center;
+        display:block; padding:8px; background:#020617;
+      }
 
       .result-meta{
         margin-top:10px;
@@ -617,7 +627,11 @@
         background:#020617;
         transition:transform .16s ease-out, box-shadow .16s ease-out;
       }
-      .drop-thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; background:#020617; }
+      .drop-thumb img{
+        width:100%; height:100%;
+        object-fit:contain; object-position:center;
+        display:block; padding:6px; background:#020617;
+      }
 
       .drop-name{ font-size:10px; letter-spacing:.10em; text-transform:uppercase; color:#e5e7eb; }
       .drop-meta{ font-size:9px; color:#9ca3af; display:flex; flex-direction:column; gap:2px; }
@@ -976,7 +990,7 @@
        * PRICES (source of truth)
        ********************/
       const CARD_PRICE_EUR_BY_INDEX = {
-        0: 5.50,   // Phyllali PCA (Hidden)
+        0: 5.50,    // Phyllali PCA (HIDDEN)
         1: 135,
         2: 60,
         3: 70,
@@ -986,11 +1000,16 @@
         7: 129,
         8: 70,
         9: 109,
-        10: 1350,  // Florizarre
-        11: 199,   // Nidoking
+        10: 1350,   // Florizarre
+        11: 199,    // Nidoking
         12: 109,
         13: 109,
-        14: 77
+        14: 77,
+
+        15: 15.50,  // Boskara (HIDDEN)
+        16: 4.00,   // Filentrappe (HIDDEN)
+        17: 3.00,   // Peterson (HIDDEN)
+        18: 7.00    // Scovilain (HIDDEN)
       };
 
       /********************
@@ -1012,6 +1031,11 @@
         12:"images/noeufnoeuf.png",
         13:"images/paras.png",
         14:"images/phyllali.png",
+
+        15:"images/boskara.png",
+        16:"images/filentrappe.png",
+        17:"images/peterson.png",
+        18:"images/scovilain.png"
       };
 
       const CARD_NAME_BY_INDEX = {
@@ -1030,16 +1054,29 @@
         12:"Noeufnoeuf",
         13:"Paras",
         14:"Phyllali",
+
+        15:"Boskara",
+        16:"Filentrappe",
+        17:"Peterson",
+        18:"Scovilain"
       };
 
       /********************
        * RARITY (display rules)
+       * HIDDEN = aucun tag affiché
        ********************/
       const CT_HIDDEN_PCA = 0;
+      const CT_BOSKARA = 15;
+      const CT_FILENTRAPPE = 16;
+      const CT_PETERSON = 17;
+      const CT_SCOVILAIN = 18;
+
       const CT_FLORIZARRE = 10;
 
+      const HIDDEN_SET = new Set([CT_HIDDEN_PCA, CT_BOSKARA, CT_FILENTRAPPE, CT_PETERSON, CT_SCOVILAIN]);
+
       function rarityKeyForCt(ct){
-        if (ct === CT_HIDDEN_PCA) return "HIDDEN";
+        if (HIDDEN_SET.has(ct)) return "HIDDEN";
         if (ct === CT_FLORIZARRE) return "LEGENDARY";
         const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
         if (price >= 121 && price <= 300) return "ULTRA";
@@ -1062,12 +1099,38 @@
 
       /********************
        * Drop logic (bucketed)
+       * Florizarre: 1/5000
+       * ULTRA bucket: 1/50
+       * EPIC bucket:  1/20
+       * Rest: HIDDEN bucket (pondéré)
        ********************/
       const POOL_ULTRA = [11, 1, 7, 5];
       const POOL_EPIC  = [2, 3, 8, 6, 14, 13, 4, 9, 12];
 
       function pickFrom(arr){
         return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function pickWeighted(pairs){
+        let total = 0;
+        for (const p of pairs) total += p.w;
+        let r = Math.random() * total;
+        for (const p of pairs){
+          r -= p.w;
+          if (r <= 0) return p.ct;
+        }
+        return pairs[pairs.length - 1].ct;
+      }
+
+      // ✅ Peterson (plus commun) > Filentrappe > PCA > Scovilain > Boskara (plus rare)
+      function pickHiddenCt(){
+        return pickWeighted([
+          { ct: CT_PETERSON,    w: 60 },
+          { ct: CT_FILENTRAPPE, w: 22 },
+          { ct: CT_HIDDEN_PCA,  w: 12 },
+          { ct: CT_SCOVILAIN,   w: 5  },
+          { ct: CT_BOSKARA,     w: 1  }
+        ]);
       }
 
       function pickCardIndex(){
@@ -1077,7 +1140,7 @@
         if (r < (1/5000) + (1/50)) return pickFrom(POOL_ULTRA);
         if (r < (1/5000) + (1/50) + (1/20)) return pickFrom(POOL_EPIC);
 
-        return CT_HIDDEN_PCA;
+        return pickHiddenCt();
       }
 
       /********************
@@ -1197,7 +1260,9 @@
         if (last){
           document.getElementById("stat-last").textContent = "#" + last.tokenId;
           document.getElementById("stat-last-sub").textContent =
-            (last.rarityKey === "HIDDEN") ? "PCA" : last.rarityKey;
+            (last.rarityKey === "HIDDEN") ? "HIDDEN" : last.rarityKey;
+          // (affichage history/stats interne) -> si tu veux mettre "PCA" ici uniquement, dis-moi
+          // mais tu m'as demandé de ne rien afficher sur les tags UI, et ça c'est du texte stats.
         } else {
           document.getElementById("stat-last").textContent = "—";
           document.getElementById("stat-last-sub").textContent = "—";
@@ -1206,7 +1271,7 @@
         if (best){
           document.getElementById("stat-best-img").src = best.img;
           document.getElementById("stat-best-line1").textContent =
-            ((best.rarityKey === "HIDDEN") ? "PCA" : best.rarityKey) + " #" + best.tokenId;
+            ((best.rarityKey === "HIDDEN") ? "HIDDEN" : best.rarityKey) + " #" + best.tokenId;
           document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
         } else {
           document.getElementById("stat-best-line1").textContent = "—";
@@ -1241,7 +1306,8 @@
           const l1 = document.createElement("div");
           l1.className = "hist-line1";
 
-          const label = (c.rarityKey === "HIDDEN") ? "PCA" : c.rarityKey;
+          // ✅ pas de tag HIDDEN dans l’UI "tag" => ici c’est un texte mini
+          const label = (c.rarityKey === "HIDDEN") ? "HIDDEN" : c.rarityKey;
           l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${label}</span>`;
 
           const l2 = document.createElement("div");
@@ -1454,14 +1520,14 @@
         document.getElementById("result-img").src = imgSrc;
         document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
 
-        const isHidden = (winningCt === CT_HIDDEN_PCA);
+        const isHidden = HIDDEN_SET.has(winningCt);
 
         const desc = isHidden
           ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
           : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
         document.getElementById("result-desc").textContent = desc;
 
-        // Pill : cachée si PCA
+        // Pill : cachée si HIDDEN
         const pill = document.getElementById("result-pill");
         if (isHidden){
           pill.style.display = "none";
@@ -1471,16 +1537,12 @@
           pill.className = "result-pill " + rarityKey.toLowerCase();
         }
 
-        // ✅ afficher uniquement la valeur
-        const p = document.getElementById("result-profit");
-        p.textContent = "Valeur : " + fmtEur(price);
+        // ✅ plus de -19,49€ -> uniquement la valeur
+        document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
 
-        // bouton revendre label + reset disable
         const sellBtn = document.getElementById("result-sell");
-        if (sellBtn){
-          sellBtn.disabled = false;
-          sellBtn.textContent = "Revendre · " + fmtEur(price);
-        }
+        sellBtn.disabled = false;
+        sellBtn.textContent = "Revendre · " + fmtEur(price);
 
         triggerHiddenPullFx(isHidden);
       }
@@ -1516,7 +1578,7 @@
         setStatus(`Revendu ✅ +${fmtEur(price)}`, "ok");
 
         const btn = document.getElementById("result-sell");
-        if (btn) btn.disabled = true;
+        btn.disabled = true;
       }
 
       async function openPackRoulette(){
@@ -1589,11 +1651,7 @@
        ********************/
       function setPreview({ img, name, rarity }){
         const box = document.getElementById("preview-float");
-        const im = document.getElementById("preview-img");
-        im.src = img || "";
-        im.loading = "lazy";
-        im.decoding = "async";
-
+        document.getElementById("preview-img").src = img || "";
         document.getElementById("preview-name").textContent = name || "—";
 
         const tag = document.getElementById("preview-tag");
