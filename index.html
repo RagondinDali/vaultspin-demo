@@ -467,10 +467,13 @@
         background:rgba(2,6,23,.35);
         flex:0 0 auto;
         font-weight:900;
+        min-width:52px;
+        text-align:center;
       }
       .reel-tag.epic{ color:#38bdf8; }
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
+      .reel-tag.hidden{ color:#cbd5e1; }
 
       /* Result-only */
       .result-section{ display:none; }
@@ -606,26 +609,6 @@
       .drop-item[data-rarity="EPIC"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 14px rgba(56,189,248,.28); }
       .drop-item[data-rarity="ULTRA"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 16px rgba(168,85,247,.30); }
       .drop-item[data-rarity="LEGENDARY"]:hover .drop-thumb{ transform:translateY(-2px) scale(1.04); box-shadow:0 0 18px rgba(249,115,22,.33); }
-
-      /* Hidden Pull FX discret (PCA) */
-      #result-imgwrap.fx-hidden{
-        box-shadow: 0 0 0 1px rgba(203,213,225,.22), 0 0 26px rgba(203,213,225,.12) inset;
-      }
-      #result-imgwrap.fx-hidden::after{
-        content:"";
-        position:absolute;
-        inset:-20%;
-        background: radial-gradient(circle, rgba(203,213,225,.25) 0, rgba(203,213,225,0) 60%);
-        mix-blend-mode: screen;
-        opacity:.9;
-        animation: hiddenPulse 900ms ease-out forwards;
-        pointer-events:none;
-      }
-      @keyframes hiddenPulse{
-        0%{ transform: scale(.7); opacity:0; }
-        20%{ opacity:.9; }
-        100%{ transform: scale(1.15); opacity:0; }
-      }
     </style>
   </head>
 
@@ -712,7 +695,7 @@
 
           <div class="wallet-pop">
             <h3>Wallet (démo)</h3>
-            <div class="wallet-hint" id="wallet-hint">∞ wallet (démo)<br/>Pack : <b>3,99 €</b></div>
+            <div class="wallet-hint" id="wallet-hint">∞ wallet (démo)<br/>Pack : <b>24,99 €</b></div>
             <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
               <button class="btn-mini" id="reset-data">Reset data</button>
             </div>
@@ -728,7 +711,7 @@
         <div><h1>Open your VaultSpin Pack</h1></div>
 
         <div class="btn-row">
-          <button id="open-pack-btn" class="btn-primary">Open VaultSpin Pack — 3,99 €</button>
+          <button id="open-pack-btn" class="btn-primary">Open VaultSpin Pack — 24,99 €</button>
         </div>
 
         <div id="status-line" class="status-line">
@@ -804,9 +787,9 @@
         <div class="drop-table">
           <div class="drop-title">Cartes potentiellement obtenables</div>
 
-          <!-- ✅ Pas de taux, pas de prix. Ordre EPIC -> ULTRA -> LEGENDARY. Nidoking = ULTRA -->
+          <!-- ✅ Pas de PCA ici. Nidoking affiché ULTRA. -->
           <div class="drop-grid" id="drop-grid">
-            <!-- EPIC (≤120) -->
+            <!-- EPIC -->
             <div class="drop-item" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
               <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon" /></div>
               <div class="drop-name">Germignon</div>
@@ -861,7 +844,7 @@
               <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
             </div>
 
-            <!-- ULTRA (121–300) -->
+            <!-- ULTRA -->
             <div class="drop-item" data-rarity="ULTRA" data-name="Énergie Plante" data-img="images/energie_plante.png" data-ct="7">
               <div class="drop-thumb"><img src="images/energie_plante.png" alt="Énergie Plante" /></div>
               <div class="drop-name">Énergie</div>
@@ -880,14 +863,13 @@
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
-            <!-- ✅ Nidoking = ULTRA (pas Legendary) -->
             <div class="drop-item" data-rarity="ULTRA" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
               <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking" /></div>
               <div class="drop-name">Nidoking</div>
               <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
             </div>
 
-            <!-- LEGENDARY (>300) -->
+            <!-- LEGENDARY -->
             <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
               <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" /></div>
               <div class="drop-name">Florizarre</div>
@@ -915,7 +897,7 @@
       /********************
        * ECONOMY
        ********************/
-      const PACK_PRICE_EUR = 3.99;
+      const PACK_PRICE_EUR = 24.99;
       const EUR_TO_ETH = 1 / 3500;
 
       function getWalletSpent(){
@@ -953,7 +935,7 @@
        * PRICES (source of truth)
        ********************/
       const CARD_PRICE_EUR_BY_INDEX = {
-        0: 5.50,   // Phyllali PCA (Hidden Pull)
+        0: 5.50,   // Phyllali PCA (Hidden)
         1: 135,
         2: 60,
         3: 70,
@@ -1010,28 +992,26 @@
       };
 
       /********************
-       * RARITY (value-based)
-       * EPIC: <=120
-       * ULTRA: 121–300
-       * LEGENDARY: >300
-       * HIDDEN: ct=0 (no label shown anywhere)
+       * RARITY (display rules)
+       * - Hidden PCA: never display "HIDDEN"
+       * - Legendary only Florizarre
+       * - Ultra = price 121–300 (includes Nidoking)
        ********************/
       const CT_HIDDEN_PCA = 0;
       const CT_FLORIZARRE = 10;
-      const CT_NIDOKING = 11;
 
       function rarityKeyForCt(ct){
         if (ct === CT_HIDDEN_PCA) return "HIDDEN";
+        if (ct === CT_FLORIZARRE) return "LEGENDARY";
         const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
-        if (price > 300) return "LEGENDARY";
-        if (price >= 121) return "ULTRA";
+        if (price >= 121 && price <= 300) return "ULTRA";
         return "EPIC";
       }
 
       function rarityLabelForKey(k){
         if (k === "ULTRA") return "Ultra";
         if (k === "LEGENDARY") return "Legendary";
-        if (k === "HIDDEN") return ""; // rien
+        if (k === "HIDDEN") return ""; // ✅ jamais afficher “HIDDEN”
         return "Epic";
       }
 
@@ -1043,31 +1023,27 @@
       }
 
       /********************
-       * Drop logic (as requested)
+       * Drop logic (bucketed)
        * Florizarre: 1/5000
-       * Nidoking: 1/50
-       * ULTRA bucket: 1/20
-       * Else: EPIC
-       * Hidden PCA: frequent filler inside EPIC outcomes (cheap)
+       * ULTRA bucket: 1/50
+       * EPIC bucket:  1/20
+       * Rest: HIDDEN (PCA)
        ********************/
-      const POOL_EPIC_VISIBLE = [2,3,4,6,8,9,12,13,14];
-      const POOL_ULTRA = [1,5,7];
+      const POOL_ULTRA = [11, 1, 7, 5]; // Nidoking, Aéromite, Énergie Plante, Jungko
+      const POOL_EPIC  = [2, 3, 8, 6, 14, 13, 4, 9, 12];
 
       function pickFrom(arr){
         return arr[Math.floor(Math.random() * arr.length)];
       }
 
       function pickCardIndex(){
-        const roll = Math.floor(Math.random() * 5000) + 1;
+        const r = Math.random();
 
-        if (roll === 1) return CT_FLORIZARRE;      // 1/5000
-        if (roll <= 101) return CT_NIDOKING;       // 100/5000 => 1/50
+        if (r < (1/5000)) return CT_FLORIZARRE;
+        if (r < (1/5000) + (1/50)) return pickFrom(POOL_ULTRA);
+        if (r < (1/5000) + (1/50) + (1/20)) return pickFrom(POOL_EPIC);
 
-        if (roll <= 351) return pickFrom(POOL_ULTRA); // 250/5000 => 1/20
-
-        // EPIC bucket
-        if (Math.random() < 0.35) return CT_HIDDEN_PCA; // PCA plus fréquent (cheap)
-        return pickFrom(POOL_EPIC_VISIBLE);
+        return CT_HIDDEN_PCA;
       }
 
       /********************
@@ -1100,7 +1076,7 @@
 
       function bestPullFromCollection(arr){
         if (!arr.length) return null;
-        const score = (rk) => rk==="LEGENDARY" ? 3 : rk==="ULTRA" ? 2 : rk==="EPIC" ? 1 : 0; // HIDDEN => 0
+        const score = (rk) => rk==="LEGENDARY" ? 3 : rk==="ULTRA" ? 2 : rk==="EPIC" ? 1 : 0;
         let best = arr[0];
         for (const c of arr){
           if (score(c.rarityKey) > score(best.rarityKey)) best = c;
@@ -1177,7 +1153,9 @@
 
         if (last){
           document.getElementById("stat-last").textContent = "#" + last.tokenId;
-          document.getElementById("stat-last-sub").textContent = (last.rarityKey === "HIDDEN") ? "—" : last.rarityKey;
+          // ✅ ne pas afficher "HIDDEN"
+          document.getElementById("stat-last-sub").textContent =
+            (last.rarityKey === "HIDDEN") ? "PCA" : last.rarityKey;
         } else {
           document.getElementById("stat-last").textContent = "—";
           document.getElementById("stat-last-sub").textContent = "—";
@@ -1186,7 +1164,7 @@
         if (best){
           document.getElementById("stat-best-img").src = best.img;
           document.getElementById("stat-best-line1").textContent =
-            (best.rarityKey === "HIDDEN") ? ("#" + best.tokenId) : (best.rarityKey + " #" + best.tokenId);
+            ((best.rarityKey === "HIDDEN") ? "PCA" : best.rarityKey) + " #" + best.tokenId;
           document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
         } else {
           document.getElementById("stat-best-line1").textContent = "—";
@@ -1221,12 +1199,9 @@
           const l1 = document.createElement("div");
           l1.className = "hist-line1";
 
-          // ✅ PCA: rien (pas de "Hidden Pull")
-          if (c.rarityKey === "HIDDEN"){
-            l1.innerHTML = `<span>#${c.tokenId}</span>`;
-          } else {
-            l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${c.rarityKey}</span>`;
-          }
+          // ✅ pas de "HIDDEN" visible
+          const label = (c.rarityKey === "HIDDEN") ? "PCA" : c.rarityKey;
+          l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${label}</span>`;
 
           const l2 = document.createElement("div");
           l2.className = "hist-line2";
@@ -1304,11 +1279,6 @@
           const ct = reelItems[i];
           const rk = rarityKeyForCt(ct);
 
-          // ✅ PCA: rien (pas de tag)
-          const tagHtml = (rk === "HIDDEN")
-            ? `<div class="reel-tag" style="display:none;"></div>`
-            : `<div class="reel-tag ${rk.toLowerCase()}">${rk}</div>`;
-
           const el = document.createElement("div");
           el.className = "reel-item";
           el.setAttribute("data-i", String(i));
@@ -1318,7 +1288,8 @@
             </div>
             <div class="reel-meta">
               <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}</div>
-              ${tagHtml}
+              <!-- ✅ jamais afficher HIDDEN -->
+              <div class="reel-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "" : rk}</div>
             </div>
           `;
           track.appendChild(el);
@@ -1446,13 +1417,12 @@
 
         const isHidden = (winningCt === CT_HIDDEN_PCA);
 
-        // ✅ PCA: uniquement date + valeur (pas de rareté)
         const desc = isHidden
           ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
           : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
         document.getElementById("result-desc").textContent = desc;
 
-        // Pill
+        // Pill : cachée si PCA
         const pill = document.getElementById("result-pill");
         if (isHidden){
           pill.style.display = "none";
@@ -1469,7 +1439,6 @@
         p.classList.remove("profit-pos","profit-neg");
         p.classList.add(profit >= 0 ? "profit-pos" : "profit-neg");
 
-        // FX
         triggerHiddenPullFx(isHidden);
       }
 
@@ -1628,7 +1597,7 @@
           renderHistory();
         });
 
-        // Hover preview + click filter (uniquement les cartes visibles)
+        // Hover preview + click filter
         document.querySelectorAll(".drop-item").forEach((el) => {
           const img = el.getAttribute("data-img");
           const name = el.getAttribute("data-name");
@@ -1653,5 +1622,27 @@
         });
       });
     </script>
+
+    <!-- Hidden Pull FX discret -->
+    <style>
+      #result-imgwrap.fx-hidden{
+        box-shadow: 0 0 0 1px rgba(203,213,225,.22), 0 0 26px rgba(203,213,225,.12) inset;
+      }
+      #result-imgwrap.fx-hidden::after{
+        content:"";
+        position:absolute;
+        inset:-20%;
+        background: radial-gradient(circle, rgba(203,213,225,.25) 0, rgba(203,213,225,0) 60%);
+        mix-blend-mode: screen;
+        opacity:.9;
+        animation: hiddenPulse 900ms ease-out forwards;
+        pointer-events:none;
+      }
+      @keyframes hiddenPulse{
+        0%{ transform: scale(.7); opacity:0; }
+        20%{ opacity:.9; }
+        100%{ transform: scale(1.15); opacity:0; }
+      }
+    </style>
   </body>
 </html>
