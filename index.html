@@ -209,8 +209,6 @@
         background:rgba(15,23,42,.85);
       }
       .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
-
-      /* Glow like “Close” */
       .top-link.glow{
         border-color: rgba(165,180,252,.75);
         box-shadow: 0 0 14px rgba(129,140,248,.28);
@@ -261,16 +259,13 @@
         box-shadow:0 0 10px rgba(129,140,248,.25);
       }
 
-      /* =========================
-         ✅ Passive hover preview
-         (bigger + show full card)
-         ========================= */
+      /* ✅ Hover preview bigger + FULL image */
       .preview-float{
         position:fixed;
         top:50%;
         right:28px;
         transform:translateY(-50%);
-        width:360px;              /* ✅ bigger */
+        width:360px;
         max-width:92vw;
         aspect-ratio:3/4;
         border-radius:18px;
@@ -285,13 +280,12 @@
       }
       .preview-float.on{ opacity:1; }
       .preview-float img{
-        width:100%;
-        height:100%;
-        object-fit:contain;        /* ✅ no crop */
+        width:100%; height:100%;
+        object-fit:contain;
         object-position:center;
         display:block;
         background:#020617;
-        padding:6px;               /* léger breathing room */
+        padding:6px;
         box-sizing:border-box;
       }
       .preview-float-meta{
@@ -336,7 +330,6 @@
       }
       .open-overlay.on{ display:flex; }
 
-      /* slightly bigger (CS:GO feel) */
       .open-modal{
         width:min(1180px, 98vw);
         border-radius:26px;
@@ -385,7 +378,6 @@
         box-shadow: 0 0 18px rgba(168,85,247,.30);
       }
 
-      /* Close glow like Ma collection */
       .open-btn.close-glow{
         border-color: rgba(165,180,252,.75);
         box-shadow: 0 0 14px rgba(129,140,248,.28);
@@ -405,10 +397,9 @@
         padding:18px 12px;
       }
 
-      /* ✅ slightly bigger reel area */
       .reel-strip{
         position:relative;
-        height:210px;              /* was 188 */
+        height:210px;
         display:flex;
         align-items:center;
       }
@@ -430,7 +421,6 @@
         background: linear-gradient(to left, rgba(2,6,23,.94), rgba(2,6,23,0));
       }
 
-      /* Cursor line */
       .reel-cursor-line{
         position:absolute;
         left:50%;
@@ -457,10 +447,9 @@
         transition: transform 7.1s cubic-bezier(0.08, 0.84, 0.12, 1);
       }
 
-      /* ✅ bigger tiles */
       .reel-item{
-        width:190px;               /* was 168 */
-        height:204px;              /* was 184 */
+        width:190px;
+        height:204px;
         border-radius:20px;
         overflow:hidden;
         border:1px solid rgba(148,163,184,.16);
@@ -470,19 +459,19 @@
       }
       .reel-thumb{
         width:100%;
-        height:152px;              /* was 132 */
+        height:152px;
         overflow:hidden;
         border-bottom:1px solid rgba(148,163,184,.12);
         background:#020617;
       }
       .reel-thumb img{
-        width:100%;
-        height:100%;
-        object-fit:contain;        /* ✅ no crop */
+        width:100%; height:100%;
+        object-fit:contain;
         object-position:center;
         display:block;
-        padding:6px;               /* breathing room */
+        padding:6px;
         box-sizing:border-box;
+        background:#020617;
       }
 
       .reel-meta{
@@ -530,9 +519,8 @@
         padding:8px 0;
       }
 
-      /* ✅ wider center so the card is not cramped */
       .result-center{
-        width:min(680px, 96vw);    /* was 520px */
+        width:min(680px, 96vw);
         display:flex;
         flex-direction:column;
         align-items:center;
@@ -556,9 +544,8 @@
         position:relative;
       }
       .result-img img{
-        width:100%;
-        height:100%;
-        object-fit:contain;        /* ✅ no crop */
+        width:100%; height:100%;
+        object-fit:contain;
         object-position:center;
         display:block;
         padding:6px;
@@ -602,7 +589,6 @@
       .result-pill.ultra{ color:#a855f7; }
       .result-pill.legendary{ color:#f97316; }
 
-      /* Buttons UNDER the card */
       .result-btnrow{
         display:flex;
         gap:10px;
@@ -611,7 +597,6 @@
         justify-content:center;
       }
 
-      /* Fly to collection animation */
       .fly-out{
         animation: flyToCollection .85s ease-in forwards;
         transform-origin:center;
@@ -656,9 +641,8 @@
         transition:transform .16s ease-out, box-shadow .16s ease-out;
       }
       .drop-thumb img{
-        width:100%;
-        height:100%;
-        object-fit:contain;        /* ✅ show full */
+        width:100%; height:100%;
+        object-fit:contain;
         object-position:center;
         display:block;
         padding:4px;
@@ -684,7 +668,7 @@
   </head>
 
   <body>
-    <!-- Passive hover preview (NO blink) -->
+    <!-- Passive hover preview -->
     <div class="preview-float" id="preview-float" aria-hidden="true">
       <img id="preview-img" src="" alt="Preview" />
       <div class="preview-float-meta">
@@ -756,7 +740,7 @@
       </div>
     </div>
 
-    <!-- Top bar (scrolls away) -->
+    <!-- Top bar -->
     <div class="top-bar">
       <div class="top-right">
         <a class="top-link glow" href="collection.html" id="collection-toplink">Ma collection</a>
@@ -764,8 +748,8 @@
         <div class="wallet-wrap">
           <div class="wallet-pill" title="Wallet local (démo)">
             <span class="wallet-label">Wallet</span>
-            <span class="wallet-main" id="wallet-eur">0,00 €</span>
-            <span class="wallet-sub" id="wallet-eth">≈ 0,0000 ETH</span>
+            <span class="wallet-main" id="wallet-eur">∞ €</span>
+            <span class="wallet-sub" id="wallet-eth">≈ ∞ ETH</span>
           </div>
 
           <div class="wallet-pop">
@@ -774,7 +758,7 @@
             <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
               <button class="btn-mini" id="wallet-add-20">+20€</button>
               <button class="btn-mini" id="wallet-add-100">+100€</button>
-              <button class="btn-mini" id="wallet-reset">Reset wallet</button>
+              <button class="btn-mini" id="wallet-reset">Reset spent</button>
             </div>
             <div style="margin-top:10px; display:flex; gap:10px;">
               <button class="btn-mini" id="reset-data">Reset data</button>
@@ -799,7 +783,7 @@
 
         <div id="status-line" class="status-line">
           <span class="status-dot" id="status-dot"></span>
-          <span id="status-text">Ajoute des fonds au wallet, puis ouvre un pack.</span>
+          <span id="status-text">Prêt. Ouvre un pack.</span>
         </div>
 
         <!-- Stats -->
@@ -887,7 +871,6 @@
               <div class="drop-meta"><span>70%</span><span class="drop-tag common">Common</span></div>
             </div>
 
-            <!-- NEW COMMON -->
             <div class="drop-item" data-rarity="COMMON" data-name="Paras" data-img="images/paras.png" data-ct="13">
               <div class="drop-thumb"><img src="images/paras.png" alt="Paras Common" /></div>
               <div class="drop-name">Paras</div>
@@ -913,7 +896,6 @@
               <div class="drop-meta"><span>20%</span><span class="drop-tag rare">Rare</span></div>
             </div>
 
-            <!-- NEW RARE -->
             <div class="drop-item" data-rarity="RARE" data-name="Phyllali" data-img="images/phyllali.png" data-ct="14">
               <div class="drop-thumb"><img src="images/phyllali.png" alt="Phyllali Rare" /></div>
               <div class="drop-name">Phyllali</div>
@@ -975,9 +957,714 @@
     <audio id="sfx-tick" src="sounds/clic_clic.mp3" preload="auto"></audio>
 
     <script>
-      /* (JS inchangé — ton script complet reste identique ici) */
-      /* ⚠️ Pour garder le message court, je n’ai pas recollé le JS déjà présent dans ton index.html.
-         Tu peux simplement garder ton JS tel quel sous cette ligne. */
+      /********************
+       * STORAGE KEYS
+       ********************/
+      const VS_COLLECTION_KEY = "vaultspin_collection_v1";
+      const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
+
+      // Wallet local (démo)
+      const VS_WALLET_EUR_KEY = "vaultspin_wallet_eur_v1";
+      const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
+
+      /********************
+       * ECONOMY (wallet local) — INFINITE MODE ✅
+       ********************/
+      const PACK_PRICE_EUR = 3.99;
+      const EUR_TO_ETH = 1 / 3500; // approximation visuelle
+
+      function getWalletEur(){ return Infinity; }
+      function setWalletEur(_v){ /* no-op */ }
+
+      function getWalletSpent(){
+        const raw = localStorage.getItem(VS_WALLET_SPENT_EUR_KEY);
+        const n = raw ? Number(raw) : 0;
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+      function setWalletSpent(v){
+        localStorage.setItem(VS_WALLET_SPENT_EUR_KEY, String(Math.max(0, Number(v) || 0)));
+      }
+
+      function fmtEur(_n){ return "∞ €"; }
+      function fmtEthFromEur(_eur){ return "≈ ∞ ETH"; }
+
+      function renderWallet(){
+        const spent = getWalletSpent();
+        document.getElementById("wallet-eur").textContent = "∞ €";
+        document.getElementById("wallet-eth").textContent = "≈ ∞ ETH";
+
+        document.getElementById("wallet-hint").innerHTML =
+          `Balance : <b>∞ €</b><br/>Spent : <b>${spent.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</b><br/>Pack : <b>${PACK_PRICE_EUR.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</b>`;
+      }
+
+      function canAffordPack(){ return true; }
+
+      function debitPack(){
+        setWalletSpent(getWalletSpent() + PACK_PRICE_EUR);
+        renderWallet();
+        return true;
+      }
+
+      /********************
+       * Cards config
+       ********************/
+      const CARD_IMAGE_BY_INDEX = {
+        0:"images/phyllali_PCA.png",
+        1:"images/aeromite.png",
+        2:"images/germignon.png",
+
+        3:"images/astronelle.png",
+        4:"images/chetiflor.png",
+        5:"images/jungko.png",
+
+        6:"images/chenipan.png",
+        7:"images/energie_plante.png",
+        8:"images/majaspic.png",
+
+        9:"images/mimitoss.png",
+        10:"images/florizarre.png",
+        11:"images/nidoking.png",
+        12:"images/noeufnoeuf.png",
+
+        13:"images/paras.png",
+        14:"images/phyllali.png",
+      };
+
+      const CARD_NAME_BY_INDEX = {
+        0:"Phyllali PCA",
+        1:"Aéromite",
+        2:"Germignon",
+
+        3:"Astronelle",
+        4:"Chétiflor",
+        5:"Jungko",
+
+        6:"Chenipan",
+        7:"Énergie Plante",
+        8:"Majaspic",
+
+        9:"Mimitoss",
+        10:"Florizarre",
+        11:"Nidoking",
+        12:"Noeufnoeuf",
+
+        13:"Paras",
+        14:"Phyllali",
+      };
+
+      // rarity: 0=COMMON 1=RARE 2=ULTRA 3=LEGENDARY
+      const CARD_RARITY_BY_INDEX = {
+        0:0, 1:0, 2:0,
+        3:1, 4:1, 5:1,
+        6:2, 7:2, 8:2,
+        9:3, 10:3, 11:3, 12:3,
+        13:0,
+        14:1,
+      };
+
+      // weights
+      const CARD_WEIGHT_BY_INDEX = {
+        0:7000, 1:7000, 2:7000,
+        3:2000, 4:2000, 5:2000,
+        6:900,  7:900,  8:900,
+        9:100, 10:100, 11:100, 12:100,
+        13:7000,
+        14:2000,
+      };
+
+      const RARITY_ORDER = ["COMMON","RARE","ULTRA","LEGENDARY"];
+      function rarityToLabel(num){ return ({0:"Common",1:"Rare",2:"Ultra",3:"Legendary"})[num] || "Common"; }
+      function rarityKeyFromNum(num){ return (num===0)?"COMMON":(num===1)?"RARE":(num===2)?"ULTRA":(num===3)?"LEGENDARY":"COMMON"; }
+
+      function pickWeightedCardIndex(){
+        let total = 0;
+        for (const k in CARD_WEIGHT_BY_INDEX) total += CARD_WEIGHT_BY_INDEX[k];
+        const roll = Math.floor(Math.random() * total);
+        let c = 0;
+        for (const k in CARD_WEIGHT_BY_INDEX){
+          c += CARD_WEIGHT_BY_INDEX[k];
+          if (roll < c) return parseInt(k, 10);
+        }
+        return 0;
+      }
+
+      /********************
+       * Collection helpers
+       ********************/
+      function getCollection(){
+        try{ return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
+        catch{ return []; }
+      }
+      function setCollection(arr){ localStorage.setItem(VS_COLLECTION_KEY, JSON.stringify(arr)); }
+
+      function nextLocalTokenId(){
+        const raw = localStorage.getItem(VS_TOKEN_COUNTER_KEY);
+        const n = raw ? Number(raw) : 1;
+        const next = Number.isFinite(n) && n > 0 ? n : 1;
+        localStorage.setItem(VS_TOKEN_COUNTER_KEY, String(next + 1));
+        return next;
+      }
+
+      function pushToCollection(entry){
+        const arr = getCollection();
+        arr.unshift(entry);
+        setCollection(arr);
+      }
+
+      /********************
+       * UI state
+       ********************/
+      const UI_STATE = { IDLE:"idle", OPENING:"opening", RESULT:"result" };
+      let uiState = UI_STATE.IDLE;
+
+      let sfxBooster=null, sfxReveal=null, sfxLegendary=null, sfxTickSrc=null;
+      let tickA=null, tickB=null, tickFlip=false;
+      let lastTickAt = 0;
+
+      function sleep(ms){ return new Promise((r)=>setTimeout(r, ms)); }
+      function isBusy(){ return uiState !== UI_STATE.IDLE; }
+
+      function setStatus(text, mode="ok"){
+        const t = document.getElementById("status-text");
+        const d = document.getElementById("status-dot");
+        t.textContent = text;
+        d.classList.remove("error","pending");
+        if (mode==="error") d.classList.add("error");
+        if (mode==="pending") d.classList.add("pending");
+      }
+
+      function playSound(el){
+        if(!el) return;
+        try{ el.pause(); el.currentTime=0; el.play().catch(()=>{}); }catch(_){}
+      }
+
+      function stopTickAudio(){
+        try{
+          if (tickA){ tickA.pause(); tickA.currentTime = 0; }
+          if (tickB){ tickB.pause(); tickB.currentTime = 0; }
+        }catch(_){}
+      }
+
+      function playTick(){
+        const now = performance.now();
+        if (now - lastTickAt < 58) return;
+        lastTickAt = now;
+
+        const a = tickFlip ? tickA : tickB;
+        tickFlip = !tickFlip;
+        if (!a) return;
+        try{
+          a.currentTime = 0;
+          a.play().catch(()=>{});
+        }catch(_){}
+      }
+
+      function formatDate(ts){
+        const d = new Date(ts);
+        return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }
+
+      function bestPullFromCollection(arr){
+        if (!arr.length) return null;
+        let best = arr[0];
+        for (const c of arr){
+          if (RARITY_ORDER.indexOf(c.rarityKey) > RARITY_ORDER.indexOf(best.rarityKey)) best = c;
+        }
+        return best;
+      }
+
+      function renderStats(){
+        const arr = getCollection();
+        const opened = arr.length;
+        const spent = getWalletSpent();
+        const last = opened ? arr[0] : null;
+        const best = opened ? bestPullFromCollection(arr) : null;
+
+        document.getElementById("stat-opened").textContent = String(opened);
+        document.getElementById("stat-spent").textContent = spent.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
+
+        if (last){
+          document.getElementById("stat-last").textContent = "#" + last.tokenId;
+          document.getElementById("stat-last-sub").textContent = last.rarityLabel;
+        } else {
+          document.getElementById("stat-last").textContent = "—";
+          document.getElementById("stat-last-sub").textContent = "—";
+        }
+
+        if (best){
+          document.getElementById("stat-best-img").src = best.img;
+          document.getElementById("stat-best-line1").textContent = best.rarityLabel + " #" + best.tokenId;
+          document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
+        } else {
+          document.getElementById("stat-best-line1").textContent = "—";
+          document.getElementById("stat-best-line2").textContent = "—";
+        }
+      }
+
+      function dotClassForRarityKey(k){
+        if (k==="LEGENDARY") return "legendary";
+        if (k==="ULTRA") return "ultra";
+        if (k==="RARE") return "rare";
+        return "common";
+      }
+
+      function renderHistory(){
+        const list = document.getElementById("history-list");
+        const arr = getCollection().slice(0, 12);
+        list.innerHTML = "";
+
+        if (!arr.length){
+          const empty = document.createElement("div");
+          empty.style.fontSize = "12px";
+          empty.style.color = "#9ca3af";
+          empty.textContent = "Aucun pack ouvert pour l’instant.";
+          list.appendChild(empty);
+          return;
+        }
+
+        for (const c of arr){
+          const row = document.createElement("div");
+          row.className = "hist-item";
+
+          const dot = document.createElement("div");
+          dot.className = "hist-dot " + dotClassForRarityKey(c.rarityKey);
+
+          const main = document.createElement("div");
+          main.className = "hist-main";
+
+          const l1 = document.createElement("div");
+          l1.className = "hist-line1";
+          l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${c.rarityLabel}</span>`;
+
+          const l2 = document.createElement("div");
+          l2.className = "hist-line2";
+          l2.textContent = formatDate(c.ts);
+
+          main.appendChild(l1);
+          main.appendChild(l2);
+
+          row.appendChild(dot);
+          row.appendChild(main);
+
+          list.appendChild(row);
+        }
+      }
+
+      /********************
+       * Overlay helpers
+       ********************/
+      function openOverlay(){
+        const o = document.getElementById("open-overlay");
+        o.classList.add("on");
+        o.setAttribute("aria-hidden","false");
+      }
+      function closeOverlay(){
+        const o = document.getElementById("open-overlay");
+        o.classList.remove("on");
+        o.setAttribute("aria-hidden","true");
+      }
+
+      function showReel(){
+        document.getElementById("reel-section").classList.remove("hidden");
+        document.getElementById("result-section").classList.remove("on");
+        document.getElementById("open-close").style.display = "none";
+        document.getElementById("open-skip").style.display = "inline-flex";
+        document.getElementById("open-hint").textContent = "Opening…";
+      }
+
+      function showResult(){
+        document.getElementById("reel-section").classList.add("hidden");
+        document.getElementById("result-section").classList.add("on");
+        document.getElementById("open-skip").style.display = "none";
+        document.getElementById("open-close").style.display = "inline-flex";
+      }
+
+      /********************
+       * Reel logic
+       ********************/
+      const REEL_TOTAL_ITEMS = 60;
+      let spinning = false;
+      let stopIndex = 0;
+      let currentOpen = null;
+      let rafId = null;
+      let lastIndexUnderCursor = -1;
+
+      function buildReelItems(winningCt){
+        const arr = [];
+        for (let i=0;i<REEL_TOTAL_ITEMS;i++) arr.push(pickWeightedCardIndex());
+        stopIndex = Math.max(20, REEL_TOTAL_ITEMS - 10);
+        arr[stopIndex] = winningCt;
+        return arr;
+      }
+
+      function escapeHtml(s){
+        return String(s || "").replace(/[&<>"']/g, (c) => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+        }[c]));
+      }
+
+      function renderReel(reelItems){
+        const track = document.getElementById("reel-track");
+        track.innerHTML = "";
+        track.classList.remove("spinning");
+        track.style.transition = "";
+        track.style.transform = "translateX(0px)";
+        void track.offsetHeight;
+
+        for (let i=0;i<reelItems.length;i++){
+          const ct = reelItems[i];
+          const rarityNum = CARD_RARITY_BY_INDEX[ct] ?? 0;
+          const rk = rarityKeyFromNum(rarityNum);
+
+          const el = document.createElement("div");
+          el.className = "reel-item";
+          el.setAttribute("data-i", String(i));
+          el.innerHTML = `
+            <div class="reel-thumb">
+              <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}"/>
+            </div>
+            <div class="reel-meta">
+              <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || ("Card"))}</div>
+              <div class="reel-tag ${rk.toLowerCase()}">${rk}</div>
+            </div>
+          `;
+          track.appendChild(el);
+        }
+      }
+
+      function getStepPx(){
+        const track = document.getElementById("reel-track");
+        const first = track.firstElementChild;
+        if (!first) return 180;
+        const w = first.getBoundingClientRect().width;
+        const gap = parseFloat(getComputedStyle(track).gap || "12") || 12;
+        return w + gap;
+      }
+
+      function getTranslateX(el){
+        const tr = getComputedStyle(el).transform;
+        if (!tr || tr === "none") return 0;
+        const m = tr.match(/matrix\(([^)]+)\)/);
+        if (!m) return 0;
+        const parts = m[1].split(",").map(x => parseFloat(x.trim()));
+        return Number.isFinite(parts[4]) ? parts[4] : 0;
+      }
+
+      function startTickLoop(){
+        const track = document.getElementById("reel-track");
+        const viewport = document.getElementById("reel-viewport");
+
+        lastIndexUnderCursor = -1;
+
+        const loop = () => {
+          if (!spinning) return;
+          const x = getTranslateX(track);
+          const step = getStepPx();
+          const vw = viewport.getBoundingClientRect().width;
+          const cursorX = vw / 2;
+
+          const offset = -x;
+          const idx = Math.floor((offset + cursorX) / step);
+
+          if (idx !== lastIndexUnderCursor){
+            lastIndexUnderCursor = idx;
+            playTick();
+          }
+
+          rafId = requestAnimationFrame(loop);
+        };
+
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function stopTickLoop(){
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
+      async function spinToStop(){
+        spinning = true;
+        setStatus("Ouverture…", "pending");
+
+        stopTickAudio();
+        playSound(sfxBooster);
+
+        const track = document.getElementById("reel-track");
+        const viewport = document.getElementById("reel-viewport");
+
+        track.classList.remove("spinning");
+        track.style.transition = "";
+        track.style.transform = "translateX(0px)";
+        void track.offsetHeight;
+
+        const step = getStepPx();
+        const vw = viewport.getBoundingClientRect().width;
+        const cursorX = vw / 2;
+        const targetCenter = stopIndex * step + (step / 2);
+        const targetTranslate = targetCenter - cursorX;
+
+        const jitter = (Math.random()*6) - 3;
+        const finalX = -(targetTranslate + jitter);
+
+        startTickLoop();
+
+        track.classList.add("spinning");
+        requestAnimationFrame(() => {
+          track.style.transform = `translateX(${finalX}px)`;
+        });
+
+        await new Promise((resolve) => {
+          track.addEventListener("transitionend", resolve, { once:true });
+        });
+
+        spinning = false;
+        stopTickLoop();
+      }
+
+      function skipSpinNow(){
+        if (!spinning) return;
+        const track = document.getElementById("reel-track");
+        const viewport = document.getElementById("reel-viewport");
+
+        track.classList.remove("spinning");
+
+        const step = getStepPx();
+        const vw = viewport.getBoundingClientRect().width;
+        const cursorX = vw / 2;
+        const targetCenter = stopIndex * step + (step / 2);
+        const targetTranslate = targetCenter - cursorX;
+        const finalX = -(targetTranslate);
+
+        track.style.transition = "transform 420ms cubic-bezier(.16,.84,.2,1)";
+        track.style.transform = `translateX(${finalX}px)`;
+      }
+
+      function triggerRarityFx(rarityKey){
+        const wrap = document.getElementById("result-imgwrap");
+        wrap.classList.remove("fx-ultra","fx-legendary");
+        void wrap.offsetHeight;
+        if (rarityKey === "ULTRA") wrap.classList.add("fx-ultra");
+        if (rarityKey === "LEGENDARY") wrap.classList.add("fx-legendary");
+      }
+
+      function fillResultUI(){
+        const { rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
+
+        document.getElementById("result-img").src = imgSrc;
+        document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
+        document.getElementById("result-desc").textContent = `${rarityToLabel(rarityNum)} · ${formatDate(ts)}`;
+
+        const pill = document.getElementById("result-pill");
+        pill.textContent = rarityKey;
+        pill.className = "result-pill " + rarityKey.toLowerCase();
+
+        triggerRarityFx(rarityKey);
+      }
+
+      function commitToCollection(){
+        const { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
+        const entry = {
+          tokenId,
+          ts,
+          priceEur: PACK_PRICE_EUR,
+          rarity: rarityNum,
+          rarityLabel: rarityToLabel(rarityNum),
+          rarityKey,
+          cardTypeIndex: winningCt,
+          img: imgSrc,
+          name
+        };
+        pushToCollection(entry);
+        renderStats();
+        renderHistory();
+      }
+
+      async function openPackRoulette(){
+        if (isBusy()) return;
+
+        if (!canAffordPack()){
+          setStatus("Fonds insuffisants. Ajoute du crédit dans le wallet.", "error");
+          return;
+        }
+
+        if (!debitPack()){
+          setStatus("Fonds insuffisants. Ajoute du crédit dans le wallet.", "error");
+          return;
+        }
+
+        uiState = UI_STATE.OPENING;
+        const mainBtn = document.getElementById("open-pack-btn");
+        mainBtn.disabled = true;
+
+        openOverlay();
+        showReel();
+
+        const winningCt = pickWeightedCardIndex();
+        const rarityNum = CARD_RARITY_BY_INDEX[winningCt] ?? 0;
+        const rarityKey = rarityKeyFromNum(rarityNum);
+        const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[0];
+        const name = CARD_NAME_BY_INDEX[winningCt] || ("Card");
+        const tokenId = nextLocalTokenId();
+        const ts = Date.now();
+
+        currentOpen = { winningCt, rarityNum, rarityKey, imgSrc, name, tokenId, ts };
+
+        const reelItems = buildReelItems(winningCt);
+        renderReel(reelItems);
+
+        await sleep(70);
+        await spinToStop();
+
+        playSound(sfxReveal);
+        if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
+
+        commitToCollection();
+        fillResultUI();
+
+        uiState = UI_STATE.RESULT;
+        showResult();
+
+        setStatus("Pack ouvert ✅", "ok");
+        mainBtn.disabled = false;
+      }
+
+      async function flyThenOpenAnother(){
+        const imgwrap = document.getElementById("result-imgwrap");
+        imgwrap.classList.add("fly-out");
+        await sleep(850);
+        imgwrap.classList.remove("fly-out");
+
+        uiState = UI_STATE.IDLE;
+        await openPackRoulette();
+      }
+
+      function openCollectionFiltered(cardTypeIndex){
+        window.location.href = "collection.html?ct=" + encodeURIComponent(String(cardTypeIndex));
+      }
+
+      function resetAllData(){
+        localStorage.removeItem(VS_COLLECTION_KEY);
+        localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
+        localStorage.removeItem(VS_WALLET_EUR_KEY);
+        localStorage.removeItem(VS_WALLET_SPENT_EUR_KEY);
+        setStatus("Reset ✅", "ok");
+        renderWallet();
+        renderStats();
+        renderHistory();
+      }
+
+      /********************
+       * Hover preview float
+       ********************/
+      function setPreview({ img, name, rarity }){
+        const box = document.getElementById("preview-float");
+        document.getElementById("preview-img").src = img || "";
+        document.getElementById("preview-name").textContent = name || "—";
+        const tag = document.getElementById("preview-tag");
+        tag.textContent = rarity || "COMMON";
+        tag.className = "pf-tag " + String(rarity || "COMMON").toLowerCase();
+        box.classList.add("on");
+        box.setAttribute("aria-hidden","false");
+      }
+      function clearPreview(){
+        const box = document.getElementById("preview-float");
+        box.classList.remove("on");
+        box.setAttribute("aria-hidden","true");
+      }
+
+      /********************
+       * Init
+       ********************/
+      document.addEventListener("DOMContentLoaded", () => {
+        sfxBooster = document.getElementById("sfx-booster");
+        sfxReveal = document.getElementById("sfx-reveal");
+        sfxLegendary = document.getElementById("sfx-legendary");
+        sfxTickSrc = document.getElementById("sfx-tick");
+
+        try{
+          const src = sfxTickSrc ? sfxTickSrc.getAttribute("src") : null;
+          if (src){
+            tickA = new Audio(src);
+            tickB = new Audio(src);
+            tickA.preload = "auto";
+            tickB.preload = "auto";
+            tickA.volume = 0.55;
+            tickB.volume = 0.55;
+          }
+        }catch(_){}
+
+        renderWallet();
+        setStatus("Prêt. Ouvre un pack.", "ok");
+
+        renderStats();
+        renderHistory();
+
+        document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
+        document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
+        document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
+
+        document.getElementById("open-close").addEventListener("click", () => {
+          if (spinning) return;
+          closeOverlay();
+          uiState = UI_STATE.IDLE;
+        });
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key !== "Escape") return;
+          const overlay = document.getElementById("open-overlay");
+          if (overlay.classList.contains("on") && !spinning && uiState === UI_STATE.RESULT){
+            closeOverlay();
+            uiState = UI_STATE.IDLE;
+          }
+        });
+
+        // Wallet buttons (∞ mode)
+        document.getElementById("wallet-add-20").addEventListener("click", () => {
+          renderWallet();
+          setStatus("Wallet en mode ∞ ✅", "ok");
+        });
+        document.getElementById("wallet-add-100").addEventListener("click", () => {
+          renderWallet();
+          setStatus("Wallet en mode ∞ ✅", "ok");
+        });
+        document.getElementById("wallet-reset").addEventListener("click", () => {
+          setWalletSpent(0);
+          renderWallet();
+          setStatus("Spent reset ✅", "ok");
+        });
+
+        document.getElementById("reset-data").addEventListener("click", resetAllData);
+        document.getElementById("clear-history").addEventListener("click", () => {
+          localStorage.removeItem(VS_COLLECTION_KEY);
+          setStatus("History cleared ✅", "ok");
+          renderStats();
+          renderHistory();
+        });
+
+        // Hover preview + click filter ✅
+        document.querySelectorAll(".drop-item").forEach((el) => {
+          const img = el.getAttribute("data-img");
+          const name = el.getAttribute("data-name");
+          const rarity = el.getAttribute("data-rarity");
+          const ct = el.getAttribute("data-ct");
+
+          let timer = null;
+
+          el.addEventListener("mouseenter", () => {
+            timer = setTimeout(() => setPreview({ img, name, rarity }), 90);
+          });
+          el.addEventListener("mouseleave", () => {
+            if (timer) clearTimeout(timer);
+            clearPreview();
+          });
+
+          el.addEventListener("click", (e) => {
+            e.preventDefault();
+            clearPreview();
+            openCollectionFiltered(ct);
+          });
+        });
+      });
     </script>
   </body>
 </html>
