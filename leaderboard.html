@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>VaultSpin – Leaderboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body{
+        min-height:100vh;
+        background: radial-gradient(circle at top, #101827, #020617 60%);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color:#e5e7eb;
+      }
+
+      .wrap{
+        width:100%;
+        max-width:1200px;
+        margin:0 auto;
+        padding:90px 16px 50px;
+        display:flex;
+        flex-direction:column;
+        gap:16px;
+      }
+
+      /* Top bar */
+      .top-bar{
+        position:fixed;
+        top:16px;
+        left:50%;
+        transform:translateX(-50%);
+        width:100%;
+        max-width:1200px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:0 16px;
+        z-index:30;
+        pointer-events:none;
+      }
+      .top-left,.top-right{
+        pointer-events:auto;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+      }
+      .top-logo{
+        font-size:12px;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:#9ca3af;
+      }
+      .pill{
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.22);
+        background: rgba(15,23,42,.55);
+        padding:8px 12px;
+        font-size:11px;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        color:#e5e7eb;
+        cursor:default;
+      }
+      .btn{
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.22);
+        background: rgba(15,23,42,.55);
+        padding:9px 12px;
+        font-size:11px;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        color:#e5e7eb;
+        cursor:pointer;
+        transition: box-shadow .15s ease-out, transform .15s ease-out, border-color .15s ease-out, opacity .15s ease-out;
+      }
+      .btn:hover{
+        transform: translateY(-1px);
+        border-color: rgba(165,180,252,.7);
+        box-shadow: 0 0 12px rgba(129,140,248,.25);
+      }
+      .btn.primary{
+        border:none;
+        background: radial-gradient(circle at top left, #a855f7, #4f46e5);
+        box-shadow: 0 0 18px rgba(168,85,247,.35);
+      }
+      .btn.primary:hover{ box-shadow: 0 0 22px rgba(168,85,247,.55); }
+
+      /* Panels */
+      .panel{
+        background: radial-gradient(circle at top left, #020617, #020617 70%);
+        border-radius:26px;
+        border: 1px solid rgba(148,163,184,.20);
+        padding:18px;
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+
+      h1{
+        font-size:22px;
+        font-weight:800;
+        letter-spacing:.10em;
+        text-transform:uppercase;
+        color:#f9fafb;
+      }
+      .sub{
+        font-size:13px;
+        color:#9ca3af;
+        line-height:1.45;
+        max-width:860px;
+      }
+
+      .stats-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+      }
+      .stat{
+        border-radius:18px;
+        border:1px solid rgba(148,163,184,.14);
+        background: rgba(2,6,23,.28);
+        padding:12px;
+        min-width:220px;
+        flex:1;
+      }
+      .stat .k{
+        font-size:10px;
+        letter-spacing:.16em;
+        text-transform:uppercase;
+        color:#9ca3af;
+      }
+      .stat .v{
+        margin-top:6px;
+        font-size:18px;
+        font-weight:900;
+        color:#f9fafb;
+      }
+      .stat .s{
+        margin-top:3px;
+        font-size:12px;
+        color:#9ca3af;
+        line-height:1.35;
+      }
+
+      .table{
+        border-radius:22px;
+        border:1px solid rgba(148,163,184,.20);
+        overflow:hidden;
+      }
+      .thead, .trow{
+        display:grid;
+        grid-template-columns: 70px 1.4fr 1fr 1fr;
+        gap:10px;
+        align-items:center;
+        padding:12px 14px;
+      }
+      .thead{
+        background: rgba(15,23,42,.55);
+        font-size:10px;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        color:#cbd5e1;
+        border-bottom:1px solid rgba(148,163,184,.14);
+      }
+      .trow{
+        background: rgba(2,6,23,.26);
+        border-bottom:1px solid rgba(148,163,184,.10);
+        font-size:13px;
+      }
+      .trow:hover{
+        background: rgba(15,23,42,.28);
+      }
+      .rank{
+        font-weight:900;
+        color:#e5e7eb;
+      }
+      .me{
+        outline: 1px solid rgba(165,180,252,.55);
+        box-shadow: 0 0 14px rgba(129,140,248,.16);
+        position:relative;
+      }
+      .name{
+        font-weight:850;
+        color:#f9fafb;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .points{
+        font-weight:900;
+        letter-spacing:.04em;
+      }
+      .reward{
+        font-weight:900;
+        letter-spacing:.04em;
+      }
+      .muted{ color:#9ca3af; font-weight:700; }
+
+      .footer-hint{
+        margin-top:6px;
+        font-size:12px;
+        color:#9ca3af;
+        line-height:1.45;
+      }
+
+      @media (max-width: 680px){
+        .thead, .trow{
+          grid-template-columns: 60px 1.2fr 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="top-logo">VAULTSPIN · LEADERBOARD</div>
+        <div class="pill" id="month-pill">—</div>
+        <div class="pill" id="me-pill">—</div>
+      </div>
+      <div class="top-right">
+        <button class="btn" id="back-packs">Retour packs</button>
+        <button class="btn" id="back-collection">Collection</button>
+        <button class="btn primary" id="reset-month">Reset mois (démo)</button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="panel">
+        <div>
+          <h1>Classement mensuel</h1>
+          <div class="sub">
+            Leaderboard (100 joueurs). Reset automatique chaque mois.
+            <br />
+            Points : +25 par booster ouvert. Booster gratuit : 2500 points.
+            <br />
+            Récompenses top 10 : <b>1000€ → 100€</b> (décroissance de 100€/rang).
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="k">Players</div>
+            <div class="v" id="stat-players">100</div>
+            <div class="s">Classement global</div>
+          </div>
+          <div class="stat">
+            <div class="k">Your rank</div>
+            <div class="v" id="stat-rank">—</div>
+            <div class="s" id="stat-rank-sub">—</div>
+          </div>
+          <div class="stat">
+            <div class="k">Your points</div>
+            <div class="v" id="stat-points">0</div>
+            <div class="s">Utilisables pour un booster gratuit</div>
+          </div>
+          <div class="stat">
+            <div class="k">Top reward</div>
+            <div class="v">1000€</div>
+            <div class="s">1er du mois</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="table" id="table">
+          <div class="thead">
+            <div>Rank</div>
+            <div>Player</div>
+            <div>Points</div>
+            <div>Reward</div>
+          </div>
+          <div id="tbody"></div>
+        </div>
+
+        <div class="footer-hint">
+          Note : en mode démo (localStorage), les 99 autres joueurs sont simulés.
+          Sur un vrai produit, ce leaderboard doit venir du backend (anti-cheat + cohérence multi-device).
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /********************
+       * STORAGE KEYS (shared with index)
+       ********************/
+      const VS_USER_ID_KEY = "vaultspin_user_id_v1";
+      const VS_USER_NAME_KEY = "vaultspin_user_name_v1";
+      const VS_POINTS_KEY = "vaultspin_points_v1";
+
+      const VS_LB_MONTH_KEY = "vaultspin_leaderboard_month_v1";
+      const VS_LB_DATA_KEY  = "vaultspin_leaderboard_data_v1";
+
+      /********************
+       * Helpers
+       ********************/
+      function monthKey(d = new Date()){
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,"0");
+        return `${y}-${m}`;
+      }
+
+      function fmtPts(n){
+        const v = Number(n)||0;
+        return v.toLocaleString("fr-FR");
+      }
+
+      function fmtEur(n){
+        return (Number(n)||0).toLocaleString("fr-FR", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + "€";
+      }
+
+      function getUserId(){
+        let id = localStorage.getItem(VS_USER_ID_KEY);
+        if (!id){
+          id = "u_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+          localStorage.setItem(VS_USER_ID_KEY, id);
+        }
+        return id;
+      }
+
+      function getUserName(){
+        let name = localStorage.getItem(VS_USER_NAME_KEY);
+        if (!name){
+          // pseudo simple (démo)
+          name = "Player " + (Math.floor(Math.random()*9000) + 1000);
+          localStorage.setItem(VS_USER_NAME_KEY, name);
+        }
+        return name;
+      }
+
+      function getPoints(){
+        const raw = localStorage.getItem(VS_POINTS_KEY);
+        const n = raw ? Number(raw) : 0;
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+
+      // RNG déterministe (mulberry32)
+      function mulberry32(a){
+        return function(){
+          let t = a += 0x6D2B79F5;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        }
+      }
+      function hashStr(s){
+        let h = 2166136261;
+        for (let i=0;i<s.length;i++){
+          h ^= s.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
+
+      function rewardForRank(rank1){
+        if (rank1 < 1 || rank1 > 10) return null;
+        return 1100 - (rank1 * 100); // 1->1000, 10->100
+      }
+
+      /********************
+       * Leaderboard data
+       ********************/
+      function loadLb(){
+        try{ return JSON.parse(localStorage.getItem(VS_LB_DATA_KEY) || "[]"); }
+        catch{ return []; }
+      }
+
+      function saveLb(arr){
+        localStorage.setItem(VS_LB_DATA_KEY, JSON.stringify(arr));
+      }
+
+      function ensureMonthlyReset(){
+        const nowM = monthKey();
+        const storedM = localStorage.getItem(VS_LB_MONTH_KEY);
+
+        if (storedM !== nowM){
+          localStorage.setItem(VS_LB_MONTH_KEY, nowM);
+          // reset leaderboard
+          const seed = hashStr("vaultspin_" + nowM);
+          const rnd = mulberry32(seed);
+
+          const meId = getUserId();
+          const meName = getUserName();
+          const mePts = getPoints();
+
+          const bots = [];
+          for (let i=0;i<99;i++){
+            const id = "bot_" + String(i+1).padStart(3,"0");
+            // points simulés réalistes: 0.. ~12000
+            const pts = Math.floor(Math.pow(rnd(), 0.38) * 12000);
+            bots.push({ id, name: "Player " + (10000 + i), points: pts });
+          }
+
+          const all = [{ id: meId, name: meName, points: mePts }, ...bots];
+          saveLb(all);
+        } else {
+          // garantir que "me" existe et est synchro points
+          const arr = loadLb();
+          const meId = getUserId();
+          const meName = getUserName();
+          const mePts = getPoints();
+          const idx = arr.findIndex(x => x.id === meId);
+          if (idx >= 0){
+            arr[idx].name = meName;
+            arr[idx].points = mePts;
+          } else {
+            arr.push({ id: meId, name: meName, points: mePts });
+          }
+          // limiter à 100 (démo)
+          saveLb(arr.slice(0, 100));
+        }
+      }
+
+      function computeSorted(arr){
+        const copy = arr.slice();
+        // tri points desc puis name asc
+        copy.sort((a,b) => {
+          const pa = Number(a.points)||0;
+          const pb = Number(b.points)||0;
+          if (pb !== pa) return pb - pa;
+          return String(a.name||"").localeCompare(String(b.name||""), "fr");
+        });
+        return copy;
+      }
+
+      function render(){
+        ensureMonthlyReset();
+
+        const m = localStorage.getItem(VS_LB_MONTH_KEY) || monthKey();
+        document.getElementById("month-pill").textContent = "Mois : " + m;
+
+        const meId = getUserId();
+        const meName = getUserName();
+        const mePts = getPoints();
+
+        document.getElementById("me-pill").textContent = meName + " · " + fmtPts(mePts) + " pts";
+
+        const data = loadLb();
+        const sorted = computeSorted(data);
+
+        // stats
+        document.getElementById("stat-players").textContent = String(sorted.length);
+        document.getElementById("stat-points").textContent = fmtPts(mePts);
+
+        const myRank = (sorted.findIndex(x => x.id === meId) + 1) || null;
+        if (myRank){
+          document.getElementById("stat-rank").textContent = "#" + myRank;
+          const r = rewardForRank(myRank);
+          document.getElementById("stat-rank-sub").textContent =
+            r ? ("Reward actuelle : " + fmtEur(r)) : "Hors top 10 (récompenses à définir)";
+        } else {
+          document.getElementById("stat-rank").textContent = "—";
+          document.getElementById("stat-rank-sub").textContent = "—";
+        }
+
+        // table
+        const tbody = document.getElementById("tbody");
+        tbody.innerHTML = "";
+
+        for (let i=0;i<sorted.length;i++){
+          const p = sorted[i];
+          const rank1 = i + 1;
+          const r = rewardForRank(rank1);
+
+          const row = document.createElement("div");
+          row.className = "trow" + (p.id === meId ? " me" : "");
+
+          row.innerHTML = `
+            <div class="rank">#${rank1}</div>
+            <div class="name">${escapeHtml(p.name || ("Player " + p.id))}</div>
+            <div class="points">${fmtPts(p.points || 0)} <span class="muted">pts</span></div>
+            <div class="reward">${r ? fmtEur(r) : "<span class='muted'>—</span>"}</div>
+          `;
+
+          tbody.appendChild(row);
+        }
+      }
+
+      function escapeHtml(s){
+        return String(s || "").replace(/[&<>"']/g, (c) => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+        }[c]));
+      }
+
+      /********************
+       * Demo actions
+       ********************/
+      function resetMonthDemo(){
+        // force month mismatch => triggers full reset
+        localStorage.setItem(VS_LB_MONTH_KEY, "force-reset");
+        render();
+      }
+
+      /********************
+       * Init
+       ********************/
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("back-packs").addEventListener("click", () => {
+          window.location.href = "index.html";
+        });
+        document.getElementById("back-collection").addEventListener("click", () => {
+          window.location.href = "collection.html";
+        });
+        document.getElementById("reset-month").addEventListener("click", resetMonthDemo);
+
+        render();
+      });
+    </script>
+  </body>
+</html>
