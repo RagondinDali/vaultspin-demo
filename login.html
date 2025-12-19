@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VaultSpin — Login</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #070a12;
+      color: #e8e8ff;
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      width: min(520px, 92vw);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    p { margin: 0 0 16px; opacity: 0.85; }
+    label { display: block; margin-top: 12px; font-size: 13px; opacity: 0.9; }
+    input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.25);
+      color: #e8e8ff;
+      outline: none;
+    }
+    .row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    button, a.btnlink {
+      cursor: pointer;
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 14px;
+      background: #6c4cff;
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 160px;
+    }
+    button.secondary {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
+      min-width: 160px;
+    }
+    .mutedbtn {
+      background: transparent;
+      border: 1px dashed rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.9);
+      min-width: 160px;
+    }
+    #msg { margin-top: 14px; min-height: 20px; }
+    .session {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .small { font-size: 12px; opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="topbar">
+      <div>
+        <h1>VaultSpin — Connexion</h1>
+        <div class="small">Email / Mot de passe (Supabase Auth)</div>
+      </div>
+      <a class="btnlink secondary" href="./index.html">← Retour</a>
+    </div>
+
+    <div id="authBox">
+      <p>Crée un compte ou connecte-toi.</p>
+
+      <label>Email</label>
+      <input id="email" type="email" placeholder="toi@email.com" autocomplete="email" />
+
+      <label>Mot de passe</label>
+      <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+      <div class="row">
+        <button id="btnSignUp">Créer un compte</button>
+        <button class="secondary" id="btnSignIn">Se connecter</button>
+        <button class="mutedbtn" id="btnResend">Renvoyer confirmation</button>
+      </div>
+    </div>
+
+    <div id="sessionBox" class="session" style="display:none;">
+      <div>✅ Connecté en tant que : <b id="userEmail"></b></div>
+      <div class="row">
+        <button class="secondary" id="btnSignOut">Se déconnecter</button>
+        <a class="btnlink" href="./index.html">Aller à l’accueil</a>
+      </div>
+    </div>
+
+    <div id="msg"></div>
+  </div>
+
+  <script type="module" src="./js/auth.js"></script>
+</body>
+</html>
