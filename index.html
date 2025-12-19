@@ -1673,7 +1673,7 @@
         triggerHiddenPullFx(isHidden);
       }
 
-      // ✅ MODIF: retourne l'entry pour pouvoir l'envoyer à Supabase
+      // ✅ MODIF: retourne l'entry pour pouvoir l'envoyer à Supabase (ou autre)
       function commitToCollection(){
         const { winningCt, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
         const entry = {
@@ -1738,6 +1738,19 @@
 
         currentOpen = { winningCt, rarityKey, imgSrc, name, tokenId, ts };
 
+        // ✅ Étape A — Event dispatch (module Supabase va écouter et persister)
+        window.dispatchEvent(new CustomEvent("vs:card-opened", {
+          detail: {
+            token_id: tokenId,
+            card_type_index: winningCt,
+            rarity_key: rarityKey, // EPIC/ULTRA/LEGENDARY/HIDDEN
+            image_url: imgSrc,
+            card_name: name,
+            estimated_value_eur: (CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0),
+            opened_at: ts
+          }
+        }));
+
         const reelItems = buildReelItems(winningCt);
         renderReel(reelItems);
 
@@ -1748,28 +1761,7 @@
         if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
 
         // ✅ 1) localStorage (démo)
-        const entry = commitToCollection();
-
-        // ✅ 2) DB Supabase (si la fonction est dispo)
-        // (La fonction est déclarée dans le <script type="module"> plus bas)
-        try{
-          if (window.vsSaveCardToDb){
-            const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
-            await window.vsSaveCardToDb({
-              token_id: tokenId,
-              card_type_index: winningCt,
-              rarity_key: (rarityKey === "HIDDEN") ? null : rarityKey,
-              image_url: imgSrc,
-              card_name: name,
-              estimated_value_eur: price,
-              opened_at: new Date(ts).toISOString()
-            });
-          }
-        }catch(err){
-          console.warn("DB save failed:", err);
-          // On ne bloque pas l’UX si la DB échoue, mais on peut prévenir:
-          setStatus("Pack ouvert ✅ (DB en retard / erreur)", "pending");
-        }
+        commitToCollection();
 
         fillResultUI();
 
@@ -2021,32 +2013,34 @@
         return session;
       }
 
-      // ✅ EXPOSE: fonction DB save utilisable par ton <script> classique
-      window.vsSaveCardToDb = async (card) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) throw new Error("Not authenticated");
+      // ✅ Étape B — Persist opened cards to Supabase (user_cards)
+      window.addEventListener("vs:card-opened", async (ev) => {
+        try {
+          const card = ev.detail;
 
-        const payload = {
-          user_id: session.user.id,
-          token_id: card.token_id ?? null,
-          card_type_index: card.card_type_index,
-          rarity_key: card.rarity_key ?? null,
-          image_url: card.image_url ?? null,
-          card_name: card.card_name ?? null,
-          estimated_value_eur: card.estimated_value_eur ?? 0,
-          opened_at: card.opened_at ?? new Date().toISOString(),
-          chain_id: null,
-          contract_address: null,
-          onchain_token_id: null
-        };
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session?.user) return; // pas loggé => ignore
 
-        const { error } = await supabase
-          .from("user_cards")
-          .insert(payload);
+          const payload = {
+            user_id: session.user.id,
+            token_id: card.token_id ?? null,
+            card_type_index: card.card_type_index,
+            rarity_key: card.rarity_key, // ✅ IMPORTANT (jamais NULL)
+            image_url: card.image_url ?? null,
+            card_name: card.card_name ?? null,
+            estimated_value_eur: card.estimated_value_eur ?? 0,
+            opened_at: new Date(card.opened_at).toISOString(),
+            chain_id: null,
+            contract_address: null,
+            onchain_token_id: null
+          };
 
-        if (error) throw error;
-        return true;
-      };
+          const { error } = await supabase.from("user_cards").insert([payload]);
+          if (error) console.error("save user_cards error:", error);
+        } catch (e) {
+          console.error("save user_cards exception:", e);
+        }
+      });
 
       // 1) Etat initial
       const { data: { session } } = await supabase.auth.getSession();
