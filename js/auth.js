@@ -1,133 +1,184 @@
+// js/auth.js
 import { supabase } from "./supabaseClient.js";
 
-const $ = (id) => document.getElementById(id);
+/**
+ * Helpers DOM (tolérant: si l'élément n'existe pas, ça ne crash pas)
+ */
+const $ = (sel) => document.querySelector(sel);
+const setMsg = (text, ok = true) => {
+  const el = $("#msg");
+  if (!el) return;
+  el.textContent = text || "";
+  el.style.color = ok ? "lime" : "salmon";
+};
 
-function getRedirectTo() {
-  // URL absolue de la page login (important pour GitHub Pages)
-  return new URL("./login.html", window.location.href).toString();
+function getNextUrl(defaultNext = "./index.html") {
+  const p = new URLSearchParams(window.location.search);
+  return p.get("next") || defaultNext;
 }
 
-async function refreshUI() {
-  const { data: { session } } = await supabase.auth.getSession();
+/**
+ * Vérifie que l'utilisateur a bien un profil + un username.
+ * Redirige vers profile.html si nécessaire.
+ */
+async function ensureProfileAndRoute(user, next = "./index.html") {
+  // 1) Lire profiles
+  const { data: profile, error: selErr } = await supabase
+    .from("profiles")
+    .select("id, username")
+    .eq("id", user.id)
+    .maybeSingle();
 
-  $("sessionBox").style.display = session ? "block" : "none";
-  $("authBox").style.display = session ? "none" : "block";
+  if (selErr) throw selErr;
 
-  if (session) {
-    $("userEmail").textContent = session.user.email || "(email inconnu)";
+  // 2) Si pas de row => créer
+  if (!profile) {
+    const { error: insErr } = await supabase.from("profiles").insert({
+      id: user.id,
+      email: user.email,
+      is_public: true,
+      username: null,
+      display_name: null,
+    });
+    if (insErr) throw insErr;
+
+    // profil créé, maintenant forcer écran pseudo
+    window.location.href = `./profile.html?next=${encodeURIComponent(next)}`;
+    return;
   }
+
+  // 3) Si username manquant => forcer écran pseudo
+  if (!profile.username) {
+    window.location.href = `./profile.html?next=${encodeURIComponent(next)}`;
+    return;
+  }
+
+  // 4) OK => aller au next
+  window.location.href = next;
 }
 
-async function signUp(email, password) {
-  const redirectTo = getRedirectTo();
+/**
+ * Connexion
+ */
+export async function signIn(email, password, next = "./index.html") {
+  setMsg("Connexion…", true);
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { emailRedirectTo: redirectTo },
-  });
-
-  if (error) throw error;
-
-  // Si email confirmation activée, l'utilisateur doit cliquer le lien
-  $("msg").textContent =
-    "✅ Compte créé. Regarde tes emails et clique le lien de confirmation, puis reviens ici pour te connecter.";
-  $("msg").style.color = "lime";
-}
-
-async function signIn(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-  if (error) throw error;
 
-  $("msg").textContent = "✅ Connecté ! Redirection vers l’accueil…";
-  $("msg").style.color = "lime";
+  if (error) {
+    setMsg(error.message || "Erreur de connexion", false);
+    throw error;
+  }
 
-  // Retour à l'accueil
-  setTimeout(() => {
-    window.location.href = "./index.html";
-  }, 600);
+  setMsg("✅ Connecté. Vérification du profil…", true);
+  await ensureProfileAndRoute(data.user, next);
 }
 
-async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
-  $("msg").textContent = "✅ Déconnecté.";
-  $("msg").style.color = "lime";
-  await refreshUI();
-}
+/**
+ * Inscription
+ * (Supabase peut demander confirmation email selon ta config)
+ */
+export async function signUp(email, password, next = "./index.html") {
+  setMsg("Création du compte…", true);
 
-async function resendConfirmation(email) {
-  const redirectTo = getRedirectTo();
-  const { error } = await supabase.auth.resend({
-    type: "signup",
+  const { data, error } = await supabase.auth.signUp({
     email,
-    options: { emailRedirectTo: redirectTo },
+    password,
   });
-  if (error) throw error;
 
-  $("msg").textContent = "✅ Email de confirmation renvoyé.";
-  $("msg").style.color = "lime";
+  if (error) {
+    setMsg(error.message || "Erreur d'inscription", false);
+    throw error;
+  }
+
+  // Si confirmation email activée : pas de session immédiate
+  if (!data.session) {
+    setMsg("✅ Compte créé. Vérifie tes emails pour confirmer, puis reconnecte-toi.", true);
+    return;
+  }
+
+  setMsg("✅ Compte créé. Vérification du profil…", true);
+  await ensureProfileAndRoute(data.user, next);
 }
 
-function showError(err) {
-  console.error(err);
-  $("msg").textContent = "❌ " + (err?.message || String(err));
-  $("msg").style.color = "salmon";
+/**
+ * Déconnexion
+ */
+export async function signOut() {
+  await supabase.auth.signOut();
+  setMsg("Déconnecté.", true);
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-  // Si tu arrives ici depuis un email de confirmation, Supabase peut renvoyer une session
-  // On écoute les changements
-  supabase.auth.onAuthStateChange(async () => {
-    await refreshUI();
-  });
+/**
+ * Brancher automatiquement les boutons si présents dans la page.
+ * Attendu :
+ *  - #email, #password
+ *  - #btnLogin, #btnRegister, #btnLogout
+ *  - #msg
+ */
+async function wireUI() {
+  const emailEl = $("#email");
+  const passEl = $("#password");
 
-  $("btnSignUp").addEventListener("click", async () => {
-    try {
-      $("msg").textContent = "";
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      if (!email || !password) return showError("Email et mot de passe requis.");
-      await signUp(email, password);
-    } catch (e) {
-      showError(e);
+  const btnLogin = $("#btnLogin");
+  const btnRegister = $("#btnRegister");
+  const btnLogout = $("#btnLogout");
+
+  const next = getNextUrl("./index.html");
+
+  if (btnLogin) {
+    btnLogin.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const email = emailEl?.value?.trim();
+        const password = passEl?.value;
+        if (!email || !password) return setMsg("Email et mot de passe requis.", false);
+        await signIn(email, password, next);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+
+  if (btnRegister) {
+    btnRegister.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const email = emailEl?.value?.trim();
+        const password = passEl?.value;
+        if (!email || !password) return setMsg("Email et mot de passe requis.", false);
+        await signUp(email, password, next);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+
+  if (btnLogout) {
+    btnLogout.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        await signOut();
+        window.location.href = "./login.html";
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+
+  // UX: si déjà connecté et qu'on est sur login.html, on redirige direct
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) {
+    // si tu es sur login, ça évite de rester bloqué
+    const onLoginPage = /login\.html$/i.test(window.location.pathname);
+    if (onLoginPage) {
+      setMsg("Session active. Vérification du profil…", true);
+      await ensureProfileAndRoute(session.user, next);
     }
-  });
+  }
+}
 
-  $("btnSignIn").addEventListener("click", async () => {
-    try {
-      $("msg").textContent = "";
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      if (!email || !password) return showError("Email et mot de passe requis.");
-      await signIn(email, password);
-    } catch (e) {
-      showError(e);
-    }
-  });
-
-  $("btnResend").addEventListener("click", async () => {
-    try {
-      $("msg").textContent = "";
-      const email = $("email").value.trim();
-      if (!email) return showError("Entre ton email pour renvoyer.");
-      await resendConfirmation(email);
-    } catch (e) {
-      showError(e);
-    }
-  });
-
-  $("btnSignOut").addEventListener("click", async () => {
-    try {
-      $("msg").textContent = "";
-      await signOut();
-    } catch (e) {
-      showError(e);
-    }
-  });
-
-  await refreshUI();
-});
+document.addEventListener("DOMContentLoaded", wireUI);
