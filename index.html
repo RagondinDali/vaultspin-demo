@@ -88,7 +88,7 @@
         border:1px solid rgba(148,163,184,.20);
         background:rgba(15,23,42,.35);
         display:grid;
-        grid-template-columns: repeat(6, 1fr); /* ✅ 6 colonnes (ajout Points) */
+        grid-template-columns: repeat(6, 1fr);
         gap:10px;
       }
       @media (max-width: 860px){ .stats{ grid-template-columns: repeat(2, 1fr); } }
@@ -969,10 +969,11 @@
       const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
       const VS_WALLET_BALANCE_EUR_KEY = "vaultspin_wallet_balance_eur_v1";
 
-      /* ✅ Points + leaderboard (démo) */
+      /* ✅ Points + leaderboard (démo/local UI) */
       const VS_USER_ID_KEY = "vaultspin_user_id_v1";
       const VS_USER_NAME_KEY = "vaultspin_user_name_v1";
       const VS_POINTS_KEY = "vaultspin_points_v1";
+
       const VS_LB_MONTH_KEY = "vaultspin_leaderboard_month_v1";
       const VS_LB_DATA_KEY  = "vaultspin_leaderboard_data_v1";
 
@@ -1673,7 +1674,6 @@
         triggerHiddenPullFx(isHidden);
       }
 
-      // ✅ MODIF: retourne l'entry pour pouvoir l'envoyer à Supabase (ou autre)
       function commitToCollection(){
         const { winningCt, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
         const entry = {
@@ -1715,9 +1715,28 @@
         if (mode === "paid"){
           if (!debitPack()) return;
         } else {
-          if (!spendPoints(FREE_PACK_COST_PTS)){
-            setStatus("Points insuffisants pour un booster gratuit.", "error");
-            return;
+          // ✅ spend points server-side if available (authoritative)
+          try{
+            if (window.vsSpendPointsServer){
+              const res = await window.vsSpendPointsServer(FREE_PACK_COST_PTS);
+              if (!res?.ok){
+                setStatus(`Points insuffisants (${res?.points || 0}/${FREE_PACK_COST_PTS}).`, "error");
+                return;
+              }
+              localStorage.setItem(VS_POINTS_KEY, String(res.points));
+              renderPoints();
+            } else {
+              if (!spendPoints(FREE_PACK_COST_PTS)){
+                setStatus("Points insuffisants pour un booster gratuit.", "error");
+                return;
+              }
+            }
+          }catch(e){
+            // fallback demo local
+            if (!spendPoints(FREE_PACK_COST_PTS)){
+              setStatus("Points insuffisants pour un booster gratuit.", "error");
+              return;
+            }
           }
         }
 
@@ -1738,19 +1757,6 @@
 
         currentOpen = { winningCt, rarityKey, imgSrc, name, tokenId, ts };
 
-        // ✅ Étape A — Event dispatch (module Supabase va écouter et persister)
-        window.dispatchEvent(new CustomEvent("vs:card-opened", {
-          detail: {
-            token_id: tokenId,
-            card_type_index: winningCt,
-            rarity_key: rarityKey, // EPIC/ULTRA/LEGENDARY/HIDDEN
-            image_url: imgSrc,
-            card_name: name,
-            estimated_value_eur: (CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0),
-            opened_at: ts
-          }
-        }));
-
         const reelItems = buildReelItems(winningCt);
         renderReel(reelItems);
 
@@ -1763,9 +1769,28 @@
         // ✅ 1) localStorage (démo)
         commitToCollection();
 
+        // ✅ 2) DB Supabase (si dispo)
+        try{
+          if (window.vsSaveCardToDb){
+            const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+            await window.vsSaveCardToDb({
+              token_id: tokenId,
+              card_type_index: winningCt,
+              rarity_key: (rarityKey === "HIDDEN") ? null : rarityKey,
+              image_url: imgSrc,
+              card_name: name,
+              estimated_value_eur: price,
+              opened_at: new Date(ts).toISOString()
+            });
+          }
+        }catch(err){
+          console.warn("DB save failed:", err);
+          setStatus("Pack ouvert ✅ (DB en retard / erreur)", "pending");
+        }
+
         fillResultUI();
 
-        /* ✅ +25 points à chaque pack ouvert (payant ou gratuit) */
+        // ✅ UI: +25 (démo immédiate), la DB va resync derrière
         addPoints(POINTS_PER_PACK);
 
         uiState = UI_STATE.RESULT;
@@ -1861,6 +1886,9 @@
         renderPoints();
         setStatus("Prêt. Ouvre un pack.", "ok");
 
+        // ✅ expose pour module (sync server points)
+        window.renderPoints = renderPoints;
+
         document.getElementById("open-pack-btn").addEventListener("click", () => openPackRoulette("paid"));
         document.getElementById("free-pack-btn").addEventListener("click", () => openPackRoulette("free"));
 
@@ -1946,7 +1974,7 @@
       }
     </style>
 
-    <!-- ✅ AUTH + DB SAVE (Supabase) -->
+    <!-- ✅ AUTH + DB SAVE (Supabase) + ✅ POINTS RPC -->
     <script type="module">
       import { supabase } from "./js/supabaseClient.js";
 
@@ -1956,6 +1984,9 @@
 
       const paidBtn = document.getElementById("open-pack-btn");
       const freeBtn = document.getElementById("free-pack-btn");
+
+      const POINTS_PER_PACK = 25;
+      const FREE_PACK_COST_PTS = 2500;
 
       function setAuthed(label){
         if (emailEl){
@@ -2013,44 +2044,99 @@
         return session;
       }
 
-      // ✅ Étape B — Persist opened cards to Supabase (user_cards)
-      window.addEventListener("vs:card-opened", async (ev) => {
-        try {
-          const card = ev.detail;
+      /********************
+       * ✅ POINTS RPC (server authoritative)
+       ********************/
+      async function vsGetPoints(){
+        const { data, error } = await supabase.rpc("vs_get_points", {});
+        if (error) throw error;
+        return Number(data || 0);
+      }
 
+      async function vsAddPoints(delta){
+        const { data, error } = await supabase.rpc("vs_add_points", { p_delta: delta });
+        if (error) throw error;
+        return Number(data || 0);
+      }
+
+      async function vsSpendPoints(cost){
+        const { data, error } = await supabase.rpc("vs_spend_points", { p_cost: cost });
+        if (error) throw error;
+        const row = Array.isArray(data) ? data[0] : data;
+        return { ok: !!row?.ok, points: Number(row?.points || 0) };
+      }
+
+      async function syncPointsToLocalStorage(){
+        try{
           const { data: { session } } = await supabase.auth.getSession();
-          if (!session?.user) return; // pas loggé => ignore
-
-          const payload = {
-            user_id: session.user.id,
-            token_id: card.token_id ?? null,
-            card_type_index: card.card_type_index,
-            rarity_key: card.rarity_key, // ✅ IMPORTANT (jamais NULL)
-            image_url: card.image_url ?? null,
-            card_name: card.card_name ?? null,
-            estimated_value_eur: card.estimated_value_eur ?? 0,
-            opened_at: new Date(card.opened_at).toISOString(),
-            chain_id: null,
-            contract_address: null,
-            onchain_token_id: null
-          };
-
-          const { error } = await supabase.from("user_cards").insert([payload]);
-          if (error) console.error("save user_cards error:", error);
-        } catch (e) {
-          console.error("save user_cards exception:", e);
+          if (!session?.user) return;
+          const pts = await vsGetPoints();
+          localStorage.setItem("vaultspin_points_v1", String(pts));
+          if (window.renderPoints) window.renderPoints();
+        }catch(e){
+          console.warn("syncPointsToLocalStorage failed:", e);
         }
-      });
+      }
+
+      // expose spend pour openPackRoulette("free")
+      window.vsSpendPointsServer = async (cost) => {
+        return await vsSpendPoints(cost);
+      };
+
+      // ✅ EXPOSE: fonction DB save utilisable par ton <script> classique
+      window.vsSaveCardToDb = async (card) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) throw new Error("Not authenticated");
+
+        const payload = {
+          user_id: session.user.id,
+          token_id: card.token_id ?? null,
+          card_type_index: card.card_type_index,
+          rarity_key: card.rarity_key ?? null,
+          image_url: card.image_url ?? null,
+          card_name: card.card_name ?? null,
+          estimated_value_eur: card.estimated_value_eur ?? 0,
+          opened_at: card.opened_at ?? new Date().toISOString(),
+          chain_id: null,
+          contract_address: null,
+          onchain_token_id: null
+        };
+
+        const { error } = await supabase
+          .from("user_cards")
+          .insert(payload);
+
+        if (error) throw error;
+
+        // ✅ add points server-side (authoritative)
+        try{
+          const newPts = await vsAddPoints(POINTS_PER_PACK);
+          localStorage.setItem("vaultspin_points_v1", String(newPts));
+          if (window.renderPoints) window.renderPoints();
+        }catch(e){
+          console.warn("vsAddPoints failed:", e);
+        }
+
+        return true;
+      };
 
       // 1) Etat initial
       const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) await setAuthedFromSession(session);
-      else setNotAuthed();
+      if (session?.user){
+        await setAuthedFromSession(session);
+        await syncPointsToLocalStorage();
+      } else {
+        setNotAuthed();
+      }
 
       // 2) React aux changements login/logout
       supabase.auth.onAuthStateChange(async (_event, newSession) => {
-        if (newSession?.user) await setAuthedFromSession(newSession);
-        else setNotAuthed();
+        if (newSession?.user){
+          await setAuthedFromSession(newSession);
+          await syncPointsToLocalStorage();
+        } else {
+          setNotAuthed();
+        }
       });
 
       // 3) Logout
