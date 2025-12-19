@@ -1940,79 +1940,112 @@
       }
     </style>
 
-    <!-- ✅ AUTH GUARD + HEADER (ajout) -->
-    <script type="module">
-      import { supabase } from "./js/supabaseClient.js";
+   <!-- ✅ AUTH GUARD + HEADER (label = display_name || username || email) -->
+<script type="module">
+  import { supabase } from "./js/supabaseClient.js";
 
-      const loginBtn  = document.getElementById("vs-login-btn");
-      const logoutBtn = document.getElementById("vs-logout-btn");
-      const emailEl   = document.getElementById("vs-user-email");
+  const loginBtn  = document.getElementById("vs-login-btn");
+  const logoutBtn = document.getElementById("vs-logout-btn");
+  const emailEl   = document.getElementById("vs-user-email");
 
-      const paidBtn = document.getElementById("open-pack-btn");
-      const freeBtn = document.getElementById("free-pack-btn");
+  const paidBtn = document.getElementById("open-pack-btn");
+  const freeBtn = document.getElementById("free-pack-btn");
 
-      function setAuthed(email){
-        if (emailEl){
-          emailEl.style.display = "inline-flex";
-          emailEl.textContent = email || "Connecté";
-        }
-        if (loginBtn) loginBtn.style.display = "none";
-        if (logoutBtn) logoutBtn.style.display = "inline-flex";
+  function setAuthed(label){
+    if (emailEl){
+      emailEl.style.display = "inline-flex";
+      emailEl.textContent = label || "Connecté";
+    }
+    if (loginBtn) loginBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-flex";
+  }
+
+  function setNotAuthed(){
+    if (emailEl){
+      emailEl.style.display = "none";
+      emailEl.textContent = "—";
+    }
+    if (loginBtn) loginBtn.style.display = "inline-flex";
+    if (logoutBtn) logoutBtn.style.display = "none";
+  }
+
+  async function setAuthedFromSession(session){
+    // session.user.id = auth.users.id = profiles.id
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("username, display_name")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    // Si RLS/row manquante/etc, fallback email
+    const label = (!error && data)
+      ? (data.display_name || data.username || session.user.email || "Connecté")
+      : (session.user.email || "Connecté");
+
+    setAuthed(label);
+  }
+
+  async function requireAuthOrRedirect(){
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user){
+      window.location.href = "login.html";
+      return null;
+    }
+
+    // (Optionnel mais très utile) : si pas de pseudo -> profile.html
+    // Ça évite un user “connecté” mais invisible sur leaderboard
+    try{
+      const { data } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      if (!data?.username){
+        window.location.href = "profile.html?next=./index.html";
+        return null;
       }
+    }catch(_){}
 
-      function setNotAuthed(){
-        if (emailEl){
-          emailEl.style.display = "none";
-          emailEl.textContent = "—";
-        }
-        if (loginBtn) loginBtn.style.display = "inline-flex";
-        if (logoutBtn) logoutBtn.style.display = "none";
-      }
+    return session;
+  }
 
-      async function requireAuthOrRedirect(){
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user){
-          window.location.href = "login.html";
-          return null;
-        }
-        return session;
-      }
+  // 1) Etat initial
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) await setAuthedFromSession(session);
+  else setNotAuthed();
 
-      // 1) Etat initial
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) setAuthed(session.user.email);
-      else setNotAuthed();
+  // 2) React aux changements login/logout
+  supabase.auth.onAuthStateChange(async (_event, newSession) => {
+    if (newSession?.user) await setAuthedFromSession(newSession);
+    else setNotAuthed();
+  });
 
-      // 2) React aux changements login/logout
-      supabase.auth.onAuthStateChange((_event, newSession) => {
-        if (newSession?.user) setAuthed(newSession.user.email);
-        else setNotAuthed();
-      });
+  // 3) Logout button
+  logoutBtn?.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+  });
 
-      // 3) Logout button
-      logoutBtn?.addEventListener("click", async () => {
-        await supabase.auth.signOut();
-      });
+  // 4) GUARD : intercepte les clics AVANT ton code existant
+  // (capture=true + stopImmediatePropagation = ton listener DOMContentLoaded ne s’exécute pas si pas connecté)
+  paidBtn?.addEventListener("click", async (e) => {
+    const s = await requireAuthOrRedirect();
+    if (!s){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
+  }, true);
 
-      // 4) GUARD : intercepte les clics AVANT ton code existant
-      // (capture=true + stopImmediatePropagation = ton listener DOMContentLoaded ne s’exécute pas si pas connecté)
-      paidBtn?.addEventListener("click", async (e) => {
-        const s = await requireAuthOrRedirect();
-        if (!s){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          return;
-        }
-      }, true);
-
-      freeBtn?.addEventListener("click", async (e) => {
-        const s = await requireAuthOrRedirect();
-        if (!s){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          return;
-        }
-      }, true);
-    </script>
+  freeBtn?.addEventListener("click", async (e) => {
+    const s = await requireAuthOrRedirect();
+    if (!s){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
+  }, true);
+</script>
   </body>
 </html>
+
