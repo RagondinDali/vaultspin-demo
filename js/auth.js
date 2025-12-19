@@ -1,28 +1,44 @@
 // js/auth.js
 import { supabase } from "./supabaseClient.js";
 
-/**
- * Helpers DOM (tolérant: si l'élément n'existe pas, ça ne crash pas)
- */
+/* ----------------------------- DOM helpers ----------------------------- */
 const $ = (sel) => document.querySelector(sel);
-const setMsg = (text, ok = true) => {
-  const el = $("#msg");
-  if (!el) return;
-  el.textContent = text || "";
-  el.style.color = ok ? "lime" : "salmon";
+
+const ui = {
+  email: () => $("#email"),
+  password: () => $("#password"),
+
+  btnSignUp: () => $("#btnSignUp"),
+  btnSignIn: () => $("#btnSignIn"),
+  btnResend: () => $("#btnResend"),
+  btnSignOut: () => $("#btnSignOut"),
+
+  authBox: () => $("#authBox"),
+  sessionBox: () => $("#sessionBox"),
+  userEmail: () => $("#userEmail"),
+  msg: () => $("#msg"),
 };
+
+function setMsg(text = "", ok = true) {
+  const el = ui.msg();
+  if (!el) return;
+  el.textContent = text;
+  el.style.color = ok ? "lime" : "salmon";
+}
+
+function setLoading(isLoading) {
+  const buttons = [ui.btnSignUp(), ui.btnSignIn(), ui.btnResend(), ui.btnSignOut()].filter(Boolean);
+  buttons.forEach((b) => (b.disabled = !!isLoading));
+  if (isLoading) setMsg("⏳ Traitement…", true);
+}
 
 function getNextUrl(defaultNext = "./index.html") {
   const p = new URLSearchParams(window.location.search);
   return p.get("next") || defaultNext;
 }
 
-/**
- * Vérifie que l'utilisateur a bien un profil + un username.
- * Redirige vers profile.html si nécessaire.
- */
+/* ------------------------ Profile gating (VaultSpin) ------------------------ */
 async function ensureProfileAndRoute(user, next = "./index.html") {
-  // 1) Lire profiles
   const { data: profile, error: selErr } = await supabase
     .from("profiles")
     .select("id, username")
@@ -31,154 +47,167 @@ async function ensureProfileAndRoute(user, next = "./index.html") {
 
   if (selErr) throw selErr;
 
-  // 2) Si pas de row => créer
   if (!profile) {
     const { error: insErr } = await supabase.from("profiles").insert({
       id: user.id,
       email: user.email,
-      is_public: true,
       username: null,
       display_name: null,
+      avatar_url: null,
+      is_public: true,
     });
     if (insErr) throw insErr;
 
-    // profil créé, maintenant forcer écran pseudo
     window.location.href = `./profile.html?next=${encodeURIComponent(next)}`;
     return;
   }
 
-  // 3) Si username manquant => forcer écran pseudo
   if (!profile.username) {
     window.location.href = `./profile.html?next=${encodeURIComponent(next)}`;
     return;
   }
 
-  // 4) OK => aller au next
   window.location.href = next;
 }
 
-/**
- * Connexion
- */
-export async function signIn(email, password, next = "./index.html") {
-  setMsg("Connexion…", true);
+/* ----------------------------- Auth actions ----------------------------- */
+async function signIn(email, password, next) {
+  setLoading(true);
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    setMsg(error.message || "Erreur de connexion", false);
-    throw error;
+    setMsg("✅ Connecté. Vérification du profil…", true);
+    await ensureProfileAndRoute(data.user, next);
+  } catch (err) {
+    console.error(err);
+    setMsg(err?.message || "Erreur de connexion", false);
+  } finally {
+    setLoading(false);
   }
-
-  setMsg("✅ Connecté. Vérification du profil…", true);
-  await ensureProfileAndRoute(data.user, next);
 }
 
-/**
- * Inscription
- * (Supabase peut demander confirmation email selon ta config)
- */
-export async function signUp(email, password, next = "./index.html") {
-  setMsg("Création du compte…", true);
+async function signUp(email, password, next) {
+  setLoading(true);
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+    if (!data.session) {
+      setMsg("✅ Compte créé. Vérifie tes emails puis reconnecte-toi.", true);
+      return;
+    }
 
-  if (error) {
-    setMsg(error.message || "Erreur d'inscription", false);
-    throw error;
+    setMsg("✅ Compte créé. Vérification du profil…", true);
+    await ensureProfileAndRoute(data.user, next);
+  } catch (err) {
+    console.error(err);
+    setMsg(err?.message || "Erreur d'inscription", false);
+  } finally {
+    setLoading(false);
   }
-
-  // Si confirmation email activée : pas de session immédiate
-  if (!data.session) {
-    setMsg("✅ Compte créé. Vérifie tes emails pour confirmer, puis reconnecte-toi.", true);
-    return;
-  }
-
-  setMsg("✅ Compte créé. Vérification du profil…", true);
-  await ensureProfileAndRoute(data.user, next);
 }
 
-/**
- * Déconnexion
- */
-export async function signOut() {
-  await supabase.auth.signOut();
-  setMsg("Déconnecté.", true);
+async function resendConfirmation(email) {
+  setLoading(true);
+  try {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+    });
+    if (error) throw error;
+
+    setMsg("📩 Email de confirmation renvoyé. Check ta boîte (et spam).", true);
+  } catch (err) {
+    console.error(err);
+    setMsg(err?.message || "Impossible de renvoyer l'email", false);
+  } finally {
+    setLoading(false);
+  }
 }
 
-/**
- * Brancher automatiquement les boutons si présents dans la page.
- * Attendu :
- *  - #email, #password
- *  - #btnLogin, #btnRegister, #btnLogout
- *  - #msg
- */
+async function signOut() {
+  setLoading(true);
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    setMsg("👋 Déconnecté.", true);
+  } catch (err) {
+    console.error(err);
+    setMsg(err?.message || "Erreur de déconnexion", false);
+  } finally {
+    setLoading(false);
+  }
+}
+
+/* ----------------------------- UI rendering ----------------------------- */
+function renderSession(session) {
+  const authBox = ui.authBox();
+  const sessionBox = ui.sessionBox();
+  const userEmail = ui.userEmail();
+
+  if (!authBox || !sessionBox) return;
+
+  if (session?.user) {
+    authBox.style.display = "none";
+    sessionBox.style.display = "block";
+    if (userEmail) userEmail.textContent = session.user.email || "";
+  } else {
+    authBox.style.display = "block";
+    sessionBox.style.display = "none";
+    if (userEmail) userEmail.textContent = "";
+  }
+}
+
+/* ----------------------------- Wire events ----------------------------- */
 async function wireUI() {
-  const emailEl = $("#email");
-  const passEl = $("#password");
-
-  const btnLogin = $("#btnLogin");
-  const btnRegister = $("#btnRegister");
-  const btnLogout = $("#btnLogout");
-
   const next = getNextUrl("./index.html");
 
-  if (btnLogin) {
-    btnLogin.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try {
-        const email = emailEl?.value?.trim();
-        const password = passEl?.value;
-        if (!email || !password) return setMsg("Email et mot de passe requis.", false);
-        await signIn(email, password, next);
-      } catch (err) {
-        console.error(err);
-      }
-    });
+  ui.btnSignIn()?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = ui.email()?.value?.trim();
+    const password = ui.password()?.value;
+    if (!email || !password) return setMsg("Email et mot de passe requis.", false);
+    await signIn(email, password, next);
+  });
+
+  ui.btnSignUp()?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = ui.email()?.value?.trim();
+    const password = ui.password()?.value;
+    if (!email || !password) return setMsg("Email et mot de passe requis.", false);
+    await signUp(email, password, next);
+  });
+
+  ui.btnResend()?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = ui.email()?.value?.trim();
+    if (!email) return setMsg("Entre ton email pour renvoyer la confirmation.", false);
+    await resendConfirmation(email);
+  });
+
+  ui.btnSignOut()?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    await signOut();
+    const { data } = await supabase.auth.getSession();
+    renderSession(data.session);
+  });
+
+  // Etat initial
+  const { data } = await supabase.auth.getSession();
+  renderSession(data.session);
+
+  // Si déjà loggé sur login.html => check profil et redirect
+  if (data.session?.user) {
+    setMsg("Session active. Vérification du profil…", true);
+    await ensureProfileAndRoute(data.session.user, next);
   }
 
-  if (btnRegister) {
-    btnRegister.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try {
-        const email = emailEl?.value?.trim();
-        const password = passEl?.value;
-        if (!email || !password) return setMsg("Email et mot de passe requis.", false);
-        await signUp(email, password, next);
-      } catch (err) {
-        console.error(err);
-      }
-    });
-  }
-
-  if (btnLogout) {
-    btnLogout.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try {
-        await signOut();
-        window.location.href = "./login.html";
-      } catch (err) {
-        console.error(err);
-      }
-    });
-  }
-
-  // UX: si déjà connecté et qu'on est sur login.html, on redirige direct
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session?.user) {
-    // si tu es sur login, ça évite de rester bloqué
-    const onLoginPage = /login\.html$/i.test(window.location.pathname);
-    if (onLoginPage) {
-      setMsg("Session active. Vérification du profil…", true);
-      await ensureProfileAndRoute(session.user, next);
-    }
-  }
+  // Listener global : si la session change, on met à jour l'UI
+  supabase.auth.onAuthStateChange(async (_event, session) => {
+    renderSession(session);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", wireUI);
+
