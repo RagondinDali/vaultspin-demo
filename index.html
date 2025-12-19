@@ -212,9 +212,9 @@
       .top-link{
         font-size:12px;
         padding:6px 10px;
-        height:34px;                 /* ✅ align vertical */
-        display:inline-flex;         /* ✅ align vertical */
-        align-items:center;          /* ✅ align vertical */
+        height:34px;
+        display:inline-flex;
+        align-items:center;
         justify-content:center;
         border-radius:999px;
         border:1px solid rgba(148,163,184,.45);
@@ -228,32 +228,28 @@
         box-shadow: 0 0 14px rgba(129,140,248,.28);
       }
 
-      /* ✅ Auth buttons (petit plus) */
+      /* ✅ Auth buttons */
       #vs-logout-btn.top-link{ cursor:pointer; }
       #vs-logout-btn.top-link:hover{
         border-color:#a5b4fc;
         box-shadow:0 0 10px rgba(129,140,248,.4);
       }
 
-      /* Wallet (hover stable) */
-      .wallet-wrap{
-        position:relative;
-        pointer-events:auto;
-      }
-      /* ✅ pont hover sans décaler le wallet (fix align) */
+      /* Wallet */
+      .wallet-wrap{ position:relative; pointer-events:auto; }
       .wallet-wrap::after{
         content:"";
         position:absolute;
         left:0; right:0;
         top:100%;
-        height:14px;               /* zone “pont” */
+        height:14px;
       }
 
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
         border-radius:999px;
-        height:34px;               /* ✅ align vertical */
-        padding:0 12px;            /* ✅ align vertical */
+        height:34px;
+        padding:0 12px;
         background:radial-gradient(circle at top,#020617,#020617 70%);
         border:1px solid rgba(148,163,184,.45);
         cursor:default;
@@ -528,7 +524,7 @@
       .reel-tag.epic{ color:#38bdf8; }
       .reel-tag.ultra{ color:#a855f7; }
       .reel-tag.legendary{ color:#f97316; }
-      .reel-tag.hidden{ display:none; } /* ✅ supprime le rectangle noir vide */
+      .reel-tag.hidden{ display:none; }
 
       /* Result-only */
       .result-section{ display:none; }
@@ -750,7 +746,7 @@
         <a class="top-link glow" href="collection.html">Ma collection</a>
         <a class="top-link" href="leaderboard.html">Leaderboard</a>
 
-        <!-- ✅ AUTH (ajout) -->
+        <!-- ✅ AUTH -->
         <span id="vs-user-email" class="top-link" style="display:none; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
           —
         </span>
@@ -1226,7 +1222,7 @@
       function rarityLabelForKey(k){
         if (k === "ULTRA") return "Ultra";
         if (k === "LEGENDARY") return "Legendary";
-        if (k === "HIDDEN") return ""; // ✅ jamais afficher
+        if (k === "HIDDEN") return "";
         return "Epic";
       }
 
@@ -1239,10 +1235,6 @@
 
       /********************
        * Drop logic (bucketed)
-       * Florizarre: 1/5000
-       * ULTRA bucket: 1/50
-       * EPIC bucket:  1/20
-       * Rest: HIDDEN bucket (pondéré)
        ********************/
       const POOL_ULTRA = [11, 1, 7, 5];
       const POOL_EPIC  = [2, 3, 8, 6, 14, 13, 4, 9, 12];
@@ -1262,7 +1254,6 @@
         return pairs[pairs.length - 1].ct;
       }
 
-      // ✅ Peterson (plus commun) > Filentrappe > PCA > Scovilain > Boskara (plus rare)
       function pickHiddenCt(){
         return pickWeighted([
           { ct: CT_PETERSON,    w: 60 },
@@ -1682,6 +1673,7 @@
         triggerHiddenPullFx(isHidden);
       }
 
+      // ✅ MODIF: retourne l'entry pour pouvoir l'envoyer à Supabase
       function commitToCollection(){
         const { winningCt, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
         const entry = {
@@ -1697,6 +1689,7 @@
         pushToCollection(entry);
         renderStats();
         renderHistory();
+        return entry;
       }
 
       function sellCurrentPull(){
@@ -1754,7 +1747,30 @@
         playSound(sfxReveal);
         if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
 
-        commitToCollection();
+        // ✅ 1) localStorage (démo)
+        const entry = commitToCollection();
+
+        // ✅ 2) DB Supabase (si la fonction est dispo)
+        // (La fonction est déclarée dans le <script type="module"> plus bas)
+        try{
+          if (window.vsSaveCardToDb){
+            const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+            await window.vsSaveCardToDb({
+              token_id: tokenId,
+              card_type_index: winningCt,
+              rarity_key: (rarityKey === "HIDDEN") ? null : rarityKey,
+              image_url: imgSrc,
+              card_name: name,
+              estimated_value_eur: price,
+              opened_at: new Date(ts).toISOString()
+            });
+          }
+        }catch(err){
+          console.warn("DB save failed:", err);
+          // On ne bloque pas l’UX si la DB échoue, mais on peut prévenir:
+          setStatus("Pack ouvert ✅ (DB en retard / erreur)", "pending");
+        }
+
         fillResultUI();
 
         /* ✅ +25 points à chaque pack ouvert (payant ou gratuit) */
@@ -1789,7 +1805,6 @@
         localStorage.removeItem(VS_WALLET_SPENT_EUR_KEY);
         localStorage.removeItem(VS_WALLET_BALANCE_EUR_KEY);
 
-        /* ✅ reset points + leaderboard user (démo) */
         localStorage.removeItem(VS_POINTS_KEY);
         localStorage.removeItem(VS_LB_DATA_KEY);
         localStorage.removeItem(VS_LB_MONTH_KEY);
@@ -1844,7 +1859,6 @@
           }
         }catch(_){}
 
-        /* ✅ init user + leaderboard + points */
         getUserId();
         getUserName();
         syncLeaderboardMe();
@@ -1940,112 +1954,134 @@
       }
     </style>
 
-   <!-- ✅ AUTH GUARD + HEADER (label = display_name || username || email) -->
-<script type="module">
-  import { supabase } from "./js/supabaseClient.js";
+    <!-- ✅ AUTH + DB SAVE (Supabase) -->
+    <script type="module">
+      import { supabase } from "./js/supabaseClient.js";
 
-  const loginBtn  = document.getElementById("vs-login-btn");
-  const logoutBtn = document.getElementById("vs-logout-btn");
-  const emailEl   = document.getElementById("vs-user-email");
+      const loginBtn  = document.getElementById("vs-login-btn");
+      const logoutBtn = document.getElementById("vs-logout-btn");
+      const emailEl   = document.getElementById("vs-user-email");
 
-  const paidBtn = document.getElementById("open-pack-btn");
-  const freeBtn = document.getElementById("free-pack-btn");
+      const paidBtn = document.getElementById("open-pack-btn");
+      const freeBtn = document.getElementById("free-pack-btn");
 
-  function setAuthed(label){
-    if (emailEl){
-      emailEl.style.display = "inline-flex";
-      emailEl.textContent = label || "Connecté";
-    }
-    if (loginBtn) loginBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "inline-flex";
-  }
-
-  function setNotAuthed(){
-    if (emailEl){
-      emailEl.style.display = "none";
-      emailEl.textContent = "—";
-    }
-    if (loginBtn) loginBtn.style.display = "inline-flex";
-    if (logoutBtn) logoutBtn.style.display = "none";
-  }
-
-  async function setAuthedFromSession(session){
-    // session.user.id = auth.users.id = profiles.id
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("username, display_name")
-      .eq("id", session.user.id)
-      .maybeSingle();
-
-    // Si RLS/row manquante/etc, fallback email
-    const label = (!error && data)
-      ? (data.display_name || data.username || session.user.email || "Connecté")
-      : (session.user.email || "Connecté");
-
-    setAuthed(label);
-  }
-
-  async function requireAuthOrRedirect(){
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user){
-      window.location.href = "login.html";
-      return null;
-    }
-
-    // (Optionnel mais très utile) : si pas de pseudo -> profile.html
-    // Ça évite un user “connecté” mais invisible sur leaderboard
-    try{
-      const { data } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("id", session.user.id)
-        .maybeSingle();
-
-      if (!data?.username){
-        window.location.href = "profile.html?next=./index.html";
-        return null;
+      function setAuthed(label){
+        if (emailEl){
+          emailEl.style.display = "inline-flex";
+          emailEl.textContent = label || "Connecté";
+        }
+        if (loginBtn) loginBtn.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "inline-flex";
       }
-    }catch(_){}
 
-    return session;
-  }
+      function setNotAuthed(){
+        if (emailEl){
+          emailEl.style.display = "none";
+          emailEl.textContent = "—";
+        }
+        if (loginBtn) loginBtn.style.display = "inline-flex";
+        if (logoutBtn) logoutBtn.style.display = "none";
+      }
 
-  // 1) Etat initial
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session?.user) await setAuthedFromSession(session);
-  else setNotAuthed();
+      async function setAuthedFromSession(session){
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("username, display_name")
+          .eq("id", session.user.id)
+          .maybeSingle();
 
-  // 2) React aux changements login/logout
-  supabase.auth.onAuthStateChange(async (_event, newSession) => {
-    if (newSession?.user) await setAuthedFromSession(newSession);
-    else setNotAuthed();
-  });
+        const label = (!error && data)
+          ? (data.display_name || data.username || session.user.email || "Connecté")
+          : (session.user.email || "Connecté");
 
-  // 3) Logout button
-  logoutBtn?.addEventListener("click", async () => {
-    await supabase.auth.signOut();
-  });
+        setAuthed(label);
+      }
 
-  // 4) GUARD : intercepte les clics AVANT ton code existant
-  // (capture=true + stopImmediatePropagation = ton listener DOMContentLoaded ne s’exécute pas si pas connecté)
-  paidBtn?.addEventListener("click", async (e) => {
-    const s = await requireAuthOrRedirect();
-    if (!s){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      return;
-    }
-  }, true);
+      async function requireAuthOrRedirect(){
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user){
+          window.location.href = "login.html";
+          return null;
+        }
 
-  freeBtn?.addEventListener("click", async (e) => {
-    const s = await requireAuthOrRedirect();
-    if (!s){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      return;
-    }
-  }, true);
-</script>
+        // Optionnel: forcer un username
+        try{
+          const { data } = await supabase
+            .from("profiles")
+            .select("username")
+            .eq("id", session.user.id)
+            .maybeSingle();
+
+          if (!data?.username){
+            window.location.href = "profile.html?next=./index.html";
+            return null;
+          }
+        }catch(_){}
+
+        return session;
+      }
+
+      // ✅ EXPOSE: fonction DB save utilisable par ton <script> classique
+      window.vsSaveCardToDb = async (card) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) throw new Error("Not authenticated");
+
+        const payload = {
+          user_id: session.user.id,
+          token_id: card.token_id ?? null,
+          card_type_index: card.card_type_index,
+          rarity_key: card.rarity_key ?? null,
+          image_url: card.image_url ?? null,
+          card_name: card.card_name ?? null,
+          estimated_value_eur: card.estimated_value_eur ?? 0,
+          opened_at: card.opened_at ?? new Date().toISOString(),
+          chain_id: null,
+          contract_address: null,
+          onchain_token_id: null
+        };
+
+        const { error } = await supabase
+          .from("user_cards")
+          .insert(payload);
+
+        if (error) throw error;
+        return true;
+      };
+
+      // 1) Etat initial
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) await setAuthedFromSession(session);
+      else setNotAuthed();
+
+      // 2) React aux changements login/logout
+      supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        if (newSession?.user) await setAuthedFromSession(newSession);
+        else setNotAuthed();
+      });
+
+      // 3) Logout
+      logoutBtn?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+      });
+
+      // 4) GUARD (capture)
+      paidBtn?.addEventListener("click", async (e) => {
+        const s = await requireAuthOrRedirect();
+        if (!s){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
+      }, true);
+
+      freeBtn?.addEventListener("click", async (e) => {
+        const s = await requireAuthOrRedirect();
+        if (!s){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
+      }, true);
+    </script>
   </body>
 </html>
-
