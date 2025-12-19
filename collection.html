@@ -45,6 +45,7 @@
         display:flex;
         align-items:center;
         gap:10px;
+        flex-wrap:wrap;
       }
       .top-logo{
         font-size:12px;
@@ -228,7 +229,6 @@
         border:1px solid rgba(148,163,184,.18);
         background: rgba(2,6,23,.55);
       }
-      /* ✅ PAS DE CROP + ✅ fond transparent pour enlever le “petit rectangle noir” */
       .thumb img{
         width:100%;
         height:100%;
@@ -236,10 +236,9 @@
         object-position:center;
         display:block;
         padding:6px;
-        background: transparent; /* ✅ CHANGÉ (avant: #020617) */
+        background: transparent;
       }
 
-      /* Meta prend la place */
       .meta{
         flex:1;
         display:flex;
@@ -318,7 +317,7 @@
         line-height:1.45;
       }
 
-      /* Modal preview (center) */
+      /* Modal preview */
       .modal{
         position:fixed;
         inset:0;
@@ -350,7 +349,6 @@
         border:1px solid rgba(148,163,184,.22);
         background: rgba(2,6,23,.55);
       }
-      /* ✅ PAS DE CROP + ✅ fond transparent pour enlever le “petit rectangle noir” */
       .modal-img img{
         width:100%;
         height:100%;
@@ -358,7 +356,7 @@
         object-position:center;
         display:block;
         padding:10px;
-        background: transparent; /* ✅ CHANGÉ (avant: #020617) */
+        background: transparent;
       }
 
       .modal-meta{
@@ -424,6 +422,26 @@
       .chip a{ color:#a5b4fc; text-decoration: underline; }
       .chip a:hover{ color:#c4b5fd; }
 
+      .top-link{
+        font-size:12px;
+        padding:6px 10px;
+        height:34px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.45);
+        color:#e5e7eb;
+        text-decoration:none;
+        letter-spacing:.14em;
+        text-transform:uppercase;
+        background:rgba(15,23,42,.85);
+      }
+      .top-link:hover{
+        border-color:#a5b4fc;
+        box-shadow:0 0 10px rgba(129,140,248,.4);
+      }
+
       @media (max-width: 520px){
         .card{ gap:10px; }
         .thumb{ width:84px; }
@@ -440,6 +458,11 @@
         <div class="pill" id="filter-pill" style="display:none;"></div>
       </div>
       <div class="top-right">
+        <a class="top-link" href="leaderboard.html">Leaderboard</a>
+        <span id="vs-user-email" class="top-link" style="display:none; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
+        <a id="vs-login-btn" class="top-link" href="login.html">Connexion</a>
+        <button class="btn" id="vs-logout-btn" style="display:none;">Déconnexion</button>
+
         <button class="btn" id="back-packs">Retour packs</button>
         <button class="btn primary" id="clear-filter" style="display:none;">Clear filter</button>
       </div>
@@ -469,13 +492,13 @@
               Vue “Stacks” : cartes groupées par <b>cardTypeIndex</b>.
               Clique sur <b>Owned</b> pour filtrer. Filtre aussi via <b>?ct=</b>.
               <br/>
-              ✅ Rareté sync avec index (EPIC / ULTRA / LEGENDARY). PCA : aucun tag affiché (jamais “HIDDEN”).
+              ✅ Source of truth = Supabase <b>user_cards</b> (si connecté). Sinon fallback localStorage.
             </div>
           </div>
 
           <div class="controls">
             <button class="btn" id="export-json">Export JSON</button>
-            <button class="btn" id="reset-data">Reset data</button>
+            <button class="btn" id="reset-data">Reset data (local)</button>
           </div>
         </div>
 
@@ -497,7 +520,7 @@
           <div class="stat">
             <div class="k">Total items</div>
             <div class="v" id="stat-total">0</div>
-            <div class="s">NFTs (démo) enregistrés</div>
+            <div class="s">NFTs enregistrés</div>
           </div>
           <div class="stat">
             <div class="k">Unique types</div>
@@ -533,7 +556,7 @@
 
     <script>
       /********************
-       * STORAGE
+       * STORAGE (fallback)
        ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
 
@@ -541,7 +564,7 @@
        * PRICES (source of truth — identique à index)
        ********************/
       const CARD_PRICE_EUR_BY_INDEX = {
-        0: 5.50,   // Phyllali PCA
+        0: 5.50,
         1: 135,
         2: 60,
         3: 70,
@@ -551,17 +574,15 @@
         7: 129,
         8: 70,
         9: 109,
-        10: 1350,  // Florizarre
-        11: 199,   // Nidoking (ULTRA)
+        10: 1350,
+        11: 199,
         12: 109,
         13: 109,
         14: 77,
-
-        /* ✅ NOUVEAUX HIDDEN */
-        15: 15.50, // Boskara
-        16: 4.00,  // Filentrappe
-        17: 3.00,  // Peterson
-        18: 7.00   // Scovilain
+        15: 15.50,
+        16: 4.00,
+        17: 3.00,
+        18: 7.00
       };
 
       function fmtEur(n){
@@ -569,40 +590,29 @@
       }
 
       /********************
-       * ✅ RARITY SYNC AVEC INDEX (bucket logic)
-       * - HIDDEN : aucun tag affiché (jamais “HIDDEN”)
-       * - Florizarre ct=10 : LEGENDARY
-       * - ULTRA bucket : ct 1,5,7,11
-       * - EPIC bucket  : ct 2,3,4,6,8,9,12,13,14
+       * RARITY logic
        ********************/
       const CT_FLORIZARRE = 10;
 
-      /* ✅ HIDDEN SET (PCA + 4 nouvelles) */
       const CT_PCA = 0;
       const CT_BOSKARA = 15;
       const CT_FILENTRAPPE = 16;
       const CT_PETERSON = 17;
       const CT_SCOVILAIN = 18;
-
       const HIDDEN_SET = new Set([CT_PCA, CT_BOSKARA, CT_FILENTRAPPE, CT_PETERSON, CT_SCOVILAIN]);
 
       const ULTRA_BUCKET = new Set([1, 5, 7, 11]);
       const EPIC_BUCKET  = new Set([2, 3, 4, 6, 8, 9, 12, 13, 14]);
 
-      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"]; // HIDDEN = plus bas
+      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"]; // hidden: -1
       const RARITY_LABEL = { EPIC:"EPIC", ULTRA:"ULTRA", LEGENDARY:"LEGENDARY" };
 
       function rarityKeyForCt(ct){
         const n = Number(ct);
-
-        /* ✅ HIDDEN : aucun tag */
         if (HIDDEN_SET.has(n)) return "";
-
         if (n === CT_FLORIZARRE) return "LEGENDARY";
         if (ULTRA_BUCKET.has(n)) return "ULTRA";
         if (EPIC_BUCKET.has(n)) return "EPIC";
-
-        // fallback sécurité
         const price = CARD_PRICE_EUR_BY_INDEX[n] ?? 0;
         if (price > 300) return "LEGENDARY";
         if (price >= 121) return "ULTRA";
@@ -610,7 +620,7 @@
       }
 
       function rarityRank(rk){
-        if (!rk) return -1; // HIDDEN : plus bas
+        if (!rk) return -1;
         return RARITY_ORDER.indexOf(rk);
       }
 
@@ -618,11 +628,11 @@
         if (k === "LEGENDARY") return "legendary";
         if (k === "ULTRA") return "ultra";
         if (k === "EPIC") return "epic";
-        return ""; // HIDDEN
+        return "";
       }
 
       /********************
-       * ✅ Local catalog (ct -> card meta)
+       * Local catalog (ct -> meta)
        ********************/
       const CARD_CATALOG = {
         0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
@@ -640,8 +650,6 @@
         12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
         13: { name:"Paras",          img:"images/paras.png" },
         14: { name:"Phyllali",       img:"images/phyllali.png" },
-
-        /* ✅ NOUVEAUX HIDDEN */
         15: { name:"Boskara",        img:"images/boskara.png" },
         16: { name:"Filentrappe",    img:"images/filentrappe.png" },
         17: { name:"Peterson",       img:"images/peterson.png" },
@@ -652,12 +660,12 @@
         return CARD_CATALOG[Number(ct)] || null;
       }
 
-      function getCollection(){
+      function getLocalCollection(){
         try { return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
         catch { return []; }
       }
 
-      function setCollection(arr){
+      function setLocalCollection(arr){
         localStorage.setItem(VS_COLLECTION_KEY, JSON.stringify(arr));
       }
 
@@ -728,7 +736,7 @@
           if (!map.has(ct)){
             map.set(ct, {
               cardTypeIndex: ct,
-              rarityKey: rk,                              // "" for HIDDEN
+              rarityKey: rk,
               rarityLabel: rk ? (RARITY_LABEL[rk] || rk) : "",
               img: x.img || (cat && cat.img) || "",
               name: x.name || (cat && cat.name) || ("Card #" + ct),
@@ -761,7 +769,7 @@
       }
 
       /********************
-       * Modal preview
+       * Modal
        ********************/
       function openModal({ img, name, rarity, price }){
         document.getElementById("modal-img").src = img || "";
@@ -772,7 +780,7 @@
           tag.style.display = "inline-flex";
           tag.textContent = rarity;
         } else {
-          tag.style.display = "none"; // ✅ HIDDEN : aucun tag
+          tag.style.display = "none";
           tag.textContent = "";
         }
 
@@ -790,6 +798,42 @@
       }
 
       /********************
+       * DB-first state
+       ********************/
+      let SOURCE = "local";   // "db" | "local"
+      let CARDS = [];         // normalized list
+
+      function normalizeFromLocal(localArr){
+        // local schema: { tokenId, ts, priceEur, rarityKey, cardTypeIndex, img, name }
+        return (localArr || []).map(x => ({
+          tokenId: x.tokenId ?? null,
+          ts: x.ts ?? Date.now(),
+          cardTypeIndex: Number(x.cardTypeIndex ?? -1),
+          img: x.img || "",
+          name: x.name || "",
+          estimated_value_eur: Number(x.priceEur ?? (CARD_PRICE_EUR_BY_INDEX[Number(x.cardTypeIndex)] ?? 0)) || 0
+        })).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
+      }
+
+      function normalizeFromDb(rows){
+        // db schema: user_cards: { id, token_id, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at }
+        return (rows || []).map(r => {
+          const ct = Number(r.card_type_index ?? -1);
+          const cat = catalogForCt(ct);
+          const ts = r.opened_at ? new Date(r.opened_at).getTime() : Date.now();
+          return {
+            dbId: r.id,
+            tokenId: r.token_id ?? null,
+            ts,
+            cardTypeIndex: ct,
+            img: r.image_url || (cat && cat.img) || "",
+            name: r.card_name || (cat && cat.name) || ("Card #" + ct),
+            estimated_value_eur: Number(r.estimated_value_eur ?? (CARD_PRICE_EUR_BY_INDEX[ct] ?? 0)) || 0
+          };
+        }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
+      }
+
+      /********************
        * Rendering
        ********************/
       function render(){
@@ -800,7 +844,7 @@
         const search = (document.getElementById("search").value || "").trim().toLowerCase();
         const sort = document.getElementById("sort").value;
 
-        let items = getCollection();
+        let items = CARDS.slice();
 
         if (ctFilter !== null){
           items = items.filter(x => Number(x.cardTypeIndex) === ctFilter);
@@ -815,9 +859,6 @@
         if (best){
           const ct = Number(best.cardTypeIndex ?? -1);
           const rk = rarityKeyForCt(ct);
-          // ✅ pas “HIDDEN” : pour HIDDEN on met juste "PCA" (comportement original)
-          // Ici, on garde ton comportement : HIDDEN => "PCA" dans best pull label
-          // (Si tu veux “HIDDEN” vide ou un label différent, dis-moi)
           document.getElementById("stat-best").textContent = rk ? rk : "PCA";
           document.getElementById("stat-best-sub").textContent = fmtDate(best.ts || Date.now());
         } else {
@@ -839,7 +880,6 @@
               (s.rarityLabel || "").toLowerCase(),
               String(s.price || 0),
               "owned " + String(s.owned),
-              // ✅ mot-clé "pca" pour tous HIDDEN
               (HIDDEN_SET.has(s.cardTypeIndex) ? "pca" : "")
             ].join(" ");
             return hay.includes(search);
@@ -866,7 +906,7 @@
 
         // Empty state
         grid.innerHTML = "";
-        if (!getCollection().length){
+        if (!CARDS.length){
           empty.style.display = "inline-flex";
         } else {
           empty.style.display = "none";
@@ -903,7 +943,6 @@
           const badges = document.createElement("div");
           badges.className = "badges";
 
-          // ✅ HIDDEN : aucun tag
           if (s.rarityKey){
             const tag = document.createElement("div");
             tag.className = "tag " + rarityClass(s.rarityKey);
@@ -915,7 +954,6 @@
           owned.className = "owned";
           owned.type = "button";
           owned.textContent = "Owned · " + s.owned;
-
           owned.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -934,7 +972,7 @@
             openModal({
               img: s.img,
               name: s.name + " (ct " + s.cardTypeIndex + ")",
-              rarity: s.rarityLabel,     // "" for HIDDEN => hidden
+              rarity: s.rarityLabel,
               price: s.price
             });
           });
@@ -970,8 +1008,8 @@
        * Actions
        ********************/
       function exportJson(){
-        const data = getCollection();
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+        const data = CARDS.slice();
+        const blob = new Blob([JSON.stringify({ source: SOURCE, items: data }, null, 2)], { type:"application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -982,14 +1020,25 @@
         URL.revokeObjectURL(url);
       }
 
-      function resetData(){
+      function resetLocalData(){
         localStorage.removeItem(VS_COLLECTION_KEY);
         closeModal();
-        render();
+        // si on est en local: refresh
+        if (SOURCE === "local"){
+          CARDS = normalizeFromLocal(getLocalCollection());
+          render();
+        }
+      }
+
+      function setSourceChip(){
+        const hint = document.getElementById("hint");
+        hint.innerHTML = SOURCE === "db"
+          ? `✅ Source : <b>Supabase</b> (user_cards).`
+          : `ℹ️ Source : <b>localStorage</b> (démo). Connecte-toi pour voir ta vraie collection.`;
       }
 
       /********************
-       * Init
+       * Init (base)
        ********************/
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("back-packs").addEventListener("click", () => {
@@ -999,7 +1048,7 @@
           clearCtInUrl();
         });
         document.getElementById("export-json").addEventListener("click", exportJson);
-        document.getElementById("reset-data").addEventListener("click", resetData);
+        document.getElementById("reset-data").addEventListener("click", resetLocalData);
 
         document.getElementById("modal-close").addEventListener("click", closeModal);
         document.getElementById("modal").addEventListener("click", (e) => {
@@ -1012,8 +1061,159 @@
         document.getElementById("search").addEventListener("input", render);
         document.getElementById("sort").addEventListener("change", render);
 
+        // Fallback initial: local
+        SOURCE = "local";
+        CARDS = normalizeFromLocal(getLocalCollection());
+        setSourceChip();
         render();
       });
+    </script>
+
+    <!-- ✅ AUTH + DB read (Supabase) -->
+    <script type="module">
+      import { supabase } from "./js/supabaseClient.js";
+
+      const loginBtn  = document.getElementById("vs-login-btn");
+      const logoutBtn = document.getElementById("vs-logout-btn");
+      const emailEl   = document.getElementById("vs-user-email");
+
+      // === OPTIONAL: upload local -> db once (désactivé) ===
+      const ENABLE_LOCAL_TO_DB_MIGRATION = false;
+
+      function setAuthed(label){
+        if (emailEl){
+          emailEl.style.display = "inline-flex";
+          emailEl.textContent = label || "Connecté";
+        }
+        if (loginBtn) loginBtn.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "inline-flex";
+      }
+      function setNotAuthed(){
+        if (emailEl){
+          emailEl.style.display = "none";
+          emailEl.textContent = "—";
+        }
+        if (loginBtn) loginBtn.style.display = "inline-flex";
+        if (logoutBtn) logoutBtn.style.display = "none";
+      }
+
+      async function setAuthedFromSession(session){
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("username, display_name")
+          .eq("id", session.user.id)
+          .maybeSingle();
+
+        const label = (!error && data)
+          ? (data.display_name || data.username || session.user.email || "Connecté")
+          : (session.user.email || "Connecté");
+
+        setAuthed(label);
+      }
+
+      async function fetchDbCards(){
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return null;
+
+        // On charge tout (MVP). Si tu veux pagination après, je te le fais.
+        const { data, error } = await supabase
+          .from("user_cards")
+          .select("id, token_id, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
+          .order("opened_at", { ascending:false })
+          .limit(5000);
+
+        if (error) throw error;
+        return data || [];
+      }
+
+      async function maybeMigrateLocalToDb(){
+        if (!ENABLE_LOCAL_TO_DB_MIGRATION) return;
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+
+        const localRaw = localStorage.getItem("vaultspin_collection_v1");
+        if (!localRaw) return;
+
+        let local = [];
+        try{ local = JSON.parse(localRaw || "[]"); }catch{ local = []; }
+        if (!Array.isArray(local) || !local.length) return;
+
+        // Upload best-effort: on n'essaie pas de dédoublonner dans ce MVP
+        // (en prod: on mettrait un unique (user_id, token_id) ou (user_id, opened_at, card_type_index))
+        const rows = local.slice(0, 2000).map(x => ({
+          user_id: session.user.id,
+          token_id: x.tokenId ?? null,
+          card_type_index: Number(x.cardTypeIndex ?? -1),
+          rarity_key: x.rarityKey || null,
+          image_url: x.img || null,
+          card_name: x.name || null,
+          estimated_value_eur: Number(x.priceEur ?? 0) || 0,
+          opened_at: x.ts ? new Date(x.ts).toISOString() : new Date().toISOString()
+        })).filter(r => Number.isFinite(r.card_type_index) && r.card_type_index >= 0);
+
+        if (!rows.length) return;
+
+        const { error } = await supabase.from("user_cards").insert(rows);
+        if (!error){
+          // Optionnel: clear local pour éviter double source
+          // localStorage.removeItem("vaultspin_collection_v1");
+        }
+      }
+
+      async function refreshFromDb(){
+        const rows = await fetchDbCards();
+        if (!rows) return;
+
+        // bascule DB-first (variables globales du script non-module)
+        window.SOURCE = "db";
+        window.CARDS = window.normalizeFromDb(rows);
+        window.setSourceChip();
+        window.render();
+      }
+
+      // INIT AUTH STATE
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user){
+        await setAuthedFromSession(session);
+        await maybeMigrateLocalToDb();
+        await refreshFromDb();
+      } else {
+        setNotAuthed();
+      }
+
+      // React to auth changes
+      supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        if (newSession?.user){
+          await setAuthedFromSession(newSession);
+          await maybeMigrateLocalToDb();
+          await refreshFromDb();
+        } else {
+          setNotAuthed();
+          // back to local fallback
+          window.SOURCE = "local";
+          window.CARDS = window.normalizeFromLocal(window.getLocalCollection());
+          window.setSourceChip();
+          window.render();
+        }
+      });
+
+      logoutBtn?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+      });
+    </script>
+
+    <!-- Expose helpers to module scope (small bridge) -->
+    <script>
+      // Bridge: rendre accessibles au module (sans re-écrire tout en module)
+      // (Ces noms existent déjà dans le script principal)
+      window.getLocalCollection = window.getLocalCollection || (function(){
+        try { return JSON.parse(localStorage.getItem("vaultspin_collection_v1") || "[]"); }
+        catch { return []; }
+      });
+
+      // expose functions/vars expected by module
+      // NOTE: normalizeFromDb / normalizeFromLocal / render / setSourceChip sont déclarées dans le <script> principal
     </script>
   </body>
 </html>
