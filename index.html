@@ -203,12 +203,18 @@
       .top-right{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
 
       .top-link{
-        font-size:12px; padding:6px 10px;
+        font-size:12px;
+        padding:6px 12px;                 /* ✅ même “rythme” que wallet-pill */
         border-radius:999px;
         border:1px solid rgba(148,163,184,.45);
         color:#e5e7eb; text-decoration:none;
         letter-spacing:.14em; text-transform:uppercase;
         background:rgba(15,23,42,.85);
+        display:inline-flex;              /* ✅ aligne verticalement */
+        align-items:center;               /* ✅ aligne verticalement */
+        justify-content:center;
+        height:32px;                      /* ✅ même hauteur visuelle */
+        line-height:1;
       }
       .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
       .top-link.glow{
@@ -220,12 +226,23 @@
       .wallet-wrap{
         position:relative;
         pointer-events:auto;
-        padding-bottom:14px; /* ✅ pont hover */
+        /* ✅ IMPORTANT: on enlève padding-bottom qui faussait l'alignement vertical */
       }
+      /* ✅ pont hover sans changer la hauteur de l'élément flex (donc aligné avec "Ma collection") */
+      .wallet-wrap::after{
+        content:"";
+        position:absolute;
+        left:0; right:0;
+        top:100%;
+        height:14px;
+      }
+
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
         border-radius:999px;
         padding:6px 12px;
+        height:32px;                      /* ✅ même hauteur que .top-link */
+        line-height:1;
         background:radial-gradient(circle at top,#020617,#020617 70%);
         border:1px solid rgba(148,163,184,.45);
         cursor:default;
@@ -1261,8 +1278,6 @@
           document.getElementById("stat-last").textContent = "#" + last.tokenId;
           document.getElementById("stat-last-sub").textContent =
             (last.rarityKey === "HIDDEN") ? "HIDDEN" : last.rarityKey;
-          // (affichage history/stats interne) -> si tu veux mettre "PCA" ici uniquement, dis-moi
-          // mais tu m'as demandé de ne rien afficher sur les tags UI, et ça c'est du texte stats.
         } else {
           document.getElementById("stat-last").textContent = "—";
           document.getElementById("stat-last-sub").textContent = "—";
@@ -1306,7 +1321,6 @@
           const l1 = document.createElement("div");
           l1.className = "hist-line1";
 
-          // ✅ pas de tag HIDDEN dans l’UI "tag" => ici c’est un texte mini
           const label = (c.rarityKey === "HIDDEN") ? "HIDDEN" : c.rarityKey;
           l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${label}</span>`;
 
@@ -1527,7 +1541,6 @@
           : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
         document.getElementById("result-desc").textContent = desc;
 
-        // Pill : cachée si HIDDEN
         const pill = document.getElementById("result-pill");
         if (isHidden){
           pill.style.display = "none";
@@ -1537,7 +1550,6 @@
           pill.className = "result-pill " + rarityKey.toLowerCase();
         }
 
-        // ✅ plus de -19,49€ -> uniquement la valeur
         document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
 
         const sellBtn = document.getElementById("result-sell");
