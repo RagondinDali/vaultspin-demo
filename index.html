@@ -228,6 +228,13 @@
         box-shadow: 0 0 14px rgba(129,140,248,.28);
       }
 
+      /* ✅ Auth buttons (petit plus) */
+      #vs-logout-btn.top-link{ cursor:pointer; }
+      #vs-logout-btn.top-link:hover{
+        border-color:#a5b4fc;
+        box-shadow:0 0 10px rgba(129,140,248,.4);
+      }
+
       /* Wallet (hover stable) */
       .wallet-wrap{
         position:relative;
@@ -742,6 +749,13 @@
       <div class="top-right">
         <a class="top-link glow" href="collection.html">Ma collection</a>
         <a class="top-link" href="leaderboard.html">Leaderboard</a>
+
+        <!-- ✅ AUTH (ajout) -->
+        <span id="vs-user-email" class="top-link" style="display:none; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          —
+        </span>
+        <a id="vs-login-btn" class="top-link glow" href="login.html">Connexion</a>
+        <button id="vs-logout-btn" class="top-link" style="display:none;">Déconnexion</button>
 
         <div class="wallet-wrap">
           <div class="wallet-pill" title="Wallet local (démo)">
@@ -1925,5 +1939,80 @@
         100%{ transform: scale(1.15); opacity:0; }
       }
     </style>
+
+    <!-- ✅ AUTH GUARD + HEADER (ajout) -->
+    <script type="module">
+      import { supabase } from "./js/supabaseClient.js";
+
+      const loginBtn  = document.getElementById("vs-login-btn");
+      const logoutBtn = document.getElementById("vs-logout-btn");
+      const emailEl   = document.getElementById("vs-user-email");
+
+      const paidBtn = document.getElementById("open-pack-btn");
+      const freeBtn = document.getElementById("free-pack-btn");
+
+      function setAuthed(email){
+        if (emailEl){
+          emailEl.style.display = "inline-flex";
+          emailEl.textContent = email || "Connecté";
+        }
+        if (loginBtn) loginBtn.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "inline-flex";
+      }
+
+      function setNotAuthed(){
+        if (emailEl){
+          emailEl.style.display = "none";
+          emailEl.textContent = "—";
+        }
+        if (loginBtn) loginBtn.style.display = "inline-flex";
+        if (logoutBtn) logoutBtn.style.display = "none";
+      }
+
+      async function requireAuthOrRedirect(){
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user){
+          window.location.href = "login.html";
+          return null;
+        }
+        return session;
+      }
+
+      // 1) Etat initial
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) setAuthed(session.user.email);
+      else setNotAuthed();
+
+      // 2) React aux changements login/logout
+      supabase.auth.onAuthStateChange((_event, newSession) => {
+        if (newSession?.user) setAuthed(newSession.user.email);
+        else setNotAuthed();
+      });
+
+      // 3) Logout button
+      logoutBtn?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+      });
+
+      // 4) GUARD : intercepte les clics AVANT ton code existant
+      // (capture=true + stopImmediatePropagation = ton listener DOMContentLoaded ne s’exécute pas si pas connecté)
+      paidBtn?.addEventListener("click", async (e) => {
+        const s = await requireAuthOrRedirect();
+        if (!s){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
+      }, true);
+
+      freeBtn?.addEventListener("click", async (e) => {
+        const s = await requireAuthOrRedirect();
+        if (!s){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          return;
+        }
+      }, true);
+    </script>
   </body>
 </html>
