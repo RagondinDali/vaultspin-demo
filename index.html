@@ -62,6 +62,13 @@
       .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 0 22px rgba(168,85,247,.65); }
       .btn-primary:disabled{ opacity:.45; cursor:default; box-shadow:none; }
 
+      /* ✅ bouton gratuit */
+      .btn-free{
+        background:radial-gradient(circle at top left,#22c55e,#16a34a);
+        box-shadow:0 0 18px rgba(34,197,94,.35);
+      }
+      .btn-free:hover{ box-shadow:0 0 22px rgba(34,197,94,.55); }
+
       .status-line{
         font-size:13px; color:#e5e7eb;
         background:rgba(15,23,42,.55);
@@ -81,7 +88,7 @@
         border:1px solid rgba(148,163,184,.20);
         background:rgba(15,23,42,.35);
         display:grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr); /* ✅ 6 colonnes (ajout Points) */
         gap:10px;
       }
       @media (max-width: 860px){ .stats{ grid-template-columns: repeat(2, 1fr); } }
@@ -204,17 +211,16 @@
 
       .top-link{
         font-size:12px;
-        padding:6px 12px;                 /* ✅ même “rythme” que wallet-pill */
+        padding:6px 10px;
+        height:34px;                 /* ✅ align vertical */
+        display:inline-flex;         /* ✅ align vertical */
+        align-items:center;          /* ✅ align vertical */
+        justify-content:center;
         border-radius:999px;
         border:1px solid rgba(148,163,184,.45);
         color:#e5e7eb; text-decoration:none;
         letter-spacing:.14em; text-transform:uppercase;
         background:rgba(15,23,42,.85);
-        display:inline-flex;              /* ✅ aligne verticalement */
-        align-items:center;               /* ✅ aligne verticalement */
-        justify-content:center;
-        height:32px;                      /* ✅ même hauteur visuelle */
-        line-height:1;
       }
       .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
       .top-link.glow{
@@ -226,23 +232,21 @@
       .wallet-wrap{
         position:relative;
         pointer-events:auto;
-        /* ✅ IMPORTANT: on enlève padding-bottom qui faussait l'alignement vertical */
       }
-      /* ✅ pont hover sans changer la hauteur de l'élément flex (donc aligné avec "Ma collection") */
+      /* ✅ pont hover sans décaler le wallet (fix align) */
       .wallet-wrap::after{
         content:"";
         position:absolute;
         left:0; right:0;
         top:100%;
-        height:14px;
+        height:14px;               /* zone “pont” */
       }
 
       .wallet-pill{
         display:inline-flex; align-items:center; gap:10px;
         border-radius:999px;
-        padding:6px 12px;
-        height:32px;                      /* ✅ même hauteur que .top-link */
-        line-height:1;
+        height:34px;               /* ✅ align vertical */
+        padding:0 12px;            /* ✅ align vertical */
         background:radial-gradient(circle at top,#020617,#020617 70%);
         border:1px solid rgba(148,163,184,.45);
         cursor:default;
@@ -722,7 +726,7 @@
               <div class="result-btnrow">
                 <button class="open-btn" id="result-sell">Revendre</button>
                 <button class="open-btn primary" id="result-open-another">Open another pack</button>
-                <a class="top-link glow" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:10px 14px;">
+                <a class="top-link glow" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:0 14px; height:34px;">
                   Ma collection
                 </a>
               </div>
@@ -737,6 +741,7 @@
     <div class="top-bar">
       <div class="top-right">
         <a class="top-link glow" href="collection.html">Ma collection</a>
+        <a class="top-link" href="leaderboard.html">Leaderboard</a>
 
         <div class="wallet-wrap">
           <div class="wallet-pill" title="Wallet local (démo)">
@@ -765,6 +770,7 @@
 
         <div class="btn-row">
           <button id="open-pack-btn" class="btn-primary">Open VaultSpin Pack — 24,99 €</button>
+          <button id="free-pack-btn" class="btn-primary btn-free" disabled>Booster gratuit — 2500 pts</button>
         </div>
 
         <div id="status-line" class="status-line">
@@ -783,6 +789,12 @@
             <div class="k">Spent</div>
             <div class="v" id="stat-spent">0€</div>
             <div class="s">Packs</div>
+          </div>
+
+          <div class="stat">
+            <div class="k">Points</div>
+            <div class="v" id="stat-points">0</div>
+            <div class="s">+25 / pack</div>
           </div>
 
           <div class="stat">
@@ -946,6 +958,103 @@
       const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
       const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
       const VS_WALLET_BALANCE_EUR_KEY = "vaultspin_wallet_balance_eur_v1";
+
+      /* ✅ Points + leaderboard (démo) */
+      const VS_USER_ID_KEY = "vaultspin_user_id_v1";
+      const VS_USER_NAME_KEY = "vaultspin_user_name_v1";
+      const VS_POINTS_KEY = "vaultspin_points_v1";
+      const VS_LB_MONTH_KEY = "vaultspin_leaderboard_month_v1";
+      const VS_LB_DATA_KEY  = "vaultspin_leaderboard_data_v1";
+
+      const POINTS_PER_PACK = 25;
+      const FREE_PACK_COST_PTS = 2500;
+
+      function monthKey(d = new Date()){
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,"0");
+        return `${y}-${m}`;
+      }
+
+      function getUserId(){
+        let id = localStorage.getItem(VS_USER_ID_KEY);
+        if (!id){
+          id = "u_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+          localStorage.setItem(VS_USER_ID_KEY, id);
+        }
+        return id;
+      }
+      function getUserName(){
+        let name = localStorage.getItem(VS_USER_NAME_KEY);
+        if (!name){
+          name = "Player " + (Math.floor(Math.random()*9000) + 1000);
+          localStorage.setItem(VS_USER_NAME_KEY, name);
+        }
+        return name;
+      }
+      function getPoints(){
+        const raw = localStorage.getItem(VS_POINTS_KEY);
+        const n = raw ? Number(raw) : 0;
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+      }
+      function setPoints(v){
+        localStorage.setItem(VS_POINTS_KEY, String(Math.max(0, Number(v) || 0)));
+      }
+      function canFreePack(){
+        return getPoints() >= FREE_PACK_COST_PTS;
+      }
+      function ensureLbMonth(){
+        const nowM = monthKey();
+        const storedM = localStorage.getItem(VS_LB_MONTH_KEY);
+        if (storedM !== nowM){
+          localStorage.setItem(VS_LB_MONTH_KEY, nowM);
+          localStorage.setItem(VS_LB_DATA_KEY, JSON.stringify([
+            { id:getUserId(), name:getUserName(), points:getPoints() }
+          ]));
+        }
+      }
+      function loadLb(){
+        try{ return JSON.parse(localStorage.getItem(VS_LB_DATA_KEY) || "[]"); }
+        catch{ return []; }
+      }
+      function saveLb(arr){
+        localStorage.setItem(VS_LB_DATA_KEY, JSON.stringify(arr));
+      }
+      function syncLeaderboardMe(){
+        ensureLbMonth();
+        const arr = loadLb();
+        const meId = getUserId();
+        const idx = arr.findIndex(x => x.id === meId);
+        const me = { id: meId, name: getUserName(), points: getPoints() };
+        if (idx >= 0) arr[idx] = me; else arr.push(me);
+        saveLb(arr.slice(0, 100));
+      }
+      function addPoints(delta){
+        setPoints(getPoints() + (Number(delta) || 0));
+        renderPoints();
+        syncLeaderboardMe();
+      }
+      function spendPoints(cost){
+        const pts = getPoints();
+        if (pts < cost) return false;
+        setPoints(pts - cost);
+        renderPoints();
+        syncLeaderboardMe();
+        return true;
+      }
+      function renderPoints(){
+        const pts = getPoints();
+        const el = document.getElementById("stat-points");
+        if (el) el.textContent = pts.toLocaleString("fr-FR");
+
+        const freeBtn = document.getElementById("free-pack-btn");
+        if (freeBtn){
+          const ok = canFreePack() && !isBusy();
+          freeBtn.disabled = !ok;
+          freeBtn.textContent = canFreePack()
+            ? `Booster gratuit — ${FREE_PACK_COST_PTS} pts`
+            : `Booster gratuit — ${FREE_PACK_COST_PTS} pts (${pts}/${FREE_PACK_COST_PTS})`;
+        }
+      }
 
       /********************
        * ECONOMY
@@ -1593,14 +1702,22 @@
         btn.disabled = true;
       }
 
-      async function openPackRoulette(){
+      async function openPackRoulette(mode="paid"){
         if (isBusy()) return;
 
-        if (!debitPack()) return;
+        if (mode === "paid"){
+          if (!debitPack()) return;
+        } else {
+          if (!spendPoints(FREE_PACK_COST_PTS)){
+            setStatus("Points insuffisants pour un booster gratuit.", "error");
+            return;
+          }
+        }
 
         uiState = UI_STATE.OPENING;
         const mainBtn = document.getElementById("open-pack-btn");
         mainBtn.disabled = true;
+        renderPoints();
 
         openOverlay();
         showReel();
@@ -1626,11 +1743,15 @@
         commitToCollection();
         fillResultUI();
 
+        /* ✅ +25 points à chaque pack ouvert (payant ou gratuit) */
+        addPoints(POINTS_PER_PACK);
+
         uiState = UI_STATE.RESULT;
         showResult();
 
         setStatus("Pack ouvert ✅", "ok");
         mainBtn.disabled = false;
+        renderPoints();
       }
 
       async function flyThenOpenAnother(){
@@ -1640,7 +1761,8 @@
         imgwrap.classList.remove("fly-out");
 
         uiState = UI_STATE.IDLE;
-        await openPackRoulette();
+        renderPoints();
+        await openPackRoulette("paid");
       }
 
       function openCollectionFiltered(cardTypeIndex){
@@ -1652,10 +1774,18 @@
         localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
         localStorage.removeItem(VS_WALLET_SPENT_EUR_KEY);
         localStorage.removeItem(VS_WALLET_BALANCE_EUR_KEY);
+
+        /* ✅ reset points + leaderboard user (démo) */
+        localStorage.removeItem(VS_POINTS_KEY);
+        localStorage.removeItem(VS_LB_DATA_KEY);
+        localStorage.removeItem(VS_LB_MONTH_KEY);
+
         setStatus("Reset ✅", "ok");
         renderWallet();
         renderStats();
         renderHistory();
+        syncLeaderboardMe();
+        renderPoints();
       }
 
       /********************
@@ -1700,12 +1830,20 @@
           }
         }catch(_){}
 
+        /* ✅ init user + leaderboard + points */
+        getUserId();
+        getUserName();
+        syncLeaderboardMe();
+
         renderWallet();
         renderStats();
         renderHistory();
+        renderPoints();
         setStatus("Prêt. Ouvre un pack.", "ok");
 
-        document.getElementById("open-pack-btn").addEventListener("click", openPackRoulette);
+        document.getElementById("open-pack-btn").addEventListener("click", () => openPackRoulette("paid"));
+        document.getElementById("free-pack-btn").addEventListener("click", () => openPackRoulette("free"));
+
         document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
         document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
         document.getElementById("result-sell").addEventListener("click", sellCurrentPull);
@@ -1714,6 +1852,7 @@
           if (spinning) return;
           closeOverlay();
           uiState = UI_STATE.IDLE;
+          renderPoints();
         });
 
         document.addEventListener("keydown", (e) => {
@@ -1722,6 +1861,7 @@
           if (overlay.classList.contains("on") && !spinning && uiState === UI_STATE.RESULT){
             closeOverlay();
             uiState = UI_STATE.IDLE;
+            renderPoints();
           }
         });
 
