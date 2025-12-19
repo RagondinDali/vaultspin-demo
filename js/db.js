@@ -80,3 +80,63 @@ export async function saveCardToDb(card) {
 
   return { ok: true, id: data.id };
 }
+// -------- Points / Leaderboard helpers --------
+
+function monthStartISO(d = new Date()) {
+  // format date attendu par ta colonne month (DATE)
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  return `${y}-${m}-01`;
+}
+
+/** +delta points ce mois-ci (DB atomique via RPC) */
+export async function addMonthlyPoints(delta) {
+  const session = await requireAuthOrRedirect();
+  if (!session) return { ok: false, reason: "not_authed" };
+
+  const { error } = await supabase.rpc("add_monthly_points", { delta: Number(delta || 0) });
+  if (error) {
+    console.error("[addMonthlyPoints] error:", error);
+    return { ok: false, error };
+  }
+  return { ok: true };
+}
+
+/** Mes points du mois (utile si je ne suis pas dans le top 100) */
+export async function getMyMonthlyPoints(monthISO = monthStartISO()) {
+  const session = await requireAuthOrRedirect();
+  if (!session) return 0;
+
+  const userId = session.user.id;
+
+  const { data, error } = await supabase
+    .from("user_points_monthly")
+    .select("points")
+    .eq("user_id", userId)
+    .eq("month", monthISO)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[getMyMonthlyPoints] error:", error);
+    return 0;
+  }
+  return Number(data?.points || 0);
+}
+
+/** Leaderboard top N (join profiles pour username) */
+export async function getLeaderboardMonthly(monthISO = monthStartISO(), limit = 100) {
+  const { data, error } = await supabase
+    .from("user_points_monthly")
+    .select("user_id, month, points, profiles:profiles(id, username, display_name)")
+    .eq("month", monthISO)
+    .order("points", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[getLeaderboardMonthly] error:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export { monthStartISO };
