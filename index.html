@@ -2126,28 +2126,6 @@
       }
     }, true);
 
-    /********************
-     * ✅ BONUS: bouton "Profil" à gauche de "Ma collection"
-     * (tu m’avais demandé ça)
-     ********************/
-    function ensureProfileLink(){
-      const topRight = document.querySelector(".top-right");
-      if (!topRight) return;
-
-      // Evite doublons
-      if (document.getElementById("vs-profile-link")) return;
-
-      const a = document.createElement("a");
-      a.id = "vs-profile-link";
-      a.className = "top-link glow";
-      a.textContent = "Profil";
-      a.href = "profile.html";
-      // insert avant "Ma collection"
-      const coll = topRight.querySelector('a[href="collection.html"]');
-      if (coll) topRight.insertBefore(a, coll);
-      else topRight.insertBefore(a, topRight.firstChild);
-    }
-    ensureProfileLink();
   </script>
 
   <!-- ✅ LIVE LOOTS (colonne gauche) -->
@@ -2294,5 +2272,6 @@
 
 </body>
 </html>
+
 
 
