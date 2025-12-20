@@ -27,7 +27,13 @@ function setMsg(text = "", ok = true) {
 }
 
 function setLoading(isLoading) {
-  const buttons = [ui.btnSignUp(), ui.btnSignIn(), ui.btnResend(), ui.btnSignOut()].filter(Boolean);
+  const buttons = [
+    ui.btnSignUp(),
+    ui.btnSignIn(),
+    ui.btnResend(),
+    ui.btnSignOut()
+  ].filter(Boolean);
+
   buttons.forEach((b) => (b.disabled = !!isLoading));
   if (isLoading) setMsg("⏳ Traitement…", true);
 }
@@ -39,6 +45,8 @@ function getNextUrl(defaultNext = "./index.html") {
 
 /* ------------------------ Profile gating (VaultSpin) ------------------------ */
 async function ensureProfileAndRoute(user, next = "./index.html") {
+  if (!user?.id) throw new Error("Utilisateur introuvable (session invalide).");
+
   const { data: profile, error: selErr } = await supabase
     .from("profiles")
     .select("id, username")
@@ -55,6 +63,7 @@ async function ensureProfileAndRoute(user, next = "./index.html") {
       display_name: null,
       avatar_url: null,
       is_public: true,
+      updated_at: new Date().toISOString(),
     });
     if (insErr) throw insErr;
 
@@ -77,8 +86,11 @@ async function signIn(email, password, next) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
+    const user = data?.user || data?.session?.user;
+    if (!user) throw new Error("Connexion OK, mais user manquant dans la réponse.");
+
     setMsg("✅ Connecté. Vérification du profil…", true);
-    await ensureProfileAndRoute(data.user, next);
+    await ensureProfileAndRoute(user, next);
   } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur de connexion", false);
@@ -93,13 +105,17 @@ async function signUp(email, password, next) {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
 
-    if (!data.session) {
+    // Si email confirmation activée => pas de session directe
+    if (!data?.session) {
       setMsg("✅ Compte créé. Vérifie tes emails puis reconnecte-toi.", true);
       return;
     }
 
+    const user = data?.user || data?.session?.user;
+    if (!user) throw new Error("Inscription OK, mais user manquant dans la réponse.");
+
     setMsg("✅ Compte créé. Vérification du profil…", true);
-    await ensureProfileAndRoute(data.user, next);
+    await ensureProfileAndRoute(user, next);
   } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur d'inscription", false);
@@ -131,6 +147,11 @@ async function signOut() {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+
+    // UX: reset champs
+    if (ui.email()) ui.email().value = "";
+    if (ui.password()) ui.password().value = "";
+
     setMsg("👋 Déconnecté.", true);
   } catch (err) {
     console.error(err);
@@ -201,6 +222,7 @@ async function wireUI() {
   if (data.session?.user) {
     setMsg("Session active. Vérification du profil…", true);
     await ensureProfileAndRoute(data.session.user, next);
+    return;
   }
 
   // Listener global : si la session change, on met à jour l'UI
@@ -210,4 +232,3 @@ async function wireUI() {
 }
 
 document.addEventListener("DOMContentLoaded", wireUI);
-
