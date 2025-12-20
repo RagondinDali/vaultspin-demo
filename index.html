@@ -15,6 +15,14 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ✅ FIX: empêcher tout scroll horizontal */
+    html, body{
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+    }
+
     body{
       min-height:100vh;
       display:flex;
@@ -27,7 +35,7 @@
 
     .page{
       width:100%;
-      max-width:1200px;
+      max-width: min(1200px, calc(100vw - 32px)); /* ✅ FIX overflow subtil */
       padding:96px 16px 40px;
       display:flex;
       flex-direction:column;
@@ -748,6 +756,9 @@
   <!-- Top bar -->
   <div class="top-bar">
     <div class="top-right">
+      <!-- ✅ NEW: Profil bouton avant Ma collection -->
+      <a id="vs-profile-link" class="top-link glow" href="player.html" style="display:none;">Profil</a>
+
       <a class="top-link glow" href="collection.html">Ma collection</a>
       <a class="top-link" href="leaderboard.html">Leaderboard</a>
 
@@ -1744,8 +1755,13 @@
 
       fillResultUI();
 
-      // ✅ UI: +25 (démo immédiate), la DB va resync derrière
-      addPoints(POINTS_PER_PACK);
+      /* ✅ FIX: pas de double ajout de points.
+         - si Supabase est connecté, vsSaveCardToDb ajoute les points via RPC
+         - si pas de Supabase, on ajoute localement ici
+      */
+      if (!window.vsSaveCardToDb){
+        addPoints(POINTS_PER_PACK);
+      }
 
       uiState = UI_STATE.RESULT;
       showResult();
@@ -1922,7 +1938,6 @@
       100%{ transform: scale(1.15); opacity:0; }
     }
   </style>
-
   <!-- ✅ AUTH + DB SAVE (Supabase) + ✅ POINTS RPC -->
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
@@ -2026,6 +2041,7 @@
     };
 
     // ✅ EXPOSE: fonction DB save utilisable par ton <script> classique
+    // ✅ FIX: on attribue +25 points ICI seulement (server authoritative)
     window.vsSaveCardToDb = async (card) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) throw new Error("Not authenticated");
@@ -2103,6 +2119,29 @@
         return;
       }
     }, true);
+
+    /********************
+     * ✅ BONUS: bouton "Profil" à gauche de "Ma collection"
+     * (tu m’avais demandé ça)
+     ********************/
+    function ensureProfileLink(){
+      const topRight = document.querySelector(".top-right");
+      if (!topRight) return;
+
+      // Evite doublons
+      if (document.getElementById("vs-profile-link")) return;
+
+      const a = document.createElement("a");
+      a.id = "vs-profile-link";
+      a.className = "top-link glow";
+      a.textContent = "Profil";
+      a.href = "profile.html";
+      // insert avant "Ma collection"
+      const coll = topRight.querySelector('a[href="collection.html"]');
+      if (coll) topRight.insertBefore(a, coll);
+      else topRight.insertBefore(a, topRight.firstChild);
+    }
+    ensureProfileLink();
   </script>
 
   <!-- ✅ LIVE LOOTS (colonne gauche) -->
@@ -2175,6 +2214,7 @@
         return;
       }
 
+      // ✅ 6 visibles + scroll => déjà assuré par CSS height + overflow:auto
       for (const it of items){
         const row = document.createElement("div");
         row.className = "loot-item";
@@ -2209,7 +2249,7 @@
         row.querySelector(".loot-profile-btn")?.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          // page profil à créer ensuite
+          // page profil joueur (à créer ensuite)
           window.location.href = `player.html?u=${encodeURIComponent(it.user_id)}`;
         });
 
@@ -2227,6 +2267,7 @@
 
         renderItems(items);
 
+        // si nouveau loot en top => on remonte en haut comme Hellcase
         if (isNewTop){
           listEl.scrollTop = 0;
         }

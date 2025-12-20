@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>VaultSpin – Profil joueur</title>
+  <title>VaultSpin – Mon profil</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
@@ -24,7 +24,6 @@
       gap:16px;
     }
 
-    /* Top bar */
     .top-bar{
       position:fixed; top:16px; left:50%; transform:translateX(-50%);
       width:100%; max-width:1200px;
@@ -46,6 +45,22 @@
     .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
     .top-link.glow{ border-color: rgba(165,180,252,.75); box-shadow: 0 0 14px rgba(129,140,248,.28); }
 
+    .btn{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(15,23,42,.55);
+      padding:9px 12px;
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#e5e7eb;
+      cursor:pointer;
+      transition: box-shadow .15s ease-out, transform .15s ease-out, border-color .15s ease-out, opacity .15s ease-out;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(165,180,252,.7); box-shadow: 0 0 12px rgba(129,140,248,.25); }
+    .btn.primary{ border:none; background: radial-gradient(circle at top left, #a855f7, #4f46e5); box-shadow: 0 0 18px rgba(168,85,247,.35); }
+    .btn.primary:hover{ box-shadow: 0 0 22px rgba(168,85,247,.55); }
+
     .panel{
       background: radial-gradient(circle at top left, #020617, #020617 70%);
       border-radius:26px;
@@ -57,20 +72,8 @@
       overflow:hidden;
     }
 
-    .header{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
-    .identity{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      min-width:0;
-    }
+    .header{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+    .identity{ display:flex; gap:12px; align-items:center; min-width:0; }
     .avatar{
       width:44px; height:44px; border-radius:14px;
       border:1px solid rgba(148,163,184,.22);
@@ -86,16 +89,13 @@
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
       max-width:min(720px, 80vw);
     }
-    .sub{
-      margin-top:4px;
-      font-size:13px; color:#9ca3af; line-height:1.4;
-      overflow:hidden; text-overflow:ellipsis;
-    }
+    .sub{ margin-top:4px; font-size:13px; color:#9ca3af; line-height:1.4; }
+
+    .row-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
     .stats-row{ display:flex; flex-wrap:wrap; gap:10px; }
     .stat{
-      border-radius:18px;
-      border:1px solid rgba(148,163,184,.14);
+      border-radius:18px; border:1px solid rgba(148,163,184,.14);
       background: rgba(2,6,23,.28);
       padding:12px;
       min-width:200px;
@@ -105,7 +105,42 @@
     .stat .v{ margin-top:6px; font-size:18px; font-weight:900; color:#f9fafb; }
     .stat .s{ margin-top:3px; font-size:12px; color:#9ca3af; }
 
-    .hint{ font-size:12px; color:#9ca3af; line-height:1.45; }
+    .chip{
+      display:inline-flex; align-items:center; gap:10px;
+      border-radius:999px; border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.40);
+      padding:8px 12px;
+      font-size:11px; color:#e5e7eb;
+      width:fit-content;
+    }
+    .chip strong{ color:#f9fafb; }
+
+    /* Toggle */
+    .toggle{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,.16);
+      background: rgba(2,6,23,.28);
+      width:fit-content;
+    }
+    .switch{
+      width:46px; height:26px; border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      position:relative; cursor:pointer;
+    }
+    .knob{
+      position:absolute; top:3px; left:3px;
+      width:20px; height:20px; border-radius:999px;
+      background:#cbd5e1;
+      transition: transform .15s ease;
+    }
+    .switch.on{ border-color: rgba(34,197,94,.55); box-shadow: 0 0 12px rgba(34,197,94,.18); }
+    .switch.on .knob{ transform: translateX(20px); background:#22c55e; }
+    .toggle label{
+      font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#e5e7eb;
+    }
 
     /* Cards list (stacks) */
     .grid{ display:flex; flex-direction:column; gap:12px; }
@@ -137,10 +172,7 @@
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
       max-width:100%;
     }
-    .ct{
-      font-size:11px; color:#9ca3af; margin-top:6px;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
+    .ct{ font-size:11px; color:#9ca3af; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .price{ margin-top:6px; font-size:11px; color:#cbd5e1; letter-spacing:.06em; }
     .badges{ display:flex; flex-direction:column; gap:8px; align-items:flex-end; flex:0 0 auto; }
     .tag{
@@ -161,85 +193,19 @@
       color:#e5e7eb;
       white-space:nowrap;
     }
-
-    /* Modal preview */
-    .modal{
-      position:fixed; inset:0; display:none;
-      align-items:center; justify-content:center;
-      z-index:80;
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(10px);
-      padding:16px;
-    }
-    .modal.on{ display:flex; }
-    .modal-card{
-      width: min(430px, 92vw);
-      border-radius:24px;
-      border:1px solid rgba(148,163,184,.20);
-      background: rgba(2,6,23,.86);
-      box-shadow: 0 0 34px rgba(0,0,0,.5);
-      padding:14px;
-      position:relative;
-      animation: popIn 140ms ease-out;
-    }
-    @keyframes popIn{ from{ transform:scale(.985); opacity:0; } to{ transform:scale(1); opacity:1; } }
-    .modal-img{
-      width:100%; aspect-ratio:3/4;
-      border-radius:18px; overflow:hidden;
-      border:1px solid rgba(148,163,184,.22);
-      background: rgba(2,6,23,.55);
-    }
-    .modal-img img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:10px; }
-    .modal-meta{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; }
-    .modal-name{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:900; color:#e5e7eb; }
-    .modal-tag{
-      font-size:11px; letter-spacing:.14em; text-transform:uppercase;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(148,163,184,.20);
-      background: rgba(15,23,42,.55);
-      color:#e5e7eb;
-      white-space:nowrap;
-    }
-    .modal-price{ margin-top:10px; font-size:12px; color:#cbd5e1; letter-spacing:.08em; }
-    .modal-close{
-      position:absolute; right:10px; top:10px;
-      border:1px solid rgba(148,163,184,.20);
-      background: rgba(15,23,42,.55);
-      color:#e5e7eb;
-      border-radius:999px;
-      padding:8px 10px;
-      cursor:pointer;
-      font-size:12px;
-    }
-    .modal-close:hover{ border-color: rgba(165,180,252,.7); box-shadow: 0 0 10px rgba(129,140,248,.25); }
   </style>
 </head>
 
 <body>
   <div class="top-bar">
     <div class="top-left">
-      <div class="top-logo">VAULTSPIN · PLAYER</div>
+      <div class="top-logo">VAULTSPIN · ME</div>
     </div>
     <div class="top-right">
       <a class="top-link" href="index.html">Packs</a>
       <a class="top-link" href="leaderboard.html">Leaderboard</a>
       <a class="top-link glow" href="collection.html">Ma collection</a>
-      <a class="top-link glow" href="me.html">Mon profil</a>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal" id="modal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true">
-      <button class="modal-close" id="modal-close">✕</button>
-      <div class="modal-img">
-        <img id="modal-img" src="" alt="Preview" />
-      </div>
-      <div class="modal-meta">
-        <div class="modal-name" id="modal-name">—</div>
-        <div class="modal-tag" id="modal-tag" style="display:none;">—</div>
-      </div>
-      <div class="modal-price" id="modal-price">Valeur estimée : —</div>
+      <button class="top-link glow" id="btn-logout">Déconnexion</button>
     </div>
   </div>
 
@@ -247,14 +213,17 @@
     <div class="panel">
       <div class="header">
         <div class="identity">
-          <div class="avatar" id="p-avatar">👤</div>
+          <div class="avatar" id="me-avatar">👤</div>
           <div class="id-meta">
-            <h1 id="p-title">Profil</h1>
-            <div class="sub" id="p-sub">Chargement…</div>
+            <h1 id="me-title">Mon profil</h1>
+            <div class="sub" id="me-sub">Chargement…</div>
           </div>
         </div>
 
-        <a class="top-link glow" href="index.html">Ouvrir un pack</a>
+        <div class="row-actions">
+          <a class="top-link glow" id="btn-edit" href="profile.html">Modifier pseudo</a>
+          <a class="top-link" id="btn-public-url" href="#" style="display:none;">Voir public</a>
+        </div>
       </div>
 
       <div class="stats-row">
@@ -280,15 +249,23 @@
         </div>
       </div>
 
-      <div class="hint" id="p-hint">
-        Astuce : clique sur une carte pour la voir en grand.
+      <div class="toggle">
+        <div class="switch" id="sw-public" role="switch" aria-checked="false" tabindex="0">
+          <div class="knob"></div>
+        </div>
+        <div>
+          <label>Profil public</label>
+          <div class="sub" id="public-sub" style="margin-top:2px;">Si OFF, tes cartes ne sont pas visibles publiquement.</div>
+        </div>
+      </div>
+
+      <div class="chip" id="me-chip">
+        <span>Partager :</span>
+        <strong id="share-url">—</strong>
       </div>
     </div>
 
     <div class="panel">
-      <div class="hint" id="empty" style="display:none;">
-        Ce joueur n’a pas encore de cartes visibles (profil privé ou aucune ouverture).
-      </div>
       <div class="grid" id="grid"></div>
     </div>
   </div>
@@ -296,7 +273,6 @@
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
 
-    /* ---------- Helpers ---------- */
     function fmtEur(n){
       return (Number(n) || 0).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
     }
@@ -312,7 +288,6 @@
     }
     function escapeAttr(s){ return String(s || "").replace(/"/g, "&quot;"); }
 
-    /* ---------- Catalog + prices (same as collection/index) ---------- */
     const CARD_PRICE_EUR_BY_INDEX = {
       0: 5.50, 1: 135, 2: 60, 3: 70, 4: 109, 5: 209, 6: 69, 7: 129, 8: 70, 9: 109,
       10: 1350, 11: 199, 12: 109, 13: 109, 14: 77, 15: 15.50, 16: 4.00, 17: 3.00, 18: 7.00
@@ -368,28 +343,6 @@
       return "";
     }
 
-    function openModal({ img, name, rarity, price }){
-      document.getElementById("modal-img").src = img || "";
-      document.getElementById("modal-name").textContent = name || "—";
-      const tag = document.getElementById("modal-tag");
-      if (rarity){
-        tag.style.display = "inline-flex";
-        tag.textContent = rarity;
-      } else {
-        tag.style.display = "none";
-        tag.textContent = "";
-      }
-      document.getElementById("modal-price").textContent = "Valeur estimée : " + fmtEur(price || 0);
-      const modal = document.getElementById("modal");
-      modal.classList.add("on");
-      modal.setAttribute("aria-hidden", "false");
-    }
-    function closeModal(){
-      const modal = document.getElementById("modal");
-      modal.classList.remove("on");
-      modal.setAttribute("aria-hidden", "true");
-    }
-
     function groupByCardType(items){
       const map = new Map();
       for (const x of items){
@@ -439,37 +392,43 @@
       return sum;
     }
 
-    function getUserIdFromUrl(){
-      const p = new URLSearchParams(window.location.search);
-      const u = p.get("u");
-      return u && u.length > 10 ? u : null;
+    async function requireAuth(){
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user){
+        const next = encodeURIComponent("me.html");
+        window.location.href = `login.html?next=${next}`;
+        return null;
+      }
+      return session;
     }
 
-    /* ---------- Data fetch ---------- */
-    async function fetchProfile(userId){
-      // public policy: profiles_public_read only if is_public = true
+    async function requireUsername(userId){
       const { data, error } = await supabase
         .from("profiles")
         .select("id, email, username, display_name, is_public")
         .eq("id", userId)
         .maybeSingle();
       if (error) throw error;
-      return data || null;
+
+      if (!data?.username){
+        window.location.href = "profile.html?next=./me.html";
+        return null;
+      }
+      return data;
     }
 
-    async function fetchCardsPublic(userId){
-      // public policy: cards_public_read_if_profile_public
+    async function fetchMyCards(userId){
       const { data, error } = await supabase
         .from("user_cards")
         .select("id, token_id, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
         .eq("user_id", userId)
-        .order("opened_at", { ascending: false })
+        .order("opened_at", { ascending:false })
         .limit(5000);
       if (error) throw error;
       return data || [];
     }
 
-    async function fetchMonthlyPoints(userId, monthISO){
+    async function fetchMyPoints(userId, monthISO){
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("points")
@@ -480,33 +439,33 @@
       return Number(data?.points || 0);
     }
 
-    async function computeRank(userId, monthISO, myPoints){
-      // rank = count(users with points > myPoints) + 1
-      // (policy points_public_read = true)
+    async function computeRank(monthISO, myPoints){
+      if (!myPoints) return null;
+
       const { count, error } = await supabase
         .from("user_points_monthly")
-        .select("user_id", { count: "exact", head: true })
+        .select("user_id", { count:"exact", head:true })
         .eq("month", monthISO)
         .gt("points", myPoints);
 
       if (error) throw error;
-
-      // si aucun point et pas de row, le rank est peu pertinent
-      if (!myPoints) return null;
-
       return Number(count || 0) + 1;
     }
 
     function renderHeader(profile, userId){
-      const name = profile?.display_name || profile?.username || profile?.email || "Player";
-      document.getElementById("p-title").textContent = name;
+      const name = profile.display_name || profile.username || profile.email || "Moi";
+      document.getElementById("me-title").textContent = name;
+      document.getElementById("me-avatar").textContent = (name || "M").trim().slice(0,1).toUpperCase();
+      const short = userId.slice(0,6) + "…" + userId.slice(-4);
+      document.getElementById("me-sub").textContent = `ID: ${short}`;
 
-      const short = userId.slice(0, 6) + "…" + userId.slice(-4);
-      const privacy = profile?.is_public ? "public" : "privé";
-      document.getElementById("p-sub").textContent = `ID: ${short} · Profil ${privacy}`;
+      // share url
+      const share = `${window.location.origin}${window.location.pathname.replace("me.html","player.html")}?u=${encodeURIComponent(userId)}`;
+      document.getElementById("share-url").textContent = share;
 
-      // avatar emoji simple
-      document.getElementById("p-avatar").textContent = (name || "P").trim().slice(0,1).toUpperCase();
+      const publicBtn = document.getElementById("btn-public-url");
+      publicBtn.style.display = "inline-flex";
+      publicBtn.href = `player.html?u=${encodeURIComponent(userId)}`;
     }
 
     function renderStats(points, rank, totalCards, vaultEur){
@@ -516,20 +475,12 @@
       document.getElementById("stat-vault").textContent = fmtEur(vaultEur);
 
       const d = new Date();
-      const monthLabel = d.toLocaleString("fr-FR", { month:"long", year:"numeric" });
-      document.getElementById("stat-month").textContent = monthLabel;
+      document.getElementById("stat-month").textContent = d.toLocaleString("fr-FR", { month:"long", year:"numeric" });
     }
 
     function renderStacks(stacks){
       const grid = document.getElementById("grid");
-      const empty = document.getElementById("empty");
-
       grid.innerHTML = "";
-      if (!stacks.length){
-        empty.style.display = "block";
-        return;
-      }
-      empty.style.display = "none";
 
       stacks.sort((a,b) => {
         const ra = rarityRank(a.rarityKey);
@@ -540,91 +491,105 @@
       for (const s of stacks){
         const card = document.createElement("div");
         card.className = "card";
-
-        const thumb = document.createElement("div");
-        thumb.className = "thumb";
-        thumb.innerHTML = `<img src="${escapeAttr(s.img)}" alt="${escapeAttr(s.name)}"/>`;
-
-        const meta = document.createElement("div");
-        meta.className = "meta";
-
-        const left = document.createElement("div");
-        left.style.minWidth = "0";
-        left.innerHTML = `
-          <div class="name">${escapeHtml(s.name)}</div>
-          <div class="ct">cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"}</div>
-          <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
+        card.innerHTML = `
+          <div class="thumb"><img src="${escapeAttr(s.img)}" alt="${escapeAttr(s.name)}"/></div>
+          <div class="meta">
+            <div style="min-width:0;">
+              <div class="name">${escapeHtml(s.name)}</div>
+              <div class="ct">cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"}</div>
+              <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
+            </div>
+            <div class="badges">
+              ${s.rarityKey ? `<div class="tag ${rarityClass(s.rarityKey)}">${escapeHtml(s.rarityLabel)}</div>` : ""}
+              <div class="owned">Owned · ${s.owned}</div>
+            </div>
+          </div>
         `;
-
-        const badges = document.createElement("div");
-        badges.className = "badges";
-
-        if (s.rarityKey){
-          const tag = document.createElement("div");
-          tag.className = "tag " + rarityClass(s.rarityKey);
-          tag.textContent = s.rarityLabel;
-          badges.appendChild(tag);
-        }
-
-        const owned = document.createElement("div");
-        owned.className = "owned";
-        owned.textContent = "Owned · " + s.owned;
-        badges.appendChild(owned);
-
-        meta.appendChild(left);
-        meta.appendChild(badges);
-
-        card.appendChild(thumb);
-        card.appendChild(meta);
-
-        card.addEventListener("click", () => {
-          openModal({ img: s.img, name: `${s.name} (ct ${s.cardTypeIndex})`, rarity: s.rarityLabel, price: s.price });
-        });
-
         grid.appendChild(card);
       }
     }
 
+    function setPublicSwitch(isPublic){
+      const sw = document.getElementById("sw-public");
+      sw.classList.toggle("on", !!isPublic);
+      sw.setAttribute("aria-checked", isPublic ? "true" : "false");
+      document.getElementById("public-sub").textContent = isPublic
+        ? "ON : tes cartes et ton profil sont visibles publiquement."
+        : "OFF : tes cartes ne sont pas visibles publiquement.";
+    }
+
+    async function updateIsPublic(userId, isPublic){
+      const { error } = await supabase
+        .from("profiles")
+        .update({ is_public: !!isPublic, updated_at: new Date().toISOString() })
+        .eq("id", userId);
+      if (error) throw error;
+    }
+
     /* ---------- Init ---------- */
-    document.getElementById("modal-close").addEventListener("click", closeModal);
-    document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
-
-    const userId = getUserIdFromUrl();
-    if (!userId){
-      document.getElementById("p-title").textContent = "Profil introuvable";
-      document.getElementById("p-sub").textContent = "Paramètre manquant: ?u=";
-      document.getElementById("empty").style.display = "block";
-    } else {
-      const monthISO = fmtMonthISO();
-
+    const session = await requireAuth();
+    if (!session) { /* redirected */ }
+    else {
       try{
-        const profile = await fetchProfile(userId);
-        if (!profile){
-          document.getElementById("p-title").textContent = "Profil privé / introuvable";
-          document.getElementById("p-sub").textContent = "Ce joueur n’est pas public ou n’existe pas.";
-          document.getElementById("empty").style.display = "block";
-        } else {
-          renderHeader(profile, userId);
+        const profile = await requireUsername(session.user.id);
+        if (!profile) { /* redirected */ }
+        else {
+          renderHeader(profile, session.user.id);
+
+          // edit pseudo link -> keep next
+          document.getElementById("btn-edit").href = "profile.html?next=./me.html";
+
+          const monthISO = new Date();
+          const monthKey = fmtMonthISO(monthISO);
 
           const [cards, points] = await Promise.all([
-            fetchCardsPublic(userId),
-            fetchMonthlyPoints(userId, monthISO),
+            fetchMyCards(session.user.id),
+            fetchMyPoints(session.user.id, monthKey),
           ]);
 
-          const rank = await computeRank(userId, monthISO, points);
+          const rank = await computeRank(monthKey, points);
 
-          const vaultEur = vaultValue(cards);
-          renderStats(points, rank, cards.length, vaultEur);
+          renderStats(points, rank, cards.length, vaultValue(cards));
+          renderStacks(groupByCardType(cards));
 
-          const stacks = groupByCardType(cards);
-          renderStacks(stacks);
+          // toggle public
+          setPublicSwitch(!!profile.is_public);
+
+          const sw = document.getElementById("sw-public");
+          let busy = false;
+
+          const toggle = async () => {
+            if (busy) return;
+            busy = true;
+            try{
+              const next = !sw.classList.contains("on");
+              setPublicSwitch(next);
+              await updateIsPublic(session.user.id, next);
+            }catch(e){
+              console.error(e);
+              // rollback UI
+              setPublicSwitch(!sw.classList.contains("on"));
+              alert(e?.message || "Impossible de modifier la visibilité.");
+            }finally{
+              busy = false;
+            }
+          };
+
+          sw.addEventListener("click", toggle);
+          sw.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+          });
+
+          // logout
+          document.getElementById("btn-logout").addEventListener("click", async () => {
+            await supabase.auth.signOut();
+            window.location.href = "index.html";
+          });
         }
       }catch(e){
         console.error(e);
-        document.getElementById("p-title").textContent = "Erreur";
-        document.getElementById("p-sub").textContent = (e?.message || "Impossible de charger le profil.");
-        document.getElementById("empty").style.display = "block";
+        document.getElementById("me-title").textContent = "Erreur";
+        document.getElementById("me-sub").textContent = e?.message || "Impossible de charger ton profil.";
       }
     }
   </script>
