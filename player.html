@@ -1,3 +1,4 @@
+<!-- player.html (UPDATED: public profile DB-first, multi-pack PLANT/WATER/FIRE-ready, stack = pack_key + cardTypeIndex, valeur = estimated_value_eur) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -34,23 +35,6 @@
     }
     .top-left,.top-right{ pointer-events:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .top-logo{ font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9ca3af; }
-
-    .pill{
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.22);
-      background: rgba(15,23,42,.55);
-      padding:8px 12px;
-      font-size:11px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:#e5e7eb;
-      cursor:default;
-      max-width: 360px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-
     .top-link{
       font-size:12px; padding:6px 10px; height:34px;
       display:inline-flex; align-items:center; justify-content:center;
@@ -93,7 +77,7 @@
       border:1px solid rgba(148,163,184,.22);
       background: rgba(15,23,42,.45);
       display:flex; align-items:center; justify-content:center;
-      font-size:18px;
+      font-size:20px;
       flex:0 0 auto;
     }
     .id-meta{ min-width:0; }
@@ -120,7 +104,7 @@
     }
     .stat .k{ font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#9ca3af; }
     .stat .v{ margin-top:6px; font-size:18px; font-weight:900; color:#f9fafb; }
-    .stat .s{ margin-top:3px; font-size:12px; color:#9ca3af; line-height:1.35; }
+    .stat .s{ margin-top:3px; font-size:12px; color:#9ca3af; }
 
     .hint{ font-size:12px; color:#9ca3af; line-height:1.45; }
 
@@ -136,7 +120,6 @@
       overflow:hidden;
     }
     .card:hover{ transform: translateY(-2px); border-color: rgba(165,180,252,.55); box-shadow: 0 0 16px rgba(129,140,248,.18); }
-
     .thumb{
       width:92px; flex:0 0 auto;
       aspect-ratio: 3 / 4;
@@ -145,7 +128,6 @@
       background: rgba(2,6,23,.55);
     }
     .thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; }
-
     .meta{
       flex:1; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
       min-width:0;
@@ -161,9 +143,7 @@
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
     .price{ margin-top:6px; font-size:11px; color:#cbd5e1; letter-spacing:.06em; }
-
     .badges{ display:flex; flex-direction:column; gap:8px; align-items:flex-end; flex:0 0 auto; }
-
     .tag{
       font-size:10px; letter-spacing:.14em; text-transform:uppercase; font-weight:900;
       padding:6px 9px; border-radius:999px;
@@ -219,7 +199,7 @@
     }
     .modal-img img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:10px; }
     .modal-meta{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; }
-    .modal-name{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:900; color:#e5e7eb; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .modal-name{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:900; color:#e5e7eb; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .modal-tag{
       font-size:11px; letter-spacing:.14em; text-transform:uppercase;
       padding:6px 10px; border-radius:999px;
@@ -227,6 +207,7 @@
       background: rgba(15,23,42,.55);
       color:#e5e7eb;
       white-space:nowrap;
+      display:none;
     }
     .modal-price{ margin-top:10px; font-size:12px; color:#cbd5e1; letter-spacing:.08em; }
     .modal-close{
@@ -242,8 +223,8 @@
     .modal-close:hover{ border-color: rgba(165,180,252,.7); box-shadow: 0 0 10px rgba(129,140,248,.25); }
 
     @media (max-width: 520px){
+      .thumb{ width:84px; }
       .ct{ white-space:normal; }
-      .pill{ max-width: 220px; }
     }
   </style>
 </head>
@@ -252,8 +233,6 @@
   <div class="top-bar">
     <div class="top-left">
       <div class="top-logo">VAULTSPIN · PLAYER</div>
-      <div class="pill" id="month-pill">—</div>
-      <div class="pill" id="pack-pill" style="display:none;">—</div>
     </div>
     <div class="top-right">
       <a class="top-link" href="index.html">Packs</a>
@@ -272,7 +251,7 @@
       </div>
       <div class="modal-meta">
         <div class="modal-name" id="modal-name">—</div>
-        <div class="modal-tag" id="modal-tag" style="display:none;">—</div>
+        <div class="modal-tag" id="modal-tag">—</div>
       </div>
       <div class="modal-price" id="modal-price">Valeur estimée : —</div>
     </div>
@@ -306,12 +285,12 @@
         <div class="stat">
           <div class="k">Total NFTs</div>
           <div class="v" id="stat-total">0</div>
-          <div class="s">Cartes visibles</div>
+          <div class="s">Cartes enregistrées</div>
         </div>
         <div class="stat">
           <div class="k">Vault value</div>
           <div class="v" id="stat-vault">0€</div>
-          <div class="s">Somme (estimated_value_eur)</div>
+          <div class="s">Somme (DB: estimated_value_eur)</div>
         </div>
       </div>
 
@@ -331,21 +310,51 @@
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
 
-    /* ---------- Helpers ---------- */
-    function monthKey(d = new Date()){
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      return `${y}-${m}`;
+    /********************
+     * Catalog (fallback)
+     ********************/
+    const CATALOG = {
+      PLANT: {
+        0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
+        1:  { name:"Aéromite",       img:"images/aeromite.png" },
+        2:  { name:"Germignon",      img:"images/germignon.png" },
+        3:  { name:"Astronelle",     img:"images/astronelle.png" },
+        4:  { name:"Chétiflor",      img:"images/chetiflor.png" },
+        5:  { name:"Jungko",         img:"images/jungko.png" },
+        6:  { name:"Chenipan",       img:"images/chenipan.png" },
+        7:  { name:"Énergie Plante", img:"images/energie_plante.png" },
+        8:  { name:"Majaspic",       img:"images/majaspic.png" },
+        9:  { name:"Mimitoss",       img:"images/mimitoss.png" },
+        10: { name:"Florizarre",     img:"images/florizarre.png" },
+        11: { name:"Nidoking",       img:"images/nidoking.png" },
+        12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
+        13: { name:"Paras",          img:"images/paras.png" },
+        14: { name:"Phyllali",       img:"images/phyllali.png" },
+        15: { name:"Boskara",        img:"images/boskara.png" },
+        16: { name:"Filentrappe",    img:"images/filentrappe.png" },
+        17: { name:"Peterson",       img:"images/peterson.png" },
+        18: { name:"Scovilain",      img:"images/scovilain.png" }
+      },
+      WATER: {},
+      FIRE: {}
+    };
+
+    function catalogFor(packKey, ct){
+      const pk = (packKey || "PLANT").toUpperCase();
+      return (CATALOG[pk] && CATALOG[pk][Number(ct)]) ? CATALOG[pk][Number(ct)] : null;
     }
-    function monthStartISO(d = new Date()){
+
+    /********************
+     * Helpers
+     ********************/
+    function fmtEur(n){
+      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+    function fmtMonthStartISO(d = new Date()){
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
       return `${y}-${m}-01`; // DATE
     }
-    function fmtEur(n){
-      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
-    }
-    function fmtPts(n){ return (Number(n)||0).toLocaleString("fr-FR"); }
     function escapeHtml(s){
       return String(s || "").replace(/[&<>"']/g, (c) => ({
         "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
@@ -353,12 +362,10 @@
     }
     function escapeAttr(s){ return String(s || "").replace(/"/g, "&quot;"); }
 
-    function rewardForRank(rank1){
-      if (rank1 < 1 || rank1 > 10) return null;
-      return 1100 - (rank1 * 100);
-    }
-
-    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"];
+    /********************
+     * Rarity helpers (DB authoritative)
+     ********************/
+    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"]; // for sorting
     function rarityRank(k){
       const kk = (k || "").toUpperCase();
       const i = RARITY_ORDER.indexOf(kk);
@@ -373,9 +380,13 @@
       return "";
     }
 
+    /********************
+     * Modal
+     ********************/
     function openModal({ img, name, rarity, price }){
       document.getElementById("modal-img").src = img || "";
       document.getElementById("modal-name").textContent = name || "—";
+
       const tag = document.getElementById("modal-tag");
       if (rarity){
         tag.style.display = "inline-flex";
@@ -384,7 +395,9 @@
         tag.style.display = "none";
         tag.textContent = "";
       }
+
       document.getElementById("modal-price").textContent = "Valeur estimée : " + fmtEur(price || 0);
+
       const modal = document.getElementById("modal");
       modal.classList.add("on");
       modal.setAttribute("aria-hidden", "false");
@@ -395,34 +408,20 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
+    /********************
+     * URL
+     ********************/
     function getUserIdFromUrl(){
       const p = new URLSearchParams(window.location.search);
       const u = p.get("u");
       return u && u.length > 10 ? u : null;
     }
-    function getPackFromUrl(){
-      const p = new URLSearchParams(window.location.search);
-      const raw = (p.get("pack") || "").toUpperCase();
-      if (raw === "PLANT" || raw === "WATER" || raw === "FIRE") return raw;
-      return "ALL";
-    }
 
-    function setPills(){
-      document.getElementById("month-pill").textContent = "Mois : " + monthKey(new Date());
-      const pack = getPackFromUrl();
-      const packPill = document.getElementById("pack-pill");
-      if (pack && pack !== "ALL"){
-        packPill.style.display = "inline-flex";
-        packPill.textContent = "Pack : " + pack;
-      } else {
-        packPill.style.display = "none";
-        packPill.textContent = "";
-      }
-    }
-
-    /* ---------- Data fetch ---------- */
+    /********************
+     * DB fetch
+     ********************/
     async function fetchProfile(userId){
-      // policies: profiles_public_read si is_public = true
+      // public policy: profiles_public_read only if is_public = true
       const { data, error } = await supabase
         .from("profiles")
         .select("id, email, username, display_name, is_public")
@@ -433,42 +432,20 @@
       return data || null;
     }
 
-    async function fetchCardsPublic(userId, pack){
-      // policies: cards_public_read_if_profile_public
-      let q = supabase
+    async function fetchCardsPublic(userId){
+      // public policy: cards_public_read_if_profile_public
+      const { data, error } = await supabase
         .from("user_cards")
         .select("id, user_id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
         .eq("user_id", userId)
         .order("opened_at", { ascending: false })
         .limit(5000);
 
-      if (pack && pack !== "ALL"){
-        q = q.eq("pack_key", pack);
-      }
-
-      const { data, error } = await q;
       if (error) throw error;
       return data || [];
     }
 
-    async function fetchMonthlyPoints(userId, monthISO, pack){
-      // pack-aware si colonne pack_key existe dans user_points_monthly (sinon fallback)
-      if (pack && pack !== "ALL"){
-        try{
-          const { data, error } = await supabase
-            .from("user_points_monthly")
-            .select("points")
-            .eq("user_id", userId)
-            .eq("month", monthISO)
-            .eq("pack_key", pack)
-            .maybeSingle();
-          if (error) throw error;
-          return Number(data?.points || 0);
-        }catch(_e){
-          // fallback
-        }
-      }
-
+    async function fetchMonthlyPoints(userId, monthISO){
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("points")
@@ -480,24 +457,8 @@
       return Number(data?.points || 0);
     }
 
-    async function computeRank(monthISO, myPoints, pack){
+    async function computeRank(monthISO, myPoints){
       if (!myPoints) return null;
-
-      if (pack && pack !== "ALL"){
-        try{
-          const { count, error } = await supabase
-            .from("user_points_monthly")
-            .select("user_id", { count: "exact", head: true })
-            .eq("month", monthISO)
-            .eq("pack_key", pack)
-            .gt("points", myPoints);
-
-          if (error) throw error;
-          return Number(count || 0) + 1;
-        } catch(_e){
-          // fallback
-        }
-      }
 
       const { count, error } = await supabase
         .from("user_points_monthly")
@@ -507,6 +468,30 @@
 
       if (error) throw error;
       return Number(count || 0) + 1;
+    }
+
+    /********************
+     * Normalize + stacks
+     ********************/
+    function normalizeCards(rows){
+      return (rows || []).map(r => {
+        const pkRaw = (r.pack_key || "PLANT").toString().toUpperCase();
+        const pk = pkRaw || "PLANT";
+        const ct = Number(r.card_type_index ?? -1);
+        const cat = catalogFor(pk, ct);
+        const ts = r.opened_at ? new Date(r.opened_at).getTime() : 0;
+
+        return {
+          pack_key: pk,
+          cardTypeIndex: ct,
+          tokenId: r.token_id ?? null,
+          ts,
+          rarity_key: (r.rarity_key || "").toUpperCase() || null,
+          img: r.image_url || (cat && cat.img) || "",
+          name: r.card_name || (cat && cat.name) || ("Card #" + ct),
+          estimated_value_eur: Number(r.estimated_value_eur ?? 0) || 0
+        };
+      }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
     }
 
     function vaultValue(items){
@@ -519,19 +504,18 @@
 
     function groupByStack(items){
       const map = new Map();
-      for (const x of (items || [])){
-        const pk = (x.pack_key || "PLANT").toString().toUpperCase();
-        const ct = Number(x.card_type_index ?? -1);
-        if (!Number.isFinite(ct) || ct < 0) continue;
-
+      for (const x of items){
+        const ct = Number(x.cardTypeIndex ?? -1);
+        const pk = (x.pack_key || "PLANT").toUpperCase();
         const key = pk + ":" + String(ct);
+
         if (!map.has(key)){
           map.set(key, {
             key,
             pack_key: pk,
             cardTypeIndex: ct,
-            img: x.image_url || "",
-            name: x.card_name || ("Card #" + ct),
+            img: x.img || "",
+            name: x.name || ("Card #" + ct),
             owned: 0,
             lastTs: 0,
             lastTokenId: null,
@@ -543,10 +527,10 @@
         const g = map.get(key);
         g.owned += 1;
 
-        const ts = x.opened_at ? new Date(x.opened_at).getTime() : 0;
+        const ts = Number(x.ts || 0) || 0;
         if (ts > g.lastTs){
           g.lastTs = ts;
-          g.lastTokenId = x.token_id ?? null;
+          g.lastTokenId = x.tokenId ?? null;
         }
 
         const px = Number(x.estimated_value_eur || 0) || 0;
@@ -555,12 +539,15 @@
         const rk = (x.rarity_key || "").toUpperCase();
         if (rk && rarityRank(rk) > rarityRank(g.rarity_key)) g.rarity_key = rk;
 
-        if (!g.img && x.image_url) g.img = x.image_url;
-        if ((!g.name || g.name.startsWith("Card #")) && x.card_name) g.name = x.card_name;
+        if (!g.img && x.img) g.img = x.img;
+        if ((!g.name || g.name.startsWith("Card #")) && x.name) g.name = x.name;
       }
       return Array.from(map.values());
     }
 
+    /********************
+     * Render
+     ********************/
     function renderHeader(profile, userId){
       const name = profile?.display_name || profile?.username || profile?.email || "Player";
       document.getElementById("p-title").textContent = name;
@@ -568,19 +555,19 @@
       const short = userId.slice(0, 6) + "…" + userId.slice(-4);
       const privacy = profile?.is_public ? "public" : "privé";
       document.getElementById("p-sub").textContent = `ID: ${short} · Profil ${privacy}`;
+
       document.getElementById("p-avatar").textContent = (name || "P").trim().slice(0,1).toUpperCase();
     }
 
     function renderStats(points, rank, totalCards, vaultEur){
-      document.getElementById("stat-points").textContent = fmtPts(points);
+      document.getElementById("stat-points").textContent = (Number(points||0)).toLocaleString("fr-FR");
       document.getElementById("stat-rank").textContent = rank ? ("#" + String(rank)) : "—";
       document.getElementById("stat-total").textContent = String(totalCards);
       document.getElementById("stat-vault").textContent = fmtEur(vaultEur);
 
       const d = new Date();
       const monthLabel = d.toLocaleString("fr-FR", { month:"long", year:"numeric" });
-      const r = rank ? rewardForRank(rank) : null;
-      document.getElementById("stat-month").textContent = monthLabel + (r ? (" · Reward: " + r + "€") : "");
+      document.getElementById("stat-month").textContent = monthLabel;
     }
 
     function renderStacks(stacks){
@@ -653,21 +640,20 @@
       }
     }
 
-    /* ---------- Init ---------- */
+    /********************
+     * INIT
+     ********************/
     document.getElementById("modal-close").addEventListener("click", closeModal);
     document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
     const userId = getUserIdFromUrl();
-    setPills();
-
     if (!userId){
       document.getElementById("p-title").textContent = "Profil introuvable";
       document.getElementById("p-sub").textContent = "Paramètre manquant: ?u=";
       document.getElementById("empty").style.display = "block";
     } else {
-      const pack = getPackFromUrl();
-      const monthISO = monthStartISO();
+      const monthISO = fmtMonthStartISO(new Date());
 
       try{
         const profile = await fetchProfile(userId);
@@ -678,17 +664,16 @@
         } else {
           renderHeader(profile, userId);
 
-          const [cards, points] = await Promise.all([
-            fetchCardsPublic(userId, pack),
-            fetchMonthlyPoints(userId, monthISO, pack),
+          const [rows, points] = await Promise.all([
+            fetchCardsPublic(userId),
+            fetchMonthlyPoints(userId, monthISO),
           ]);
 
-          const rank = await computeRank(monthISO, points, pack);
+          const cards = normalizeCards(rows);
+          const rank = await computeRank(monthISO, points);
 
           renderStats(points, rank, cards.length, vaultValue(cards));
-
-          const stacks = groupByStack(cards);
-          renderStacks(stacks);
+          renderStacks(groupByStack(cards));
         }
       }catch(e){
         console.error(e);

@@ -1,3 +1,4 @@
+<!-- me.html (UPDATED: DB-first, multi-pack PLANT/WATER/FIRE-ready, stack = pack_key + cardTypeIndex, valeur = estimated_value_eur) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,7 +13,7 @@
       background: radial-gradient(circle at top, #101827, #020617 60%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color:#e5e7eb;
-      overflow-x:hidden; /* ✅ anti scroll horizontal */
+      overflow-x:hidden;
     }
     .wrap{
       width:100%;
@@ -44,22 +45,6 @@
     }
     .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
     .top-link.glow{ border-color: rgba(165,180,252,.75); box-shadow: 0 0 14px rgba(129,140,248,.28); }
-
-    .btn{
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.22);
-      background: rgba(15,23,42,.55);
-      padding:9px 12px;
-      font-size:11px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:#e5e7eb;
-      cursor:pointer;
-      transition: box-shadow .15s ease-out, transform .15s ease-out, border-color .15s ease-out, opacity .15s ease-out;
-    }
-    .btn:hover{ transform: translateY(-1px); border-color: rgba(165,180,252,.7); box-shadow: 0 0 12px rgba(129,140,248,.25); }
-    .btn.primary{ border:none; background: radial-gradient(circle at top left, #a855f7, #4f46e5); box-shadow: 0 0 18px rgba(168,85,247,.35); }
-    .btn.primary:hover{ box-shadow: 0 0 22px rgba(168,85,247,.55); }
 
     .panel{
       background: radial-gradient(circle at top left, #020617, #020617 70%);
@@ -120,9 +105,8 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
-      max-width:min(760px, 78vw);
       display:inline-block;
-      vertical-align:bottom;
+      max-width: min(860px, 72vw);
     }
 
     /* Toggle */
@@ -154,6 +138,7 @@
 
     /* Cards list (stacks) */
     .grid{ display:flex; flex-direction:column; gap:12px; }
+
     .card{
       border-radius:20px; border:1px solid rgba(148,163,184,.18);
       background: rgba(15,23,42,.28);
@@ -164,6 +149,7 @@
       overflow:hidden;
     }
     .card:hover{ transform: translateY(-2px); border-color: rgba(165,180,252,.55); box-shadow: 0 0 16px rgba(129,140,248,.18); }
+
     .thumb{
       width:92px; flex:0 0 auto;
       aspect-ratio: 3 / 4;
@@ -172,6 +158,7 @@
       background: rgba(2,6,23,.55);
     }
     .thumb img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:6px; }
+
     .meta{
       flex:1; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
       min-width:0;
@@ -184,6 +171,7 @@
     }
     .ct{ font-size:11px; color:#9ca3af; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .price{ margin-top:6px; font-size:11px; color:#cbd5e1; letter-spacing:.06em; }
+
     .badges{ display:flex; flex-direction:column; gap:8px; align-items:flex-end; flex:0 0 auto; }
     .tag{
       font-size:10px; letter-spacing:.14em; text-transform:uppercase; font-weight:900;
@@ -210,6 +198,67 @@
       color:#e5e7eb;
       white-space:nowrap;
     }
+
+    /* Modal preview */
+    .modal{
+      position:fixed; inset:0; display:none;
+      align-items:center; justify-content:center;
+      z-index:80;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      padding:16px;
+    }
+    .modal.on{ display:flex; }
+    .modal-card{
+      width: min(430px, 92vw);
+      border-radius:24px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(2,6,23,.86);
+      box-shadow: 0 0 34px rgba(0,0,0,.5);
+      padding:14px;
+      position:relative;
+      animation: popIn 140ms ease-out;
+    }
+    @keyframes popIn{ from{ transform:scale(.985); opacity:0; } to{ transform:scale(1); opacity:1; } }
+    .modal-img{
+      width:100%; aspect-ratio:3/4;
+      border-radius:18px; overflow:hidden;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(2,6,23,.55);
+    }
+    .modal-img img{ width:100%; height:100%; object-fit:contain; object-position:center; display:block; padding:10px; }
+    .modal-meta{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; }
+    .modal-name{
+      font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+      font-weight:900; color:#e5e7eb; min-width:0;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .modal-tag{
+      font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      color:#e5e7eb;
+      white-space:nowrap;
+      display:none;
+    }
+    .modal-price{ margin-top:10px; font-size:12px; color:#cbd5e1; letter-spacing:.08em; }
+    .modal-close{
+      position:absolute; right:10px; top:10px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      color:#e5e7eb;
+      border-radius:999px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .modal-close:hover{ border-color: rgba(165,180,252,.7); box-shadow: 0 0 10px rgba(129,140,248,.25); }
+
+    @media (max-width: 520px){
+      .thumb{ width:84px; }
+      .ct{ white-space:normal; }
+    }
   </style>
 </head>
 
@@ -223,6 +272,21 @@
       <a class="top-link" href="leaderboard.html">Leaderboard</a>
       <a class="top-link glow" href="collection.html">Ma collection</a>
       <button class="top-link glow" id="btn-logout">Déconnexion</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-img">
+        <img id="modal-img" src="" alt="Preview" />
+      </div>
+      <div class="modal-meta">
+        <div class="modal-name" id="modal-name">—</div>
+        <div class="modal-tag" id="modal-tag">—</div>
+      </div>
+      <div class="modal-price" id="modal-price">Valeur estimée : —</div>
     </div>
   </div>
 
@@ -262,7 +326,7 @@
         <div class="stat">
           <div class="k">Vault value</div>
           <div class="v" id="stat-vault">0€</div>
-          <div class="s">Somme estimée</div>
+          <div class="s">Somme (DB: estimated_value_eur)</div>
         </div>
       </div>
 
@@ -290,13 +354,55 @@
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
 
-    function fmtEur(n){
-      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "€";
+    /********************
+     * Catalog (fallback)
+     * - Sert seulement si DB n'a pas image_url/card_name.
+     ********************/
+    const CATALOG = {
+      PLANT: {
+        0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
+        1:  { name:"Aéromite",       img:"images/aeromite.png" },
+        2:  { name:"Germignon",      img:"images/germignon.png" },
+        3:  { name:"Astronelle",     img:"images/astronelle.png" },
+        4:  { name:"Chétiflor",      img:"images/chetiflor.png" },
+        5:  { name:"Jungko",         img:"images/jungko.png" },
+        6:  { name:"Chenipan",       img:"images/chenipan.png" },
+        7:  { name:"Énergie Plante", img:"images/energie_plante.png" },
+        8:  { name:"Majaspic",       img:"images/majaspic.png" },
+        9:  { name:"Mimitoss",       img:"images/mimitoss.png" },
+        10: { name:"Florizarre",     img:"images/florizarre.png" },
+        11: { name:"Nidoking",       img:"images/nidoking.png" },
+        12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
+        13: { name:"Paras",          img:"images/paras.png" },
+        14: { name:"Phyllali",       img:"images/phyllali.png" },
+        15: { name:"Boskara",        img:"images/boskara.png" },
+        16: { name:"Filentrappe",    img:"images/filentrappe.png" },
+        17: { name:"Peterson",       img:"images/peterson.png" },
+        18: { name:"Scovilain",      img:"images/scovilain.png" }
+      },
+      WATER: {
+        // 120: { name:"...", img:"images/....png" }
+      },
+      FIRE: {
+        // ready
+      }
+    };
+
+    function catalogFor(packKey, ct){
+      const pk = (packKey || "PLANT").toUpperCase();
+      return (CATALOG[pk] && CATALOG[pk][Number(ct)]) ? CATALOG[pk][Number(ct)] : null;
     }
-    function fmtMonthISO(d = new Date()){
+
+    /********************
+     * Formatting
+     ********************/
+    function fmtEur(n){
+      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+    function fmtMonthStartISO(d = new Date()){
       const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      return `${y}-${m}-01`; // DATE (timezone-safe)
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      return `${y}-${m}-01`; // DATE
     }
     function escapeHtml(s){
       return String(s || "").replace(/[&<>"']/g, (c) => ({
@@ -305,8 +411,10 @@
     }
     function escapeAttr(s){ return String(s || "").replace(/"/g, "&quot;"); }
 
-    /* ✅ Rarity helpers (DB authoritative) */
-    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"];
+    /********************
+     * Rarity helpers (DB authoritative)
+     ********************/
+    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"]; // for sorting
     function rarityRank(k){
       const kk = (k || "").toUpperCase();
       const i = RARITY_ORDER.indexOf(kk);
@@ -321,65 +429,36 @@
       return "";
     }
 
-    function fmtDate(ts){
-      const d = new Date(ts);
-      return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
-    }
+    /********************
+     * Modal
+     ********************/
+    function openModal({ img, name, rarity, price }){
+      document.getElementById("modal-img").src = img || "";
+      document.getElementById("modal-name").textContent = name || "—";
 
-    function groupByStack(items){
-      // key = pack_key + ":" + ct
-      const map = new Map();
-      for (const x of (items || [])){
-        const pk = (x.pack_key || "PLANT").toString().toUpperCase();
-        const ct = Number(x.card_type_index ?? -1);
-        if (!Number.isFinite(ct) || ct < 0) continue;
-
-        const key = pk + ":" + String(ct);
-        if (!map.has(key)){
-          map.set(key, {
-            key,
-            pack_key: pk,
-            cardTypeIndex: ct,
-            name: x.card_name || ("Card #" + ct),
-            img: x.image_url || "",
-            owned: 0,
-            lastTs: 0,
-            lastTokenId: null,
-            price: Number(x.estimated_value_eur || 0) || 0,
-            rarity_key: (x.rarity_key || "").toUpperCase() || null
-          });
-        }
-
-        const g = map.get(key);
-        g.owned += 1;
-
-        const ts = x.opened_at ? new Date(x.opened_at).getTime() : 0;
-        if (ts > g.lastTs){
-          g.lastTs = ts;
-          g.lastTokenId = x.token_id ?? null;
-        }
-
-        const px = Number(x.estimated_value_eur || 0) || 0;
-        if (px > g.price) g.price = px;
-
-        const rk = (x.rarity_key || "").toUpperCase();
-        if (rk && rarityRank(rk) > rarityRank(g.rarity_key)) g.rarity_key = rk;
-
-        if (!g.img && x.image_url) g.img = x.image_url;
-        if ((!g.name || g.name.startsWith("Card #")) && x.card_name) g.name = x.card_name;
+      const tag = document.getElementById("modal-tag");
+      if (rarity){
+        tag.style.display = "inline-flex";
+        tag.textContent = rarity;
+      } else {
+        tag.style.display = "none";
+        tag.textContent = "";
       }
-      return Array.from(map.values());
+
+      document.getElementById("modal-price").textContent = "Valeur estimée : " + fmtEur(price || 0);
+      const modal = document.getElementById("modal");
+      modal.classList.add("on");
+      modal.setAttribute("aria-hidden", "false");
+    }
+    function closeModal(){
+      const modal = document.getElementById("modal");
+      modal.classList.remove("on");
+      modal.setAttribute("aria-hidden", "true");
     }
 
-    function vaultValue(items){
-      // ✅ DB authoritative: sum estimated_value_eur (supports PLANT/WATER/FIRE)
-      let sum = 0;
-      for (const x of (items || [])){
-        sum += Number(x.estimated_value_eur || 0) || 0;
-      }
-      return sum;
-    }
-
+    /********************
+     * DB
+     ********************/
     async function requireAuth(){
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user){
@@ -408,7 +487,7 @@
     async function fetchMyCards(userId){
       const { data, error } = await supabase
         .from("user_cards")
-        .select("id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
+        .select("id, user_id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
         .eq("user_id", userId)
         .order("opened_at", { ascending:false })
         .limit(5000);
@@ -440,31 +519,129 @@
       return Number(count || 0) + 1;
     }
 
+    async function updateIsPublic(userId, isPublic){
+      const { error } = await supabase
+        .from("profiles")
+        .update({ is_public: !!isPublic, updated_at: new Date().toISOString() })
+        .eq("id", userId);
+      if (error) throw error;
+    }
+
+    /********************
+     * Normalization + grouping (stack = pack + ct)
+     ********************/
+    function normalizeCards(rows){
+      return (rows || []).map(r => {
+        const pkRaw = (r.pack_key || "PLANT").toString().toUpperCase();
+        // allow future packs (FIRE etc.) without crashing
+        const pk = pkRaw || "PLANT";
+        const ct = Number(r.card_type_index ?? -1);
+        const cat = catalogFor(pk, ct);
+        const ts = r.opened_at ? new Date(r.opened_at).getTime() : 0;
+
+        return {
+          pack_key: pk,
+          cardTypeIndex: ct,
+          tokenId: r.token_id ?? null,
+          ts,
+          rarity_key: (r.rarity_key || "").toUpperCase() || null,
+          img: r.image_url || (cat && cat.img) || "",
+          name: r.card_name || (cat && cat.name) || ("Card #" + ct),
+          estimated_value_eur: Number(r.estimated_value_eur ?? 0) || 0
+        };
+      }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
+    }
+
+    function vaultValue(items){
+      let sum = 0;
+      for (const x of items){
+        sum += Number(x.estimated_value_eur || 0) || 0;
+      }
+      return sum;
+    }
+
+    function groupByStack(items){
+      const map = new Map();
+      for (const x of items){
+        const ct = Number(x.cardTypeIndex ?? -1);
+        const pk = (x.pack_key || "PLANT").toUpperCase();
+        const key = pk + ":" + String(ct);
+
+        if (!map.has(key)){
+          map.set(key, {
+            key,
+            pack_key: pk,
+            cardTypeIndex: ct,
+            img: x.img || "",
+            name: x.name || ("Card #" + ct),
+            owned: 0,
+            lastTs: 0,
+            lastTokenId: null,
+            price: Number(x.estimated_value_eur || 0) || 0,
+            rarity_key: (x.rarity_key || "").toUpperCase() || null
+          });
+        }
+
+        const g = map.get(key);
+        g.owned += 1;
+
+        const ts = Number(x.ts || 0) || 0;
+        if (ts > g.lastTs){
+          g.lastTs = ts;
+          g.lastTokenId = x.tokenId ?? null;
+        }
+
+        const px = Number(x.estimated_value_eur || 0) || 0;
+        if (px > g.price) g.price = px;
+
+        const rk = (x.rarity_key || "").toUpperCase();
+        if (rk && rarityRank(rk) > rarityRank(g.rarity_key)) g.rarity_key = rk;
+
+        if (!g.img && x.img) g.img = x.img;
+        if ((!g.name || g.name.startsWith("Card #")) && x.name) g.name = x.name;
+      }
+      return Array.from(map.values());
+    }
+
+    /********************
+     * UI rendering
+     ********************/
     function renderHeader(profile, userId){
       const name = profile.display_name || profile.username || profile.email || "Moi";
       document.getElementById("me-title").textContent = name;
       document.getElementById("me-avatar").textContent = (name || "M").trim().slice(0,1).toUpperCase();
+
       const short = userId.slice(0,6) + "…" + userId.slice(-4);
       document.getElementById("me-sub").textContent = `ID: ${short}`;
 
-      // share url (robuste)
-      const base = window.location.href.split("?")[0];
-      const share = base.replace(/me\.html$/i, "player.html") + `?u=${encodeURIComponent(userId)}`;
+      const share = `${window.location.origin}${window.location.pathname.replace("me.html","player.html")}?u=${encodeURIComponent(userId)}`;
       document.getElementById("share-url").textContent = share;
 
       const publicBtn = document.getElementById("btn-public-url");
       publicBtn.style.display = "inline-flex";
       publicBtn.href = `player.html?u=${encodeURIComponent(userId)}`;
+
+      // edit pseudo link -> keep next
+      document.getElementById("btn-edit").href = "profile.html?next=./me.html";
     }
 
     function renderStats(points, rank, totalCards, vaultEur){
-      document.getElementById("stat-points").textContent = points.toLocaleString("fr-FR");
+      document.getElementById("stat-points").textContent = (Number(points||0)).toLocaleString("fr-FR");
       document.getElementById("stat-rank").textContent = rank ? ("#" + String(rank)) : "—";
       document.getElementById("stat-total").textContent = String(totalCards);
       document.getElementById("stat-vault").textContent = fmtEur(vaultEur);
 
       const d = new Date();
       document.getElementById("stat-month").textContent = d.toLocaleString("fr-FR", { month:"long", year:"numeric" });
+    }
+
+    function setPublicSwitch(isPublic){
+      const sw = document.getElementById("sw-public");
+      sw.classList.toggle("on", !!isPublic);
+      sw.setAttribute("aria-checked", isPublic ? "true" : "false");
+      document.getElementById("public-sub").textContent = isPublic
+        ? "ON : tes cartes et ton profil sont visibles publiquement."
+        : "OFF : tes cartes ne sont pas visibles publiquement.";
     }
 
     function renderStacks(stacks){
@@ -480,63 +657,88 @@
       for (const s of stacks){
         const card = document.createElement("div");
         card.className = "card";
-        card.innerHTML = `
-          <div class="thumb"><img src="${escapeAttr(s.img)}" alt="${escapeAttr(s.name)}"/></div>
-          <div class="meta">
-            <div style="min-width:0;">
-              <div class="name">${escapeHtml(s.name)}</div>
-              <div class="ct">pack: ${escapeHtml(s.pack_key)} · cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"} · ${s.lastTs ? fmtDate(s.lastTs) : "—"}</div>
-              <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
-            </div>
-            <div class="badges">
-              <div class="tag pack">${escapeHtml(s.pack_key)}</div>
-              ${s.rarity_key ? `<div class="tag ${rarityClass(s.rarity_key)}">${escapeHtml(s.rarity_key)}</div>` : ""}
-              <div class="owned">Owned · ${s.owned}</div>
-            </div>
-          </div>
+
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+        thumb.innerHTML = `<img src="${escapeAttr(s.img)}" alt="${escapeAttr(s.name)}"/>`;
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const left = document.createElement("div");
+        left.style.minWidth = "0";
+        left.innerHTML = `
+          <div class="name">${escapeHtml(s.name)}</div>
+          <div class="ct">pack: ${escapeHtml(s.pack_key)} · cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"}</div>
+          <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
         `;
+
+        const badges = document.createElement("div");
+        badges.className = "badges";
+
+        const packTag = document.createElement("div");
+        packTag.className = "tag pack";
+        packTag.textContent = s.pack_key;
+        badges.appendChild(packTag);
+
+        if (s.rarity_key){
+          const tag = document.createElement("div");
+          tag.className = "tag " + rarityClass(s.rarity_key);
+          tag.textContent = s.rarity_key;
+          badges.appendChild(tag);
+        }
+
+        const owned = document.createElement("div");
+        owned.className = "owned";
+        owned.textContent = "Owned · " + s.owned;
+        badges.appendChild(owned);
+
+        meta.appendChild(left);
+        meta.appendChild(badges);
+
+        card.appendChild(thumb);
+        card.appendChild(meta);
+
+        card.addEventListener("click", () => {
+          openModal({
+            img: s.img,
+            name: `${s.name} (${s.pack_key} · ct ${s.cardTypeIndex})`,
+            rarity: s.rarity_key || "",
+            price: s.price || 0
+          });
+        });
+
         grid.appendChild(card);
       }
     }
 
-    function setPublicSwitch(isPublic){
-      const sw = document.getElementById("sw-public");
-      sw.classList.toggle("on", !!isPublic);
-      sw.setAttribute("aria-checked", isPublic ? "true" : "false");
-      document.getElementById("public-sub").textContent = isPublic
-        ? "ON : tes cartes et ton profil sont visibles publiquement."
-        : "OFF : tes cartes ne sont pas visibles publiquement.";
-    }
+    /********************
+     * INIT
+     ********************/
+    document.getElementById("modal-close").addEventListener("click", closeModal);
+    document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
-    async function updateIsPublic(userId, isPublic){
-      const { error } = await supabase
-        .from("profiles")
-        .update({ is_public: !!isPublic, updated_at: new Date().toISOString() })
-        .eq("id", userId);
-      if (error) throw error;
-    }
-
-    /* ---------- Init ---------- */
     const session = await requireAuth();
-    if (!session) { /* redirected */ }
-    else {
+    if (!session) {
+      // redirected
+    } else {
       try{
         const profile = await requireUsername(session.user.id);
-        if (!profile) { /* redirected */ }
-        else {
+        if (!profile) {
+          // redirected
+        } else {
           renderHeader(profile, session.user.id);
 
-          // edit pseudo link -> keep next
-          document.getElementById("btn-edit").href = "profile.html?next=./me.html";
+          const monthISO = fmtMonthStartISO(new Date());
 
-          const monthKey = fmtMonthISO(new Date());
-
-          const [cards, points] = await Promise.all([
+          const [rows, points] = await Promise.all([
             fetchMyCards(session.user.id),
-            fetchMyPoints(session.user.id, monthKey),
+            fetchMyPoints(session.user.id, monthISO),
           ]);
 
-          const rank = await computeRank(monthKey, points);
+          const cards = normalizeCards(rows);
+          const rank = await computeRank(monthISO, points);
 
           renderStats(points, rank, cards.length, vaultValue(cards));
           renderStacks(groupByStack(cards));
@@ -556,7 +758,7 @@
               await updateIsPublic(session.user.id, next);
             }catch(e){
               console.error(e);
-              // rollback UI
+              // rollback
               setPublicSwitch(!sw.classList.contains("on"));
               alert(e?.message || "Impossible de modifier la visibilité.");
             }finally{
