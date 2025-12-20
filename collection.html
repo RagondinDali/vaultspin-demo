@@ -821,13 +821,15 @@
         }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
       }
 
+      // ✅ FIX : on récupère UNIQUEMENT la collection du user connecté
       async function fetchDbCards(){
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.user) return null;
 
         const { data, error } = await supabase
           .from("user_cards")
-          .select("id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
+          .select("id, user_id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
+          .eq("user_id", session.user.id) // ✅ IMPORTANT
           .order("opened_at", { ascending:false })
           .limit(5000);
 
