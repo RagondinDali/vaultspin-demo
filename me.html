@@ -112,8 +112,18 @@
       padding:8px 12px;
       font-size:11px; color:#e5e7eb;
       width:fit-content;
+      max-width:100%;
+      overflow:hidden;
     }
-    .chip strong{ color:#f9fafb; }
+    .chip strong{
+      color:#f9fafb;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width:min(760px, 78vw);
+      display:inline-block;
+      vertical-align:bottom;
+    }
 
     /* Toggle */
     .toggle{
@@ -182,9 +192,16 @@
       background: rgba(2,6,23,.35);
       white-space:nowrap;
     }
+    .tag.pack{
+      border-color: rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      color:#e5e7eb;
+    }
     .tag.epic{ color:#38bdf8; }
     .tag.ultra{ color:#a855f7; }
     .tag.legendary{ color:#f97316; }
+    .tag.hidden{ color:#9ca3af; }
+
     .owned{
       font-size:10px; letter-spacing:.14em; text-transform:uppercase;
       padding:6px 9px; border-radius:999px;
@@ -274,12 +291,12 @@
     import { supabase } from "./js/supabaseClient.js";
 
     function fmtEur(n){
-      return (Number(n) || 0).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
+      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "€";
     }
     function fmtMonthISO(d = new Date()){
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, "0");
-      return `${y}-${m}-01`; // DATE
+      return `${y}-${m}-01`; // DATE (timezone-safe)
     }
     function escapeHtml(s){
       return String(s || "").replace(/[&<>"']/g, (c) => ({
@@ -288,84 +305,52 @@
     }
     function escapeAttr(s){ return String(s || "").replace(/"/g, "&quot;"); }
 
-    const CARD_PRICE_EUR_BY_INDEX = {
-      0: 5.50, 1: 135, 2: 60, 3: 70, 4: 109, 5: 209, 6: 69, 7: 129, 8: 70, 9: 109,
-      10: 1350, 11: 199, 12: 109, 13: 109, 14: 77, 15: 15.50, 16: 4.00, 17: 3.00, 18: 7.00
-    };
-    const CARD_CATALOG = {
-      0: { name:"Phyllali PCA", img:"images/phyllali_PCA.png" },
-      1: { name:"Aéromite", img:"images/aeromite.png" },
-      2: { name:"Germignon", img:"images/germignon.png" },
-      3: { name:"Astronelle", img:"images/astronelle.png" },
-      4: { name:"Chétiflor", img:"images/chetiflor.png" },
-      5: { name:"Jungko", img:"images/jungko.png" },
-      6: { name:"Chenipan", img:"images/chenipan.png" },
-      7: { name:"Énergie Plante", img:"images/energie_plante.png" },
-      8: { name:"Majaspic", img:"images/majaspic.png" },
-      9: { name:"Mimitoss", img:"images/mimitoss.png" },
-      10:{ name:"Florizarre", img:"images/florizarre.png" },
-      11:{ name:"Nidoking", img:"images/nidoking.png" },
-      12:{ name:"Noeufnoeuf", img:"images/noeufnoeuf.png" },
-      13:{ name:"Paras", img:"images/paras.png" },
-      14:{ name:"Phyllali", img:"images/phyllali.png" },
-      15:{ name:"Boskara", img:"images/boskara.png" },
-      16:{ name:"Filentrappe", img:"images/filentrappe.png" },
-      17:{ name:"Peterson", img:"images/peterson.png" },
-      18:{ name:"Scovilain", img:"images/scovilain.png" }
-    };
-
-    const CT_FLORIZARRE = 10;
-    const HIDDEN_SET = new Set([0,15,16,17,18]);
-    const ULTRA_BUCKET = new Set([1,5,7,11]);
-    const EPIC_BUCKET = new Set([2,3,4,6,8,9,12,13,14]);
-    const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"];
-    const RARITY_LABEL = { EPIC:"EPIC", ULTRA:"ULTRA", LEGENDARY:"LEGENDARY" };
-
-    function rarityKeyForCt(ct){
-      const n = Number(ct);
-      if (HIDDEN_SET.has(n)) return "";
-      if (n === CT_FLORIZARRE) return "LEGENDARY";
-      if (ULTRA_BUCKET.has(n)) return "ULTRA";
-      if (EPIC_BUCKET.has(n)) return "EPIC";
-      const price = CARD_PRICE_EUR_BY_INDEX[n] ?? 0;
-      if (price > 300) return "LEGENDARY";
-      if (price >= 121) return "ULTRA";
-      return "EPIC";
-    }
-    function rarityRank(rk){
-      if (!rk) return -1;
-      return RARITY_ORDER.indexOf(rk);
+    /* ✅ Rarity helpers (DB authoritative) */
+    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"];
+    function rarityRank(k){
+      const kk = (k || "").toUpperCase();
+      const i = RARITY_ORDER.indexOf(kk);
+      return i === -1 ? 0 : i;
     }
     function rarityClass(k){
-      if (k === "LEGENDARY") return "legendary";
-      if (k === "ULTRA") return "ultra";
-      if (k === "EPIC") return "epic";
+      const kk = (k || "").toUpperCase();
+      if (kk === "LEGENDARY") return "legendary";
+      if (kk === "ULTRA") return "ultra";
+      if (kk === "EPIC") return "epic";
+      if (kk === "HIDDEN") return "hidden";
       return "";
     }
 
-    function groupByCardType(items){
+    function fmtDate(ts){
+      const d = new Date(ts);
+      return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+
+    function groupByStack(items){
+      // key = pack_key + ":" + ct
       const map = new Map();
-      for (const x of items){
+      for (const x of (items || [])){
+        const pk = (x.pack_key || "PLANT").toString().toUpperCase();
         const ct = Number(x.card_type_index ?? -1);
         if (!Number.isFinite(ct) || ct < 0) continue;
-        const cat = CARD_CATALOG[ct] || null;
-        const price = Number(x.estimated_value_eur ?? (CARD_PRICE_EUR_BY_INDEX[ct] ?? 0)) || 0;
-        const rk = rarityKeyForCt(ct);
 
-        if (!map.has(ct)){
-          map.set(ct, {
+        const key = pk + ":" + String(ct);
+        if (!map.has(key)){
+          map.set(key, {
+            key,
+            pack_key: pk,
             cardTypeIndex: ct,
-            name: x.card_name || (cat && cat.name) || ("Card #" + ct),
-            img: x.image_url || (cat && cat.img) || "",
+            name: x.card_name || ("Card #" + ct),
+            img: x.image_url || "",
             owned: 0,
             lastTs: 0,
-            lastTokenId: x.token_id ?? null,
-            price,
-            rarityKey: rk,
-            rarityLabel: rk ? (RARITY_LABEL[rk] || rk) : ""
+            lastTokenId: null,
+            price: Number(x.estimated_value_eur || 0) || 0,
+            rarity_key: (x.rarity_key || "").toUpperCase() || null
           });
         }
-        const g = map.get(ct);
+
+        const g = map.get(key);
         g.owned += 1;
 
         const ts = x.opened_at ? new Date(x.opened_at).getTime() : 0;
@@ -373,21 +358,24 @@
           g.lastTs = ts;
           g.lastTokenId = x.token_id ?? null;
         }
+
+        const px = Number(x.estimated_value_eur || 0) || 0;
+        if (px > g.price) g.price = px;
+
+        const rk = (x.rarity_key || "").toUpperCase();
+        if (rk && rarityRank(rk) > rarityRank(g.rarity_key)) g.rarity_key = rk;
+
         if (!g.img && x.image_url) g.img = x.image_url;
-        if (!g.name && x.card_name) g.name = x.card_name;
-        g.price = price;
-        g.rarityKey = rk;
-        g.rarityLabel = rk ? (RARITY_LABEL[rk] || rk) : "";
+        if ((!g.name || g.name.startsWith("Card #")) && x.card_name) g.name = x.card_name;
       }
       return Array.from(map.values());
     }
 
     function vaultValue(items){
+      // ✅ DB authoritative: sum estimated_value_eur (supports PLANT/WATER/FIRE)
       let sum = 0;
-      for (const x of items){
-        const ct = Number(x.card_type_index ?? -1);
-        if (!Number.isFinite(ct) || ct < 0) continue;
-        sum += (CARD_PRICE_EUR_BY_INDEX[ct] ?? Number(x.estimated_value_eur || 0) || 0);
+      for (const x of (items || [])){
+        sum += Number(x.estimated_value_eur || 0) || 0;
       }
       return sum;
     }
@@ -420,7 +408,7 @@
     async function fetchMyCards(userId){
       const { data, error } = await supabase
         .from("user_cards")
-        .select("id, token_id, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
+        .select("id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
         .eq("user_id", userId)
         .order("opened_at", { ascending:false })
         .limit(5000);
@@ -459,8 +447,9 @@
       const short = userId.slice(0,6) + "…" + userId.slice(-4);
       document.getElementById("me-sub").textContent = `ID: ${short}`;
 
-      // share url
-      const share = `${window.location.origin}${window.location.pathname.replace("me.html","player.html")}?u=${encodeURIComponent(userId)}`;
+      // share url (robuste)
+      const base = window.location.href.split("?")[0];
+      const share = base.replace(/me\.html$/i, "player.html") + `?u=${encodeURIComponent(userId)}`;
       document.getElementById("share-url").textContent = share;
 
       const publicBtn = document.getElementById("btn-public-url");
@@ -483,8 +472,8 @@
       grid.innerHTML = "";
 
       stacks.sort((a,b) => {
-        const ra = rarityRank(a.rarityKey);
-        const rb = rarityRank(b.rarityKey);
+        const ra = rarityRank(a.rarity_key);
+        const rb = rarityRank(b.rarity_key);
         return (rb - ra) || (b.price - a.price) || (b.owned - a.owned);
       });
 
@@ -496,11 +485,12 @@
           <div class="meta">
             <div style="min-width:0;">
               <div class="name">${escapeHtml(s.name)}</div>
-              <div class="ct">cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"}</div>
+              <div class="ct">pack: ${escapeHtml(s.pack_key)} · cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"} · ${s.lastTs ? fmtDate(s.lastTs) : "—"}</div>
               <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
             </div>
             <div class="badges">
-              ${s.rarityKey ? `<div class="tag ${rarityClass(s.rarityKey)}">${escapeHtml(s.rarityLabel)}</div>` : ""}
+              <div class="tag pack">${escapeHtml(s.pack_key)}</div>
+              ${s.rarity_key ? `<div class="tag ${rarityClass(s.rarity_key)}">${escapeHtml(s.rarity_key)}</div>` : ""}
               <div class="owned">Owned · ${s.owned}</div>
             </div>
           </div>
@@ -539,8 +529,7 @@
           // edit pseudo link -> keep next
           document.getElementById("btn-edit").href = "profile.html?next=./me.html";
 
-          const monthISO = new Date();
-          const monthKey = fmtMonthISO(monthISO);
+          const monthKey = fmtMonthISO(new Date());
 
           const [cards, points] = await Promise.all([
             fetchMyCards(session.user.id),
@@ -550,7 +539,7 @@
           const rank = await computeRank(monthKey, points);
 
           renderStats(points, rank, cards.length, vaultValue(cards));
-          renderStacks(groupByCardType(cards));
+          renderStacks(groupByStack(cards));
 
           // toggle public
           setPublicSwitch(!!profile.is_public);
