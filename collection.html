@@ -256,6 +256,10 @@
         color:#f9fafb;
         line-height:1.2;
         min-width:0;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        max-width:100%;
       }
       .ct{
         font-size:11px;
@@ -289,11 +293,19 @@
         border-radius:999px;
         border:1px solid rgba(148,163,184,.16);
         background: rgba(2,6,23,.35);
+        white-space:nowrap;
       }
 
       .tag.epic{ color:#38bdf8; }
       .tag.ultra{ color:#a855f7; }
       .tag.legendary{ color:#f97316; }
+      .tag.hidden{ color:#9ca3af; }
+
+      .tag.pack{
+        border-color: rgba(148,163,184,.20);
+        background: rgba(15,23,42,.55);
+        color:#e5e7eb;
+      }
 
       .owned{
         font-size:10px;
@@ -327,6 +339,7 @@
         z-index:80;
         background: rgba(0,0,0,.55);
         backdrop-filter: blur(10px);
+        padding:16px;
       }
       .modal.on{ display:flex; }
       .modal-card{
@@ -372,6 +385,10 @@
         text-transform:uppercase;
         font-weight:900;
         color:#e5e7eb;
+        min-width:0;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
       }
       .modal-tag{
         font-size:11px;
@@ -382,6 +399,7 @@
         border:1px solid rgba(148,163,184,.20);
         background: rgba(15,23,42,.55);
         color:#e5e7eb;
+        white-space:nowrap;
       }
       .modal-price{
         margin-top:10px;
@@ -489,10 +507,10 @@
           <div>
             <h1>Ma collection</h1>
             <div class="sub">
-              Vue “Stacks” : cartes groupées par <b>cardTypeIndex</b>.
-              Clique sur <b>Owned</b> pour filtrer. Filtre aussi via <b>?ct=</b>.
+              Vue “Stacks” : groupé par <b>pack</b> + <b>cardTypeIndex</b>.
+              Clique sur <b>Owned</b> pour filtrer. Filtre aussi via <b>?pack=PLANT|WATER&ct=</b>.
               <br/>
-              ✅ Source of truth = Supabase <b>user_cards</b> (si connecté). Sinon fallback localStorage.
+              ✅ Source of truth = Supabase <b>user_cards</b> (si connecté). Sinon fallback localStorage (démo).
             </div>
           </div>
 
@@ -503,7 +521,22 @@
         </div>
 
         <div class="filters">
-          <input class="input" id="search" placeholder="Search (rarity / index / name / price)..." />
+          <input class="input" id="search" placeholder="Search (pack / rarity / index / name / price)..." />
+
+          <select id="pack">
+            <option value="ALL">Pack: All</option>
+            <option value="PLANT">Pack: PLANT</option>
+            <option value="WATER">Pack: WATER</option>
+          </select>
+
+          <select id="rarity">
+            <option value="ALL">Rarity: All</option>
+            <option value="LEGENDARY">Rarity: LEGENDARY</option>
+            <option value="ULTRA">Rarity: ULTRA</option>
+            <option value="EPIC">Rarity: EPIC</option>
+            <option value="HIDDEN">Rarity: HIDDEN</option>
+          </select>
+
           <select id="sort">
             <option value="rarity_desc">Sort: rarity ↓</option>
             <option value="rarity_asc">Sort: rarity ↑</option>
@@ -523,9 +556,9 @@
             <div class="s">NFTs enregistrés</div>
           </div>
           <div class="stat">
-            <div class="k">Unique types</div>
+            <div class="k">Unique stacks</div>
             <div class="v" id="stat-unique">0</div>
-            <div class="s">cardTypeIndex distincts</div>
+            <div class="s">pack + cardTypeIndex distincts</div>
           </div>
           <div class="stat">
             <div class="k">Best pull</div>
@@ -535,7 +568,7 @@
           <div class="stat">
             <div class="k">Vault value</div>
             <div class="v" id="stat-vault">0€</div>
-            <div class="s">Somme des valeurs estimées</div>
+            <div class="s">Somme (DB: estimated_value_eur)</div>
           </div>
         </div>
 
@@ -554,218 +587,122 @@
       </div>
     </div>
 
-    <script>
+    <script type="module">
+      import { supabase } from "./js/supabaseClient.js";
+
       /********************
        * STORAGE (fallback)
        ********************/
       const VS_COLLECTION_KEY = "vaultspin_collection_v1";
 
       /********************
-       * PRICES (source of truth — identique à index)
+       * Catalog (OPTIONNEL)
+       * - Sert seulement de fallback d’affichage si DB n’a pas image_url/card_name.
+       * - Tu peux enrichir ici plus tard.
        ********************/
-      const CARD_PRICE_EUR_BY_INDEX = {
-        0: 5.50,
-        1: 135,
-        2: 60,
-        3: 70,
-        4: 109,
-        5: 209,
-        6: 69,
-        7: 129,
-        8: 70,
-        9: 109,
-        10: 1350,
-        11: 199,
-        12: 109,
-        13: 109,
-        14: 77,
-        15: 15.50,
-        16: 4.00,
-        17: 3.00,
-        18: 7.00
+      const CATALOG = {
+        PLANT: {
+          0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
+          1:  { name:"Aéromite",       img:"images/aeromite.png" },
+          2:  { name:"Germignon",      img:"images/germignon.png" },
+          3:  { name:"Astronelle",     img:"images/astronelle.png" },
+          4:  { name:"Chétiflor",      img:"images/chetiflor.png" },
+          5:  { name:"Jungko",         img:"images/jungko.png" },
+          6:  { name:"Chenipan",       img:"images/chenipan.png" },
+          7:  { name:"Énergie Plante", img:"images/energie_plante.png" },
+          8:  { name:"Majaspic",       img:"images/majaspic.png" },
+          9:  { name:"Mimitoss",       img:"images/mimitoss.png" },
+          10: { name:"Florizarre",     img:"images/florizarre.png" },
+          11: { name:"Nidoking",       img:"images/nidoking.png" },
+          12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
+          13: { name:"Paras",          img:"images/paras.png" },
+          14: { name:"Phyllali",       img:"images/phyllali.png" },
+          15: { name:"Boskara",        img:"images/boskara.png" },
+          16: { name:"Filentrappe",    img:"images/filentrappe.png" },
+          17: { name:"Peterson",       img:"images/peterson.png" },
+          18: { name:"Scovilain",      img:"images/scovilain.png" }
+        },
+        // IMPORTANT: tes ct Water semblent être 120+ (vu sur ton screen).
+        // Ici on met juste un fallback minimal si jamais DB n’envoie pas card_name/image_url.
+        WATER: {
+          // Exemple (mets tes vrais fichiers si tu veux fallback)
+          // 120: { name:"Givrali VSTAR", img:"images/givrali_vstar.png" },
+        }
       };
 
+      function catalogFor(packKey, ct){
+        const pk = (packKey || "PLANT").toUpperCase();
+        return (CATALOG[pk] && CATALOG[pk][Number(ct)]) ? CATALOG[pk][Number(ct)] : null;
+      }
+
+      /********************
+       * Formatting
+       ********************/
       function fmtEur(n){
         return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
       }
-
-      /********************
-       * RARITY logic
-       ********************/
-      const CT_FLORIZARRE = 10;
-
-      const CT_PCA = 0;
-      const CT_BOSKARA = 15;
-      const CT_FILENTRAPPE = 16;
-      const CT_PETERSON = 17;
-      const CT_SCOVILAIN = 18;
-      const HIDDEN_SET = new Set([CT_PCA, CT_BOSKARA, CT_FILENTRAPPE, CT_PETERSON, CT_SCOVILAIN]);
-
-      const ULTRA_BUCKET = new Set([1, 5, 7, 11]);
-      const EPIC_BUCKET  = new Set([2, 3, 4, 6, 8, 9, 12, 13, 14]);
-
-      const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"]; // hidden: -1
-      const RARITY_LABEL = { EPIC:"EPIC", ULTRA:"ULTRA", LEGENDARY:"LEGENDARY" };
-
-      function rarityKeyForCt(ct){
-        const n = Number(ct);
-        if (HIDDEN_SET.has(n)) return "";
-        if (n === CT_FLORIZARRE) return "LEGENDARY";
-        if (ULTRA_BUCKET.has(n)) return "ULTRA";
-        if (EPIC_BUCKET.has(n)) return "EPIC";
-        const price = CARD_PRICE_EUR_BY_INDEX[n] ?? 0;
-        if (price > 300) return "LEGENDARY";
-        if (price >= 121) return "ULTRA";
-        return "EPIC";
-      }
-
-      function rarityRank(rk){
-        if (!rk) return -1;
-        return RARITY_ORDER.indexOf(rk);
-      }
-
-      function rarityClass(k){
-        if (k === "LEGENDARY") return "legendary";
-        if (k === "ULTRA") return "ultra";
-        if (k === "EPIC") return "epic";
-        return "";
-      }
-
-      /********************
-       * Local catalog (ct -> meta)
-       ********************/
-      const CARD_CATALOG = {
-        0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
-        1:  { name:"Aéromite",       img:"images/aeromite.png" },
-        2:  { name:"Germignon",      img:"images/germignon.png" },
-        3:  { name:"Astronelle",     img:"images/astronelle.png" },
-        4:  { name:"Chétiflor",      img:"images/chetiflor.png" },
-        5:  { name:"Jungko",         img:"images/jungko.png" },
-        6:  { name:"Chenipan",       img:"images/chenipan.png" },
-        7:  { name:"Énergie Plante", img:"images/energie_plante.png" },
-        8:  { name:"Majaspic",       img:"images/majaspic.png" },
-        9:  { name:"Mimitoss",       img:"images/mimitoss.png" },
-        10: { name:"Florizarre",     img:"images/florizarre.png" },
-        11: { name:"Nidoking",       img:"images/nidoking.png" },
-        12: { name:"Noeufnoeuf",     img:"images/noeufnoeuf.png" },
-        13: { name:"Paras",          img:"images/paras.png" },
-        14: { name:"Phyllali",       img:"images/phyllali.png" },
-        15: { name:"Boskara",        img:"images/boskara.png" },
-        16: { name:"Filentrappe",    img:"images/filentrappe.png" },
-        17: { name:"Peterson",       img:"images/peterson.png" },
-        18: { name:"Scovilain",      img:"images/scovilain.png" }
-      };
-
-      function catalogForCt(ct){
-        return CARD_CATALOG[Number(ct)] || null;
-      }
-
-      function getLocalCollection(){
-        try { return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
-        catch { return []; }
-      }
-
-      function setLocalCollection(arr){
-        localStorage.setItem(VS_COLLECTION_KEY, JSON.stringify(arr));
-      }
-
-      function getCtFilterFromUrl(){
-        const p = new URLSearchParams(window.location.search);
-        const ct = p.get("ct");
-        if (ct === null) return null;
-        const n = Number(ct);
-        return Number.isFinite(n) ? n : null;
-      }
-
-      function setCtInUrl(ct){
-        const url = new URL(window.location.href);
-        url.searchParams.set("ct", String(ct));
-        window.location.href = url.toString();
-      }
-
-      function clearCtInUrl(){
-        const url = new URL(window.location.href);
-        url.searchParams.delete("ct");
-        window.location.href = url.toString();
-      }
-
       function fmtDate(ts){
         const d = new Date(ts);
         return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
       }
 
-      function bestPull(arr){
-        if (!arr.length) return null;
-        let best = arr[0];
-        for (const c of arr){
-          const aCt = Number(c.cardTypeIndex ?? -1);
-          const bCt = Number(best.cardTypeIndex ?? -1);
-          const aR = rarityRank(rarityKeyForCt(aCt));
-          const bR = rarityRank(rarityKeyForCt(bCt));
-          if (aR > bR) best = c;
-          else if (aR === bR){
-            const ap = CARD_PRICE_EUR_BY_INDEX[aCt] ?? 0;
-            const bp = CARD_PRICE_EUR_BY_INDEX[bCt] ?? 0;
-            if (ap > bp) best = c;
-          }
-        }
-        return best;
+      function escapeHtml(s){
+        return String(s || "").replace(/[&<>"']/g, (c) => ({
+          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+        }[c]));
+      }
+      function escapeAttr(s){
+        return String(s || "").replace(/"/g, "&quot;");
       }
 
-      function vaultValue(arr){
-        let sum = 0;
-        for (const x of arr){
-          const ct = Number(x.cardTypeIndex ?? -1);
-          if (!Number.isFinite(ct) || ct < 0) continue;
-          sum += (CARD_PRICE_EUR_BY_INDEX[ct] ?? 0);
-        }
-        return sum;
+      /********************
+       * URL filters
+       ********************/
+      function getFiltersFromUrl(){
+        const p = new URLSearchParams(window.location.search);
+        const ctRaw = p.get("ct");
+        const pack = (p.get("pack") || "").toUpperCase();
+        const ct = ctRaw === null ? null : Number(ctRaw);
+        return {
+          pack: (pack === "PLANT" || pack === "WATER") ? pack : null,
+          ct: (ctRaw === null) ? null : (Number.isFinite(ct) ? ct : null)
+        };
       }
 
-      function groupByCardType(arr){
-        const map = new Map();
+      function setPackCtInUrl(pack, ct){
+        const url = new URL(window.location.href);
+        if (pack) url.searchParams.set("pack", String(pack).toUpperCase());
+        else url.searchParams.delete("pack");
 
-        for (const x of arr){
-          const ct = Number(x.cardTypeIndex ?? -1);
-          if (!Number.isFinite(ct) || ct < 0) continue;
+        if (ct !== null && ct !== undefined) url.searchParams.set("ct", String(ct));
+        else url.searchParams.delete("ct");
 
-          const cat = catalogForCt(ct);
-          const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
-          const rk = rarityKeyForCt(ct);
+        window.location.href = url.toString();
+      }
 
-          if (!map.has(ct)){
-            map.set(ct, {
-              cardTypeIndex: ct,
-              rarityKey: rk,
-              rarityLabel: rk ? (RARITY_LABEL[rk] || rk) : "",
-              img: x.img || (cat && cat.img) || "",
-              name: x.name || (cat && cat.name) || ("Card #" + ct),
-              owned: 0,
-              lastTs: 0,
-              lastTokenId: null,
-              price
-            });
-          }
+      function clearFilterInUrl(){
+        const url = new URL(window.location.href);
+        url.searchParams.delete("pack");
+        url.searchParams.delete("ct");
+        window.location.href = url.toString();
+      }
 
-          const g = map.get(ct);
-          g.owned += 1;
-
-          const betterImg = x.img || (cat && cat.img) || "";
-          const betterName = x.name || (cat && cat.name) || "";
-          if (!g.img && betterImg) g.img = betterImg;
-          if (!g.name || g.name.startsWith("Card #")) if (betterName) g.name = betterName;
-
-          if ((x.ts || 0) > g.lastTs){
-            g.lastTs = x.ts || 0;
-            g.lastTokenId = x.tokenId ?? null;
-          }
-
-          g.price = price;
-          g.rarityKey = rk;
-          g.rarityLabel = rk ? (RARITY_LABEL[rk] || rk) : "";
-        }
-
-        return Array.from(map.values());
+      /********************
+       * Rarity helpers (DB authoritative)
+       ********************/
+      const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"]; // for sorting
+      function rarityRank(k){
+        const kk = (k || "").toUpperCase();
+        const i = RARITY_ORDER.indexOf(kk);
+        return i === -1 ? 0 : i;
+      }
+      function rarityClass(k){
+        const kk = (k || "").toUpperCase();
+        if (kk === "LEGENDARY") return "legendary";
+        if (kk === "ULTRA") return "ultra";
+        if (kk === "EPIC") return "epic";
+        if (kk === "HIDDEN") return "hidden";
+        return "";
       }
 
       /********************
@@ -790,7 +727,6 @@
         modal.classList.add("on");
         modal.setAttribute("aria-hidden", "false");
       }
-
       function closeModal(){
         const modal = document.getElementById("modal");
         modal.classList.remove("on");
@@ -798,39 +734,157 @@
       }
 
       /********************
-       * DB-first state
+       * Data (DB-first)
        ********************/
-      let SOURCE = "local";   // "db" | "local"
-      let CARDS = [];         // normalized list
+      let SOURCE = "local"; // "db" | "local"
+      let CARDS = [];       // normalized list
+
+      function getLocalCollection(){
+        try { return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
+        catch { return []; }
+      }
 
       function normalizeFromLocal(localArr){
-        // local schema: { tokenId, ts, priceEur, rarityKey, cardTypeIndex, img, name }
-        return (localArr || []).map(x => ({
-          tokenId: x.tokenId ?? null,
-          ts: x.ts ?? Date.now(),
-          cardTypeIndex: Number(x.cardTypeIndex ?? -1),
-          img: x.img || "",
-          name: x.name || "",
-          estimated_value_eur: Number(x.priceEur ?? (CARD_PRICE_EUR_BY_INDEX[Number(x.cardTypeIndex)] ?? 0)) || 0
-        })).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
+        // local schema (démo): { tokenId, ts, priceEur/valueEur, rarityKey, cardTypeIndex, img, name, boosterKey }
+        return (localArr || []).map(x => {
+          const pack = (x.pack_key || x.boosterKey || "PLANT").toString().toUpperCase();
+          const packKey = (pack === "WATER" || pack === "PLANT") ? pack : (pack === "PLANT" ? "PLANT" : "PLANT");
+          return {
+            source: "local",
+            dbId: null,
+            pack_key: packKey,
+            tokenId: x.tokenId ?? null,
+            ts: x.ts ?? Date.now(),
+            cardTypeIndex: Number(x.cardTypeIndex ?? -1),
+            rarity_key: (x.rarityKey || "").toUpperCase() || null,
+            img: x.img || "",
+            name: x.name || "",
+            estimated_value_eur: Number(x.priceEur ?? x.valueEur ?? 0) || 0
+          };
+        }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
       }
 
       function normalizeFromDb(rows){
-        // db schema: user_cards: { id, token_id, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at }
+        // db schema: user_cards: { id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at }
         return (rows || []).map(r => {
+          const packKey = (r.pack_key || "PLANT").toString().toUpperCase();
+          const pk = (packKey === "WATER" || packKey === "PLANT") ? packKey : "PLANT";
+
           const ct = Number(r.card_type_index ?? -1);
-          const cat = catalogForCt(ct);
+          const cat = catalogFor(pk, ct);
+
           const ts = r.opened_at ? new Date(r.opened_at).getTime() : Date.now();
           return {
+            source: "db",
             dbId: r.id,
+            pack_key: pk,
             tokenId: r.token_id ?? null,
             ts,
             cardTypeIndex: ct,
+            rarity_key: (r.rarity_key || "").toUpperCase() || null,
             img: r.image_url || (cat && cat.img) || "",
             name: r.card_name || (cat && cat.name) || ("Card #" + ct),
-            estimated_value_eur: Number(r.estimated_value_eur ?? (CARD_PRICE_EUR_BY_INDEX[ct] ?? 0)) || 0
+            // ✅ FIX PRIX: on utilise DB estimated_value_eur (donc Water s’affiche)
+            estimated_value_eur: Number(r.estimated_value_eur ?? 0) || 0
           };
         }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
+      }
+
+      async function fetchDbCards(){
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return null;
+
+        const { data, error } = await supabase
+          .from("user_cards")
+          .select("id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
+          .order("opened_at", { ascending:false })
+          .limit(5000);
+
+        if (error) throw error;
+        return data || [];
+      }
+
+      function vaultValue(items){
+        // DB authoritative: sum of estimated_value_eur
+        let sum = 0;
+        for (const x of items){
+          sum += Number(x.estimated_value_eur || 0) || 0;
+        }
+        return sum;
+      }
+
+      function bestPull(items){
+        if (!items.length) return null;
+        let best = items[0];
+        for (const c of items){
+          const aR = rarityRank(c.rarity_key);
+          const bR = rarityRank(best.rarity_key);
+          if (aR > bR) best = c;
+          else if (aR === bR){
+            const ap = Number(c.estimated_value_eur || 0) || 0;
+            const bp = Number(best.estimated_value_eur || 0) || 0;
+            if (ap > bp) best = c;
+          }
+        }
+        return best;
+      }
+
+      function groupByStack(items){
+        // key = pack_key + ":" + ct
+        const map = new Map();
+
+        for (const x of items){
+          const ct = Number(x.cardTypeIndex ?? -1);
+          const pk = (x.pack_key || "PLANT").toUpperCase();
+          const key = pk + ":" + String(ct);
+
+          if (!map.has(key)){
+            map.set(key, {
+              key,
+              pack_key: pk,
+              cardTypeIndex: ct,
+              img: x.img || "",
+              name: x.name || ("Card #" + ct),
+              owned: 0,
+              lastTs: 0,
+              lastTokenId: null,
+              // on prend le meilleur “prix” sur la stack (et aussi utile si certaines cartes ont été enregistrées sans prix)
+              price: Number(x.estimated_value_eur || 0) || 0,
+              rarity_key: (x.rarity_key || "").toUpperCase() || null
+            });
+          }
+
+          const g = map.get(key);
+          g.owned += 1;
+
+          const ts = Number(x.ts || 0) || 0;
+          if (ts > g.lastTs){
+            g.lastTs = ts;
+            g.lastTokenId = x.tokenId ?? null;
+          }
+
+          const px = Number(x.estimated_value_eur || 0) || 0;
+          if (px > g.price) g.price = px;
+
+          // si la rareté DB est présente et “plus haute” que celle stockée
+          const rk = (x.rarity_key || "").toUpperCase();
+          if (rk && rarityRank(rk) > rarityRank(g.rarity_key)) g.rarity_key = rk;
+
+          if (!g.img && x.img) g.img = x.img;
+          if ((!g.name || g.name.startsWith("Card #")) && x.name) g.name = x.name;
+        }
+
+        return Array.from(map.values());
+      }
+
+      /********************
+       * UI source hint
+       ********************/
+      function setSourceChip(){
+        const hint = document.getElementById("hint");
+        hint.innerHTML = SOURCE === "db"
+          ? `✅ Source : <b>Supabase</b> (user_cards).`
+          : `ℹ️ Source : <b>localStorage</b> (démo). Connecte-toi pour voir ta vraie collection (multi-device).`;
       }
 
       /********************
@@ -840,47 +894,64 @@
         const grid = document.getElementById("grid");
         const empty = document.getElementById("empty-state");
 
-        const ctFilter = getCtFilterFromUrl();
         const search = (document.getElementById("search").value || "").trim().toLowerCase();
         const sort = document.getElementById("sort").value;
 
+        const packSel = (document.getElementById("pack").value || "ALL").toUpperCase();
+        const raritySel = (document.getElementById("rarity").value || "ALL").toUpperCase();
+
+        const urlFilters = getFiltersFromUrl();
+        const ctFilter = urlFilters.ct;
+        const packFilterFromUrl = urlFilters.pack;
+
         let items = CARDS.slice();
 
+        // Apply pack dropdown + URL pack
+        if (packFilterFromUrl){
+          items = items.filter(x => (x.pack_key || "").toUpperCase() === packFilterFromUrl);
+        } else if (packSel !== "ALL"){
+          items = items.filter(x => (x.pack_key || "").toUpperCase() === packSel);
+        }
+
+        // Apply rarity dropdown
+        if (raritySel !== "ALL"){
+          items = items.filter(x => (x.rarity_key || "").toUpperCase() === raritySel);
+        }
+
+        // Apply ct from URL
         if (ctFilter !== null){
           items = items.filter(x => Number(x.cardTypeIndex) === ctFilter);
         }
 
-        // Stats base
+        // Stats
         document.getElementById("stat-total").textContent = String(items.length);
         document.getElementById("stat-vault").textContent =
           (vaultValue(items)).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
 
         const best = bestPull(items);
         if (best){
-          const ct = Number(best.cardTypeIndex ?? -1);
-          const rk = rarityKeyForCt(ct);
-          document.getElementById("stat-best").textContent = rk ? rk : "PCA";
-          document.getElementById("stat-best-sub").textContent = fmtDate(best.ts || Date.now());
+          document.getElementById("stat-best").textContent = (best.rarity_key || "—");
+          document.getElementById("stat-best-sub").textContent =
+            `${best.pack_key || "—"} · ct ${best.cardTypeIndex} · ${fmtDate(best.ts || Date.now())}`;
         } else {
           document.getElementById("stat-best").textContent = "—";
           document.getElementById("stat-best-sub").textContent = "—";
         }
 
         // Group stacks
-        let stacks = groupByCardType(items);
+        let stacks = groupByStack(items);
         document.getElementById("stat-unique").textContent = String(stacks.length);
 
         // Search
         if (search){
           stacks = stacks.filter(s => {
             const hay = [
+              s.pack_key,
               String(s.cardTypeIndex),
               (s.name || "").toLowerCase(),
-              (s.rarityKey || "").toLowerCase(),
-              (s.rarityLabel || "").toLowerCase(),
+              (s.rarity_key || "").toLowerCase(),
               String(s.price || 0),
               "owned " + String(s.owned),
-              (HIDDEN_SET.has(s.cardTypeIndex) ? "pca" : "")
             ].join(" ");
             return hay.includes(search);
           });
@@ -888,17 +959,17 @@
 
         // Sort
         stacks.sort((a,b) => {
-          const ra = rarityRank(a.rarityKey);
-          const rb = rarityRank(b.rarityKey);
+          const ra = rarityRank(a.rarity_key);
+          const rb = rarityRank(b.rarity_key);
 
-          if (sort === "rarity_desc") return rb - ra;
-          if (sort === "rarity_asc") return ra - rb;
+          if (sort === "rarity_desc") return (rb - ra) || (b.price - a.price) || (b.owned - a.owned);
+          if (sort === "rarity_asc") return (ra - rb) || (b.price - a.price) || (b.owned - a.owned);
 
-          if (sort === "owned_desc") return (b.owned - a.owned) || (rb - ra);
-          if (sort === "owned_asc") return (a.owned - b.owned) || (rb - ra);
+          if (sort === "owned_desc") return (b.owned - a.owned) || (rb - ra) || (b.price - a.price);
+          if (sort === "owned_asc") return (a.owned - b.owned) || (rb - ra) || (b.price - a.price);
 
-          if (sort === "price_desc") return (b.price - a.price) || (rb - ra);
-          if (sort === "price_asc") return (a.price - b.price) || (rb - ra);
+          if (sort === "price_desc") return (b.price - a.price) || (rb - ra) || (b.owned - a.owned);
+          if (sort === "price_asc") return (a.price - b.price) || (rb - ra) || (b.owned - a.owned);
 
           if (sort === "index_desc") return b.cardTypeIndex - a.cardTypeIndex;
           return a.cardTypeIndex - b.cardTypeIndex;
@@ -936,17 +1007,24 @@
           left.style.minWidth = "0";
           left.innerHTML = `
             <div class="name">${escapeHtml(s.name)}</div>
-            <div class="ct">cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"} · ${s.lastTs ? fmtDate(s.lastTs) : "—"}</div>
+            <div class="ct">pack: ${escapeHtml(s.pack_key)} · cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"} · ${s.lastTs ? fmtDate(s.lastTs) : "—"}</div>
             <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
           `;
 
           const badges = document.createElement("div");
           badges.className = "badges";
 
-          if (s.rarityKey){
+          // Pack badge
+          const packTag = document.createElement("div");
+          packTag.className = "tag pack";
+          packTag.textContent = s.pack_key;
+          badges.appendChild(packTag);
+
+          // Rarity badge
+          if (s.rarity_key){
             const tag = document.createElement("div");
-            tag.className = "tag " + rarityClass(s.rarityKey);
-            tag.textContent = s.rarityLabel;
+            tag.className = "tag " + rarityClass(s.rarity_key);
+            tag.textContent = s.rarity_key;
             badges.appendChild(tag);
           }
 
@@ -957,7 +1035,7 @@
           owned.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            setCtInUrl(s.cardTypeIndex);
+            setPackCtInUrl(s.pack_key, s.cardTypeIndex);
           });
 
           badges.appendChild(owned);
@@ -971,9 +1049,9 @@
           card.addEventListener("click", () => {
             openModal({
               img: s.img,
-              name: s.name + " (ct " + s.cardTypeIndex + ")",
-              rarity: s.rarityLabel,
-              price: s.price
+              name: `${s.name} (${s.pack_key} · ct ${s.cardTypeIndex})`,
+              rarity: s.rarity_key || "",
+              price: s.price || 0
             });
           });
 
@@ -983,25 +1061,18 @@
         // Filter pill UI
         const pill = document.getElementById("filter-pill");
         const clearBtn = document.getElementById("clear-filter");
-        if (ctFilter !== null){
-          const cat = catalogForCt(ctFilter);
+
+        const activePack = packFilterFromUrl;
+        const activeCt = ctFilter;
+
+        if (activePack || activeCt !== null){
           pill.style.display = "inline-flex";
-          pill.textContent = cat ? `Filter: ct=${ctFilter} · ${cat.name}` : `Filter: ct=${ctFilter}`;
+          pill.textContent = `Filter: ${activePack ? ("pack=" + activePack) : ""}${activePack && activeCt !== null ? " · " : ""}${activeCt !== null ? ("ct=" + activeCt) : ""}`;
           clearBtn.style.display = "inline-flex";
         } else {
           pill.style.display = "none";
           clearBtn.style.display = "none";
         }
-      }
-
-      function escapeHtml(s){
-        return String(s || "").replace(/[&<>"']/g, (c) => ({
-          "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
-        }[c]));
-      }
-
-      function escapeAttr(s){
-        return String(s || "").replace(/"/g, "&quot;");
       }
 
       /********************
@@ -1023,62 +1094,18 @@
       function resetLocalData(){
         localStorage.removeItem(VS_COLLECTION_KEY);
         closeModal();
-        // si on est en local: refresh
         if (SOURCE === "local"){
           CARDS = normalizeFromLocal(getLocalCollection());
           render();
         }
       }
 
-      function setSourceChip(){
-        const hint = document.getElementById("hint");
-        hint.innerHTML = SOURCE === "db"
-          ? `✅ Source : <b>Supabase</b> (user_cards).`
-          : `ℹ️ Source : <b>localStorage</b> (démo). Connecte-toi pour voir ta vraie collection.`;
-      }
-
       /********************
-       * Init (base)
+       * Auth UI
        ********************/
-      document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("back-packs").addEventListener("click", () => {
-          window.location.href = "index.html";
-        });
-        document.getElementById("clear-filter").addEventListener("click", () => {
-          clearCtInUrl();
-        });
-        document.getElementById("export-json").addEventListener("click", exportJson);
-        document.getElementById("reset-data").addEventListener("click", resetLocalData);
-
-        document.getElementById("modal-close").addEventListener("click", closeModal);
-        document.getElementById("modal").addEventListener("click", (e) => {
-          if (e.target.id === "modal") closeModal();
-        });
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") closeModal();
-        });
-
-        document.getElementById("search").addEventListener("input", render);
-        document.getElementById("sort").addEventListener("change", render);
-
-        // Fallback initial: local
-        SOURCE = "local";
-        CARDS = normalizeFromLocal(getLocalCollection());
-        setSourceChip();
-        render();
-      });
-    </script>
-
-    <!-- ✅ AUTH + DB read (Supabase) -->
-    <script type="module">
-      import { supabase } from "./js/supabaseClient.js";
-
       const loginBtn  = document.getElementById("vs-login-btn");
       const logoutBtn = document.getElementById("vs-logout-btn");
       const emailEl   = document.getElementById("vs-user-email");
-
-      // === OPTIONAL: upload local -> db once (désactivé) ===
-      const ENABLE_LOCAL_TO_DB_MIGRATION = false;
 
       function setAuthed(label){
         if (emailEl){
@@ -1111,109 +1138,82 @@
         setAuthed(label);
       }
 
-      async function fetchDbCards(){
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) return null;
-
-        // On charge tout (MVP). Si tu veux pagination après, je te le fais.
-        const { data, error } = await supabase
-          .from("user_cards")
-          .select("id, token_id, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
-          .order("opened_at", { ascending:false })
-          .limit(5000);
-
-        if (error) throw error;
-        return data || [];
-      }
-
-      async function maybeMigrateLocalToDb(){
-        if (!ENABLE_LOCAL_TO_DB_MIGRATION) return;
-
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) return;
-
-        const localRaw = localStorage.getItem("vaultspin_collection_v1");
-        if (!localRaw) return;
-
-        let local = [];
-        try{ local = JSON.parse(localRaw || "[]"); }catch{ local = []; }
-        if (!Array.isArray(local) || !local.length) return;
-
-        // Upload best-effort: on n'essaie pas de dédoublonner dans ce MVP
-        // (en prod: on mettrait un unique (user_id, token_id) ou (user_id, opened_at, card_type_index))
-        const rows = local.slice(0, 2000).map(x => ({
-          user_id: session.user.id,
-          token_id: x.tokenId ?? null,
-          card_type_index: Number(x.cardTypeIndex ?? -1),
-          rarity_key: x.rarityKey || null,
-          image_url: x.img || null,
-          card_name: x.name || null,
-          estimated_value_eur: Number(x.priceEur ?? 0) || 0,
-          opened_at: x.ts ? new Date(x.ts).toISOString() : new Date().toISOString()
-        })).filter(r => Number.isFinite(r.card_type_index) && r.card_type_index >= 0);
-
-        if (!rows.length) return;
-
-        const { error } = await supabase.from("user_cards").insert(rows);
-        if (!error){
-          // Optionnel: clear local pour éviter double source
-          // localStorage.removeItem("vaultspin_collection_v1");
-        }
-      }
-
       async function refreshFromDb(){
         const rows = await fetchDbCards();
         if (!rows) return;
 
-        // bascule DB-first (variables globales du script non-module)
-        window.SOURCE = "db";
-        window.CARDS = window.normalizeFromDb(rows);
-        window.setSourceChip();
-        window.render();
+        SOURCE = "db";
+        CARDS = normalizeFromDb(rows);
+        setSourceChip();
+        render();
       }
 
-      // INIT AUTH STATE
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user){
-        await setAuthedFromSession(session);
-        await maybeMigrateLocalToDb();
-        await refreshFromDb();
-      } else {
-        setNotAuthed();
-      }
+      /********************
+       * INIT
+       ********************/
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Nav
+        document.getElementById("back-packs").addEventListener("click", () => {
+          window.location.href = "index.html";
+        });
+        document.getElementById("clear-filter").addEventListener("click", () => {
+          clearFilterInUrl();
+        });
 
-      // React to auth changes
-      supabase.auth.onAuthStateChange(async (_event, newSession) => {
-        if (newSession?.user){
-          await setAuthedFromSession(newSession);
-          await maybeMigrateLocalToDb();
+        // Actions
+        document.getElementById("export-json").addEventListener("click", exportJson);
+        document.getElementById("reset-data").addEventListener("click", resetLocalData);
+
+        // Modal
+        document.getElementById("modal-close").addEventListener("click", closeModal);
+        document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+        // Filters
+        document.getElementById("search").addEventListener("input", render);
+        document.getElementById("sort").addEventListener("change", render);
+        document.getElementById("pack").addEventListener("change", render);
+        document.getElementById("rarity").addEventListener("change", render);
+
+        // If URL has pack/ct, reflect it in dropdown pack (nice UX)
+        const urlF = getFiltersFromUrl();
+        if (urlF.pack){
+          document.getElementById("pack").value = urlF.pack;
+        }
+
+        // Fallback initial: local
+        SOURCE = "local";
+        CARDS = normalizeFromLocal(getLocalCollection());
+        setSourceChip();
+        render();
+
+        // Auth state initial
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user){
+          await setAuthedFromSession(session);
           await refreshFromDb();
         } else {
           setNotAuthed();
-          // back to local fallback
-          window.SOURCE = "local";
-          window.CARDS = window.normalizeFromLocal(window.getLocalCollection());
-          window.setSourceChip();
-          window.render();
         }
-      });
 
-      logoutBtn?.addEventListener("click", async () => {
-        await supabase.auth.signOut();
-      });
-    </script>
+        // React to auth changes
+        supabase.auth.onAuthStateChange(async (_event, newSession) => {
+          if (newSession?.user){
+            await setAuthedFromSession(newSession);
+            await refreshFromDb();
+          } else {
+            setNotAuthed();
+            SOURCE = "local";
+            CARDS = normalizeFromLocal(getLocalCollection());
+            setSourceChip();
+            render();
+          }
+        });
 
-    <!-- Expose helpers to module scope (small bridge) -->
-    <script>
-      // Bridge: rendre accessibles au module (sans re-écrire tout en module)
-      // (Ces noms existent déjà dans le script principal)
-      window.getLocalCollection = window.getLocalCollection || (function(){
-        try { return JSON.parse(localStorage.getItem("vaultspin_collection_v1") || "[]"); }
-        catch { return []; }
+        logoutBtn?.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+        });
       });
-
-      // expose functions/vars expected by module
-      // NOTE: normalizeFromDb / normalizeFromLocal / render / setSourceChip sont déclarées dans le <script> principal
     </script>
   </body>
 </html>
