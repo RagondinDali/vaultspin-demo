@@ -14,6 +14,7 @@
   <link rel="preload" as="image" href="images/phyllali.png">
 
   <style>
+    html, body { overflow-x:hidden; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* ✅ FIX: empêcher tout scroll horizontal */
@@ -24,14 +25,16 @@
     }
 
     body{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:radial-gradient(circle at top,#101827,#020617 60%);
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      color:#e5e7eb;
-    }
+  min-height:100vh;
+  display:flex;
+  align-items:flex-start;      /* ✅ */
+  justify-content:flex-start;  /* ✅ */
+  background:radial-gradient(circle at top,#101827,#020617 60%);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#e5e7eb;
+  overflow-x:hidden;           /* sécurité */
+}
+
 
     .page{
       width:100%;
@@ -49,10 +52,13 @@
         gap:24px;
         align-items:flex-start;
       }
-      .live-panel{ flex:0 0 280px; }
-      .left-panel{ flex:1.1; }
-      .right-panel{ flex:1; }
-    }
+      .live-panel{
+  flex:0 0 280px;
+  max-width:280px;
+  min-width:280px;
+  box-sizing:border-box;
+}
+
 
     .left-panel,.right-panel{
       background:radial-gradient(circle at top left,#020617,#020617 70%);
@@ -2288,4 +2294,5 @@
 
 </body>
 </html>
+
 
