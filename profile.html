@@ -17,14 +17,35 @@
     #msg{margin-top:14px;min-height:20px}
     .hint{font-size:12px;opacity:.8;margin-top:10px}
     code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:8px}
-    .toggle{
-      display:flex;align-items:center;gap:10px;margin-top:14px;
-      padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.18)
+
+    /* ✅ NEW: public toggle row (keeps your minimalist style) */
+    .toggle-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:14px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      flex-wrap:wrap;
     }
-    .toggle input{transform:scale(1.15)}
-    a{color:#b9a7ff}
-    a:hover{color:#d2c7ff}
+    .toggle-row input[type="checkbox"]{
+      width:auto;
+      margin:0;
+      transform: scale(1.1);
+      accent-color:#6c4cff;
+    }
+    .toggle-row span{
+      font-size:13px;
+      opacity:.95;
+      line-height:1.35;
+    }
+    .toggle-row a{
+      color:#a5b4fc;
+      text-decoration:underline;
+    }
+    .toggle-row a:hover{ color:#c4b5fd; }
   </style>
 </head>
 <body>
@@ -41,17 +62,15 @@
     <label>Nom affiché (optionnel)</label>
     <input id="displayName" placeholder="ex: Antoine" autocomplete="off" />
 
-    <div class="toggle">
+    <!-- ✅ NEW: is_public toggle (used by profile.js) -->
+    <div class="toggle-row">
       <input type="checkbox" id="isPublic" />
-      <div>
-        <div style="font-weight:800;letter-spacing:.06em;text-transform:uppercase;">Profil public</div>
-        <div class="hint" style="margin-top:4px;">
-          Si activé, ton profil est visible via <code>player.html?u=</code>.
-          <span id="publicLinkWrap" style="display:none;">
-            · <a id="publicLink" href="#" target="_blank" rel="noopener">Voir mon profil public</a>
-          </span>
-        </div>
-      </div>
+      <span>
+        Profil public (cartes visibles via <code>player.html</code>)
+        <span id="publicLinkWrap" style="display:none;">
+          · <a id="publicLink" href="#" target="_blank" rel="noopener">Voir</a>
+        </span>
+      </span>
     </div>
 
     <div class="row">
@@ -63,108 +82,6 @@
     <div id="msg"></div>
   </div>
 
-  <script type="module">
-    import { supabase } from "./js/supabaseClient.js";
-
-    const $ = (id) => document.getElementById(id);
-
-    function setMsg(t){ $("msg").textContent = t || ""; }
-
-    function isValidUsername(u){
-      // 3–20, lettres/chiffres/_ uniquement
-      return /^[a-zA-Z0-9_]{3,20}$/.test(u);
-    }
-
-    async function requireAuth(){
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user){
-        const next = encodeURIComponent("profile.html");
-        window.location.href = `login.html?next=${next}`;
-        return null;
-      }
-      return session;
-    }
-
-    async function fetchProfile(userId){
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username, display_name, is_public")
-        .eq("id", userId)
-        .maybeSingle();
-      if (error) throw error;
-      return data || null;
-    }
-
-    async function updateProfile(userId, payload){
-      const { error } = await supabase
-        .from("profiles")
-        .update({ ...payload, updated_at: new Date().toISOString() })
-        .eq("id", userId);
-      if (error) throw error;
-    }
-
-    function setPublicLink(userId, isPublic){
-      const a = $("publicLink");
-      a.href = `player.html?u=${encodeURIComponent(userId)}`;
-      $("publicLinkWrap").style.display = isPublic ? "inline" : "none";
-    }
-
-    const session = await requireAuth();
-    if (!session) { /* redirected */ }
-    else {
-      try{
-        const meId = session.user.id;
-        const prof = await fetchProfile(meId);
-
-        $("username").value = prof?.username || "";
-        $("displayName").value = prof?.display_name || "";
-        $("isPublic").checked = !!prof?.is_public;
-        setPublicLink(meId, !!prof?.is_public);
-
-        $("isPublic").addEventListener("change", () => {
-          setPublicLink(meId, !!$("isPublic").checked);
-        });
-
-        $("btnSave").addEventListener("click", async () => {
-          try{
-            const username = ($("username").value || "").trim();
-            const displayName = ($("displayName").value || "").trim();
-            const isPublic = !!$("isPublic").checked;
-
-            if (!isValidUsername(username)){
-              setMsg("❌ Username invalide. Exemple: ragondin_42 (3–20, lettres/chiffres/_).");
-              return;
-            }
-
-            setMsg("Saving...");
-            await updateProfile(meId, {
-              username,
-              display_name: displayName || null,
-              is_public: isPublic
-            });
-
-            setMsg("✅ Enregistré.");
-          }catch(e){
-            console.error(e);
-            setMsg("❌ " + (e?.message || "Erreur sauvegarde"));
-          }
-        });
-
-        $("btnLogout").addEventListener("click", async () => {
-          await supabase.auth.signOut();
-          window.location.href = "index.html";
-        });
-
-        supabase.auth.onAuthStateChange(async (_event, newSession) => {
-          if (!newSession?.user){
-            window.location.href = "login.html";
-          }
-        });
-      }catch(e){
-        console.error(e);
-        setMsg("❌ " + (e?.message || "Erreur chargement profil"));
-      }
-    }
-  </script>
+  <script type="module" src="./js/profile.js"></script>
 </body>
 </html>
