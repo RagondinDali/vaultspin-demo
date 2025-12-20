@@ -265,6 +265,8 @@
           Points : +25 par booster ouvert. Booster gratuit : 2500 points.
           <br />
           Récompenses top 10 : <b>1000€ → 100€</b> (décroissance de 100€/rang).
+          <br />
+          Packs supportés : <b>PLANT / WATER / FIRE</b>.
         </div>
       </div>
 
@@ -312,6 +314,9 @@
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
 
+    /********************
+     * Month helpers
+     ********************/
     function monthKey(d = new Date()){
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
@@ -323,6 +328,24 @@
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
       return `${y}-${m}-01`;
+    }
+
+    /********************
+     * Pack filter (adapté aux derniers changements PLANT/WATER/FIRE)
+     * - Si pack n'est pas fourni => ALL
+     ********************/
+    function getPackFromUrl(){
+      const p = new URLSearchParams(window.location.search);
+      const raw = (p.get("pack") || "").toUpperCase();
+      if (raw === "PLANT" || raw === "WATER" || raw === "FIRE") return raw;
+      return "ALL";
+    }
+
+    function setPackInUrl(pack){
+      const url = new URL(window.location.href);
+      if (!pack || pack === "ALL") url.searchParams.delete("pack");
+      else url.searchParams.set("pack", pack);
+      window.location.href = url.toString();
     }
 
     function fmtPts(n){ return (Number(n)||0).toLocaleString("fr-FR"); }
@@ -344,10 +367,33 @@
       return session?.user || null;
     }
 
-    async function fetchMyMonthlyPoints(month){
+    /********************
+     * Data fetch
+     * NOTE: on suppose user_points_monthly a potentiellement une colonne pack_key (nullable).
+     * - Si elle n'existe PAS, les queries avec pack_key échoueront -> on fallback automatiquement.
+     ********************/
+    async function fetchMyMonthlyPoints(month, pack){
       const me = await fetchMe();
       if (!me?.id) return 0;
 
+      // tentative avec pack_key si pack != ALL
+      if (pack && pack !== "ALL"){
+        try{
+          const { data, error } = await supabase
+            .from("user_points_monthly")
+            .select("points")
+            .eq("user_id", me.id)
+            .eq("month", month)
+            .eq("pack_key", pack)
+            .maybeSingle();
+          if (error) throw error;
+          return Number(data?.points || 0);
+        } catch (_e){
+          // fallback si la colonne n'existe pas
+        }
+      }
+
+      // fallback "ALL" (ou colonne pack absente)
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("points")
@@ -359,8 +405,33 @@
       return Number(data?.points || 0);
     }
 
-    async function fetchLeaderboard(month){
-      // ✅ join profiles robuste (pas de dépendance de nom FK)
+    async function fetchLeaderboard(month, pack){
+      // pack != ALL => on essaie de filtrer par pack_key
+      if (pack && pack !== "ALL"){
+        try{
+          const { data, error } = await supabase
+            .from("user_points_monthly")
+            .select("user_id, month, points, pack_key, profiles(display_name, username, email)")
+            .eq("month", month)
+            .eq("pack_key", pack)
+            .order("points", { ascending:false })
+            .limit(100);
+
+          if (error) throw error;
+
+          const rows = (data || []).map(x => ({
+            user_id: x.user_id,
+            points: Number(x.points || 0),
+            name: (x.profiles?.display_name || x.profiles?.username || x.profiles?.email || "Player")
+          }));
+
+          return rows;
+        } catch (_e){
+          // fallback si pack_key n'existe pas en DB
+        }
+      }
+
+      // fallback "ALL" (ou colonne pack absente)
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("user_id, month, points, profiles(display_name, username, email)")
@@ -379,11 +450,29 @@
       return rows;
     }
 
-    async function computeMyRank(month, myPoints){
+    async function computeMyRank(month, myPoints, pack){
       // Rank global = count(users with points > myPoints) + 1
       // (policy points_public_read = true)
       if (!myPoints) return null;
 
+      // tentative pack
+      if (pack && pack !== "ALL"){
+        try{
+          const { count, error } = await supabase
+            .from("user_points_monthly")
+            .select("user_id", { count: "exact", head: true })
+            .eq("month", month)
+            .eq("pack_key", pack)
+            .gt("points", myPoints);
+
+          if (error) throw error;
+          return Number(count || 0) + 1;
+        } catch (_e){
+          // fallback si pack_key n'existe pas
+        }
+      }
+
+      // fallback ALL
       const { count, error } = await supabase
         .from("user_points_monthly")
         .select("user_id", { count: "exact", head: true })
@@ -402,9 +491,18 @@
       tbody.appendChild(d);
     }
 
+    function setPills(monthLabel, pack){
+      const monthPill = document.getElementById("month-pill");
+      const packLabel = (pack && pack !== "ALL") ? (" · Pack: " + pack) : "";
+      monthPill.textContent = "Mois : " + monthLabel + packLabel;
+    }
+
     async function render(){
       const month = monthStartISO(new Date());
-      document.getElementById("month-pill").textContent = "Mois : " + monthKey();
+      const mk = monthKey(new Date());
+
+      const pack = getPackFromUrl(); // ALL|PLANT|WATER|FIRE
+      setPills(mk, pack);
 
       const resetBtn = document.getElementById("reset-month");
       if (resetBtn) resetBtn.disabled = true; // UI-only en MVP
@@ -412,22 +510,18 @@
       const me = await fetchMe();
       const meId = me?.id || null;
 
-      // Leaderboard top 100
-      const rows = await fetchLeaderboard(month);
+      // Leaderboard top 100 (pack-aware si possible)
+      const rows = await fetchLeaderboard(month, pack);
 
-      // ✅ Mes points: même si je ne suis pas dans le top 100
-      const myPoints = meId ? await fetchMyMonthlyPoints(month) : 0;
-
-      // ✅ Mon rank global: même si je ne suis pas dans le top 100
-      const myRank = meId ? await computeMyRank(month, myPoints) : null;
+      // Mes points + rank (pack-aware si possible)
+      const myPoints = meId ? await fetchMyMonthlyPoints(month, pack) : 0;
+      const myRank = meId ? await computeMyRank(month, myPoints, pack) : null;
 
       document.getElementById("stat-players").textContent = String(rows.length);
       document.getElementById("stat-points").textContent = fmtPts(myPoints);
 
       // me pill
       if (meId){
-        // si je suis dans le top 100, on prend le nom depuis le leaderboard,
-        // sinon on prend mon profile
         const inTop = rows.find(r => r.user_id === meId);
         if (inTop){
           document.getElementById("me-pill").textContent = `${inTop.name} · ${fmtPts(myPoints)} pts`;
@@ -437,6 +531,7 @@
             .select("display_name, username, email")
             .eq("id", meId)
             .maybeSingle();
+
           const name = (prof?.display_name || prof?.username || prof?.email || me.email || "Moi");
           document.getElementById("me-pill").textContent = `${name} · ${fmtPts(myPoints)} pts`;
         }
@@ -495,6 +590,9 @@
       document.getElementById("reset-month").addEventListener("click", () => {
         alert("Reset mois : en prod => cron/admin. Ici on ne reset pas côté backend.");
       });
+
+      // Bonus: raccourci pack via console si besoin:
+      // setPackInUrl("PLANT"|"WATER"|"FIRE"|"ALL")
 
       render().catch(err => {
         console.error(err);
