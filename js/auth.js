@@ -27,26 +27,31 @@ function setMsg(text = "", ok = true) {
 }
 
 function setLoading(isLoading) {
-  const buttons = [
-    ui.btnSignUp(),
-    ui.btnSignIn(),
-    ui.btnResend(),
-    ui.btnSignOut()
-  ].filter(Boolean);
-
+  const buttons = [ui.btnSignUp(), ui.btnSignIn(), ui.btnResend(), ui.btnSignOut()].filter(Boolean);
   buttons.forEach((b) => (b.disabled = !!isLoading));
   if (isLoading) setMsg("⏳ Traitement…", true);
 }
 
-function getNextUrl(defaultNext = "./index.html") {
+function safeNextUrl(defaultNext = "./index.html") {
   const p = new URLSearchParams(window.location.search);
-  return p.get("next") || defaultNext;
+  const raw = p.get("next") || defaultNext;
+
+  // ✅ empêche les redirects vers un autre domaine (open redirect)
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin) return defaultNext;
+    // On ne garde que path+query+hash, pour rester relatif au site
+    return url.pathname + url.search + url.hash;
+  } catch {
+    return defaultNext;
+  }
 }
 
 /* ------------------------ Profile gating (VaultSpin) ------------------------ */
 async function ensureProfileAndRoute(user, next = "./index.html") {
-  if (!user?.id) throw new Error("Utilisateur introuvable (session invalide).");
+  if (!user?.id) throw new Error("User missing id");
 
+  // 1) vérifier si profil existe
   const { data: profile, error: selErr } = await supabase
     .from("profiles")
     .select("id, username")
@@ -55,27 +60,31 @@ async function ensureProfileAndRoute(user, next = "./index.html") {
 
   if (selErr) throw selErr;
 
+  // 2) si pas de profil : on le crée (upsert pour éviter collision)
   if (!profile) {
-    const { error: insErr } = await supabase.from("profiles").insert({
+    const payload = {
       id: user.id,
-      email: user.email,
+      email: user.email || null,
       username: null,
       display_name: null,
       avatar_url: null,
       is_public: true,
-      updated_at: new Date().toISOString(),
-    });
-    if (insErr) throw insErr;
+    };
+
+    const { error: upErr } = await supabase.from("profiles").upsert(payload, { onConflict: "id" });
+    if (upErr) throw upErr;
 
     window.location.href = `./profile.html?next=${encodeURIComponent(next)}`;
     return;
   }
 
+  // 3) si username manquant : forcer profile page
   if (!profile.username) {
     window.location.href = `./profile.html?next=${encodeURIComponent(next)}`;
     return;
   }
 
+  // 4) ok => go
   window.location.href = next;
 }
 
@@ -86,11 +95,8 @@ async function signIn(email, password, next) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
-    const user = data?.user || data?.session?.user;
-    if (!user) throw new Error("Connexion OK, mais user manquant dans la réponse.");
-
     setMsg("✅ Connecté. Vérification du profil…", true);
-    await ensureProfileAndRoute(user, next);
+    await ensureProfileAndRoute(data.user, next);
   } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur de connexion", false);
@@ -105,17 +111,14 @@ async function signUp(email, password, next) {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
 
-    // Si email confirmation activée => pas de session directe
-    if (!data?.session) {
+    // Email confirmation active => session null
+    if (!data.session) {
       setMsg("✅ Compte créé. Vérifie tes emails puis reconnecte-toi.", true);
       return;
     }
 
-    const user = data?.user || data?.session?.user;
-    if (!user) throw new Error("Inscription OK, mais user manquant dans la réponse.");
-
     setMsg("✅ Compte créé. Vérification du profil…", true);
-    await ensureProfileAndRoute(user, next);
+    await ensureProfileAndRoute(data.user, next);
   } catch (err) {
     console.error(err);
     setMsg(err?.message || "Erreur d'inscription", false);
@@ -147,11 +150,6 @@ async function signOut() {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-
-    // UX: reset champs
-    if (ui.email()) ui.email().value = "";
-    if (ui.password()) ui.password().value = "";
-
     setMsg("👋 Déconnecté.", true);
   } catch (err) {
     console.error(err);
@@ -182,7 +180,7 @@ function renderSession(session) {
 
 /* ----------------------------- Wire events ----------------------------- */
 async function wireUI() {
-  const next = getNextUrl("./index.html");
+  const next = safeNextUrl("./index.html");
 
   ui.btnSignIn()?.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -222,7 +220,6 @@ async function wireUI() {
   if (data.session?.user) {
     setMsg("Session active. Vérification du profil…", true);
     await ensureProfileAndRoute(data.session.user, next);
-    return;
   }
 
   // Listener global : si la session change, on met à jour l'UI
