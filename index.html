@@ -2047,6 +2047,7 @@
         if (window.vsSaveCardToDb){
           const price = b.prices[winningCt] ?? 0;
           await window.vsSaveCardToDb({
+            pack_key: b.key, // ✅ OBLIGATOIRE (plant | water | fire)
             token_id: tokenId,
             card_type_index: winningCt,
             rarity_key: rarityKey,
@@ -2393,6 +2394,7 @@
 
       const payload = {
         user_id: session.user.id,
+        pack_key: card.pack_key ?? "plant", // ✅ ajouté (fallback safe)
         token_id: card.token_id ?? null,
         card_type_index: card.card_type_index,
         rarity_key: card.rarity_key ?? null,
@@ -2590,3 +2592,4 @@
 
 </body>
 </html>
+
