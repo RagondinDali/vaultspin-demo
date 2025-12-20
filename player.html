@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>VaultSpin – Profil joueur</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{
+      min-height:100vh;
+      background: radial-gradient(circle at top, #101827, #020617 60%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:#e5e7eb;
+    }
+    .wrap{
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      padding:90px 16px 50px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    /* Top bar */
+    .top-bar{
+      position:fixed;
+      top:16px;
+      left:50%;
+      transform:translateX(-50%);
+      width:100%;
+      max-width:1200px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:0 16px;
+      z-index:50;
+      pointer-events:none;
+    }
+    .top-left,.top-right{ pointer-events:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .top-logo{ font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9ca3af; }
+    .top-link{
+      font-size:12px;
+      padding:6px 10px;
+      height:34px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.45);
+      color:#e5e7eb;
+      text-decoration:none;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      background:rgba(15,23,42,.85);
+      cursor:pointer;
+    }
+    .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
+
+    .panel{
+      background: radial-gradient(circle at top left, #020617, #020617 70%);
+      border-radius:26px;
+      border: 1px solid rgba(148,163,184,.20);
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    /* Header */
+    .profile-head{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+    .head-left{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      min-width:0;
+    }
+    .avatar{
+      width:54px; height:54px;
+      border-radius:16px;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(15,23,42,.45);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      letter-spacing:.08em;
+      color:#f9fafb;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .head-meta{ min-width:0; display:flex; flex-direction:column; gap:4px; }
+    h1{
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:#f9fafb;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:min(760px, 82vw);
+    }
+    .sub{
+      font-size:13px;
+      color:#9ca3af;
+      line-height:1.4;
+      max-width:820px;
+    }
+    .pill{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(15,23,42,.55);
+      padding:8px 12px;
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#e5e7eb;
+      cursor:default;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      height:34px;
+      white-space:nowrap;
+    }
+    .pill strong{ color:#f9fafb; }
+
+    /* Stats */
+    .stats-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .stat{
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,.14);
+      background: rgba(2,6,23,.28);
+      padding:12px;
+      min-width:220px;
+      flex:1;
+    }
+    .stat .k{ font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#9ca3af; }
+    .stat .v{ margin-top:6px; font-size:18px; font-weight:900; color:#f9fafb; }
+    .stat .s{ margin-top:3px; font-size:12px; color:#9ca3af; }
+
+    /* Collection list (stacks) */
+    .grid{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .card{
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(15,23,42,.28);
+      padding:10px;
+      display:flex;
+      flex-direction:row;
+      gap:12px;
+      align-items:stretch;
+      transition: transform .15s ease-out, box-shadow .15s ease-out, border-color .15s ease-out;
+      cursor:pointer;
+      user-select:none;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(165,180,252,.55);
+      box-shadow: 0 0 16px rgba(129,140,248,.18);
+    }
+    .thumb{
+      width:92px;
+      flex:0 0 auto;
+      aspect-ratio:3/4;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(2,6,23,.55);
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      object-position:center;
+      display:block;
+      padding:6px;
+      background:transparent;
+    }
+    .meta{
+      flex:1;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      min-width:0;
+    }
+    .name{
+      font-size:11px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      font-weight:900;
+      color:#f9fafb;
+      line-height:1.2;
+      min-width:0;
+    }
+    .ct{
+      font-size:11px;
+      color:#9ca3af;
+      margin-top:6px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .price{
+      margin-top:6px;
+      font-size:11px;
+      color:#cbd5e1;
+      letter-spacing:.06em;
+    }
+    .badges{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-end;
+      flex:0 0 auto;
+    }
+    .tag{
+      font-size:10px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-weight:900;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.16);
+      background: rgba(2,6,23,.35);
+    }
+    .tag.epic{ color:#38bdf8; }
+    .tag.ultra{ color:#a855f7; }
+    .tag.legendary{ color:#f97316; }
+    .owned{
+      font-size:10px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(15,23,42,.35);
+      color:#e5e7eb;
+      cursor:default;
+    }
+
+    .hint{ font-size:12px; color:#9ca3af; line-height:1.45; }
+
+    /* Modal preview */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:80;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      padding:16px;
+    }
+    .modal.on{ display:flex; }
+    .modal-card{
+      width: min(430px, 92vw);
+      border-radius:24px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(2,6,23,.86);
+      box-shadow: 0 0 34px rgba(0,0,0,.5);
+      padding:14px;
+      position:relative;
+      animation: popIn 140ms ease-out;
+    }
+    @keyframes popIn{ from{ transform:scale(.985); opacity:0; } to{ transform:scale(1); opacity:1; } }
+    .modal-img{
+      width:100%;
+      aspect-ratio:3/4;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(2,6,23,.55);
+    }
+    .modal-img img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      object-position:center;
+      display:block;
+      padding:10px;
+      background:transparent;
+    }
+    .modal-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-top:10px;
+    }
+    .modal-name{
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:900;
+      color:#e5e7eb;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .modal-tag{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      color:#e5e7eb;
+      white-space:nowrap;
+    }
+    .modal-price{
+      margin-top:10px;
+      font-size:12px;
+      color:#cbd5e1;
+      letter-spacing:.08em;
+    }
+    .modal-close{
+      position:absolute;
+      right:10px;
+      top:10px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      color:#e5e7eb;
+      border-radius:999px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .modal-close:hover{
+      border-color: rgba(165,180,252,.7);
+      box-shadow: 0 0 10px rgba(129,140,248,.25);
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.40);
+      padding:8px 12px;
+      font-size:11px;
+      color:#e5e7eb;
+    }
+    .chip a{ color:#a5b4fc; text-decoration:underline; }
+    .chip a:hover{ color:#c4b5fd; }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    @media (max-width: 520px){
+      .card{ gap:10px; }
+      .thumb{ width:84px; }
+      .ct{ white-space:normal; }
+      .stat{ min-width: 48%; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-left">
+      <div class="top-logo">VAULTSPIN · PLAYER</div>
+    </div>
+    <div class="top-right">
+      <a class="top-link" href="index.html">Packs</a>
+      <a class="top-link" href="leaderboard.html">Leaderboard</a>
+      <a class="top-link" href="collection.html">Ma collection</a>
+
+      <span id="vs-user-email" class="top-link" style="display:none; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
+      <a id="vs-login-btn" class="top-link" href="login.html">Connexion</a>
+      <button id="vs-logout-btn" class="top-link" style="display:none;">Déconnexion</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-img">
+        <img id="modal-img" src="" alt="Preview" />
+      </div>
+      <div class="modal-meta">
+        <div class="modal-name" id="modal-name">—</div>
+        <div class="modal-tag" id="modal-tag" style="display:none;">—</div>
+      </div>
+      <div class="modal-price" id="modal-price">Valeur estimée : —</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <div class="profile-head">
+        <div class="head-left">
+          <div class="avatar" id="avatar">VS</div>
+          <div class="head-meta">
+            <h1 id="title">Profil</h1>
+            <div class="sub" id="subtitle">—</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="pill" id="pill-rank">Rank: <strong id="rank">—</strong></div>
+          <div class="pill" id="pill-points">Points (mois): <strong id="points">0</strong></div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="k">Total items</div>
+          <div class="v" id="stat-total">0</div>
+          <div class="s">NFTs enregistrés</div>
+        </div>
+        <div class="stat">
+          <div class="k">Unique types</div>
+          <div class="v" id="stat-unique">0</div>
+          <div class="s">cardTypeIndex distincts</div>
+        </div>
+        <div class="stat">
+          <div class="k">Best pull</div>
+          <div class="v" id="stat-best">—</div>
+          <div class="s" id="stat-best-sub">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Vault value</div>
+          <div class="v" id="stat-vault">0€</div>
+          <div class="s">Somme des valeurs estimées</div>
+        </div>
+      </div>
+
+      <div class="hint" id="hint">
+        Astuce : clique sur une carte pour la voir en grand. ·
+        <a class="top-link" style="height:auto; padding:6px 10px;" href="leaderboard.html">Voir leaderboard</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="chip" id="state" style="display:none;">—</div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <script>
+    /********************
+     * Utils (UI)
+     ********************/
+    function fmtEur(n){
+      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+    function fmtDate(ts){
+      const d = new Date(ts);
+      return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+    function escapeHtml(s){
+      return String(s || "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+      }[c]));
+    }
+    function escapeAttr(s){
+      return String(s || "").replace(/"/g, "&quot;");
+    }
+
+    /********************
+     * Modal
+     ********************/
+    function openModal({ img, name, rarity, price }){
+      document.getElementById("modal-img").src = img || "";
+      document.getElementById("modal-name").textContent = name || "—";
+      const tag = document.getElementById("modal-tag");
+      if (rarity){
+        tag.style.display = "inline-flex";
+        tag.textContent = rarity;
+      } else {
+        tag.style.display = "none";
+        tag.textContent = "";
+      }
+      document.getElementById("modal-price").textContent = "Valeur estimée : " + fmtEur(price || 0);
+      const modal = document.getElementById("modal");
+      modal.classList.add("on");
+      modal.setAttribute("aria-hidden", "false");
+    }
+    function closeModal(){
+      const modal = document.getElementById("modal");
+      modal.classList.remove("on");
+      modal.setAttribute("aria-hidden", "true");
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("modal-close").addEventListener("click", closeModal);
+      document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+    });
+
+    /********************
+     * Rarity helpers (display)
+     ********************/
+    const RARITY_ORDER = ["EPIC","ULTRA","LEGENDARY"];
+    const RARITY_LABEL = { EPIC:"EPIC", ULTRA:"ULTRA", LEGENDARY:"LEGENDARY", HIDDEN:"" };
+    function rarityRank(rk){
+      if (!rk) return -1;
+      const k = String(rk).toUpperCase();
+      if (k === "HIDDEN") return -1;
+      return RARITY_ORDER.indexOf(k);
+    }
+    function rarityClass(k){
+      const kk = String(k || "").toUpperCase();
+      if (kk === "LEGENDARY") return "legendary";
+      if (kk === "ULTRA") return "ultra";
+      if (kk === "EPIC") return "epic";
+      return "";
+    }
+
+    /********************
+     * Group cards by type (stacks)
+     ********************/
+    function groupByCardType(items){
+      const map = new Map();
+      for (const x of items){
+        const ct = Number(x.cardTypeIndex ?? -1);
+        if (!Number.isFinite(ct) || ct < 0) continue;
+
+        const rk = String(x.rarityKey || "").toUpperCase();
+        const rarityLabel = (rk && rk !== "HIDDEN") ? (RARITY_LABEL[rk] || rk) : "";
+        const price = Number(x.estimated_value_eur || 0);
+
+        if (!map.has(ct)){
+          map.set(ct, {
+            cardTypeIndex: ct,
+            rarityKey: rk,
+            rarityLabel,
+            img: x.img || "",
+            name: x.name || ("Card #" + ct),
+            owned: 0,
+            lastTs: 0,
+            lastTokenId: null,
+            price
+          });
+        }
+        const g = map.get(ct);
+        g.owned += 1;
+        if (!g.img && x.img) g.img = x.img;
+        if (g.name.startsWith("Card #") && x.name) g.name = x.name;
+        if ((x.ts || 0) > g.lastTs){
+          g.lastTs = x.ts || 0;
+          g.lastTokenId = x.tokenId ?? null;
+        }
+        g.price = price; // prix = estimé par carte (on prend le dernier reçu, acceptable MVP)
+        g.rarityKey = rk;
+        g.rarityLabel = (rk && rk !== "HIDDEN") ? (RARITY_LABEL[rk] || rk) : "";
+      }
+      return Array.from(map.values());
+    }
+
+    function vaultValue(items){
+      let sum = 0;
+      for (const x of items) sum += Number(x.estimated_value_eur || 0);
+      return sum;
+    }
+
+    function bestPull(items){
+      if (!items.length) return null;
+      let best = items[0];
+      for (const c of items){
+        const aR = rarityRank(c.rarityKey);
+        const bR = rarityRank(best.rarityKey);
+        if (aR > bR) best = c;
+        else if (aR === bR){
+          const ap = Number(c.estimated_value_eur || 0);
+          const bp = Number(best.estimated_value_eur || 0);
+          if (ap > bp) best = c;
+        }
+      }
+      return best;
+    }
+
+    function setState(text, show = true){
+      const el = document.getElementById("state");
+      el.textContent = text || "";
+      el.style.display = show ? "inline-flex" : "none";
+    }
+
+    function setAvatar(label, avatarUrl){
+      const el = document.getElementById("avatar");
+      if (avatarUrl){
+        el.innerHTML = `<img src="${escapeAttr(avatarUrl)}" alt="avatar"/>`;
+        return;
+      }
+      const parts = String(label || "VS").trim().split(/\s+/).slice(0,2);
+      const initials = parts.map(p => (p[0] || "").toUpperCase()).join("") || "VS";
+      el.textContent = initials;
+    }
+
+    function renderStacks(items){
+      // Stats
+      document.getElementById("stat-total").textContent = String(items.length);
+      document.getElementById("stat-vault").textContent = vaultValue(items).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
+
+      const best = bestPull(items);
+      if (best){
+        const rk = String(best.rarityKey || "").toUpperCase();
+        document.getElementById("stat-best").textContent = (rk && rk !== "HIDDEN") ? rk : "HIDDEN";
+        document.getElementById("stat-best-sub").textContent = best.ts ? fmtDate(best.ts) : "—";
+      } else {
+        document.getElementById("stat-best").textContent = "—";
+        document.getElementById("stat-best-sub").textContent = "—";
+      }
+
+      const stacks = groupByCardType(items);
+      document.getElementById("stat-unique").textContent = String(stacks.length);
+
+      // Sort default: rarity desc then owned desc then ct asc
+      stacks.sort((a,b) => {
+        const ra = rarityRank(a.rarityKey);
+        const rb = rarityRank(b.rarityKey);
+        if (rb !== ra) return rb - ra;
+        if (b.owned !== a.owned) return b.owned - a.owned;
+        return a.cardTypeIndex - b.cardTypeIndex;
+      });
+
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+
+      if (!stacks.length){
+        const d = document.createElement("div");
+        d.className = "chip";
+        d.innerHTML = `Aucune carte à afficher.`;
+        grid.appendChild(d);
+        return;
+      }
+
+      for (const s of stacks){
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+        thumb.innerHTML = `<img src="${escapeAttr(s.img)}" alt="${escapeAttr(s.name)}"/>`;
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const left = document.createElement("div");
+        left.style.minWidth = "0";
+        left.innerHTML = `
+          <div class="name">${escapeHtml(s.name)}</div>
+          <div class="ct">cardTypeIndex: ${s.cardTypeIndex} · last: #${s.lastTokenId ?? "—"} · ${s.lastTs ? fmtDate(s.lastTs) : "—"}</div>
+          <div class="price">Valeur estimée : ${fmtEur(s.price)}</div>
+        `;
+
+        const badges = document.createElement("div");
+        badges.className = "badges";
+
+        if (s.rarityKey && String(s.rarityKey).toUpperCase() !== "HIDDEN"){
+          const tag = document.createElement("div");
+          tag.className = "tag " + rarityClass(s.rarityKey);
+          tag.textContent = s.rarityLabel;
+          badges.appendChild(tag);
+        }
+
+        const owned = document.createElement("div");
+        owned.className = "owned";
+        owned.textContent = "Owned · " + s.owned;
+        badges.appendChild(owned);
+
+        meta.appendChild(left);
+        meta.appendChild(badges);
+        card.appendChild(thumb);
+        card.appendChild(meta);
+
+        card.addEventListener("click", () => {
+          openModal({
+            img: s.img,
+            name: `${s.name} (ct ${s.cardTypeIndex})`,
+            rarity: (s.rarityLabel || ""),
+            price: s.price
+          });
+        });
+
+        grid.appendChild(card);
+      }
+    }
+  </script>
+
+  <!-- ✅ AUTH UI + ✅ DATA LOAD (profile/cards/points/rank) -->
+  <script type="module">
+    import { supabase } from "./js/supabaseClient.js";
+
+    const loginBtn = document.getElementById("vs-login-btn");
+    const logoutBtn = document.getElementById("vs-logout-btn");
+    const emailEl = document.getElementById("vs-user-email");
+
+    function setAuthed(label){
+      if (emailEl){
+        emailEl.style.display = "inline-flex";
+        emailEl.textContent = label || "Connecté";
+      }
+      if (loginBtn) loginBtn.style.display = "none";
+      if (logoutBtn) logoutBtn.style.display = "inline-flex";
+    }
+    function setNotAuthed(){
+      if (emailEl){
+        emailEl.style.display = "none";
+        emailEl.textContent = "—";
+      }
+      if (loginBtn) loginBtn.style.display = "inline-flex";
+      if (logoutBtn) logoutBtn.style.display = "none";
+    }
+
+    async function setAuthedFromSession(session){
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("username, display_name")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      const label = (!error && data)
+        ? (data.display_name || data.username || session.user.email || "Connecté")
+        : (session.user.email || "Connecté");
+
+      setAuthed(label);
+    }
+
+    function monthStartISO(d = new Date()){
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      return `${y}-${m}-01`;
+    }
+
+    function getUserIdFromUrl(){
+      const p = new URLSearchParams(window.location.search);
+      const u = p.get("u");
+      return u && u.length > 10 ? u : null;
+    }
+
+    async function fetchProfile(userId){
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, email, username, display_name, avatar_url, is_public")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw error;
+      return data || null;
+    }
+
+    async function fetchUserPointsMonth(userId, monthISO){
+      const { data, error } = await supabase
+        .from("user_points_monthly")
+        .select("points")
+        .eq("user_id", userId)
+        .eq("month", monthISO)
+        .maybeSingle();
+      if (error) throw error;
+      return Number(data?.points || 0);
+    }
+
+    async function computeRank(userId, monthISO, myPoints){
+      // Rank exact = 1 + count(points > myPoints)
+      // (si myPoints == 0 et pas de row, c'est ok => rank ~ bas, mais on affiche quand même)
+      const { count, error } = await supabase
+        .from("user_points_monthly")
+        .select("user_id", { head: true, count: "exact" })
+        .eq("month", monthISO)
+        .gt("points", myPoints);
+      if (error) throw error;
+      const above = Number(count || 0);
+      return above + 1;
+    }
+
+    async function fetchUserCards(userId){
+      const { data, error } = await supabase
+        .from("user_cards")
+        .select("id, token_id, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
+        .eq("user_id", userId)
+        .order("opened_at", { ascending: false })
+        .limit(5000);
+      if (error) throw error;
+      return data || [];
+    }
+
+    function normalizeCards(rows){
+      return (rows || []).map(r => {
+        const ts = r.opened_at ? new Date(r.opened_at).getTime() : Date.now();
+        return {
+          dbId: r.id,
+          tokenId: r.token_id ?? null,
+          ts,
+          cardTypeIndex: Number(r.card_type_index ?? -1),
+          rarityKey: String(r.rarity_key || "").toUpperCase(),
+          img: r.image_url || "",
+          name: r.card_name || ("Card #" + Number(r.card_type_index ?? -1)),
+          estimated_value_eur: Number(r.estimated_value_eur ?? 0) || 0
+        };
+      }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
+    }
+
+    function setHeader(profile){
+      const label = profile?.display_name || profile?.username || "Joueur";
+      document.getElementById("title").textContent = label;
+      document.getElementById("subtitle").innerHTML =
+        `Pseudo : <b>${(profile?.username || "—")}</b> · Profil : <b>${profile?.is_public ? "Public" : "Privé"}</b>`;
+
+      // avatar
+      window.setAvatar(label, profile?.avatar_url || null);
+    }
+
+    function setPointsAndRank(points, rank){
+      document.getElementById("points").textContent = Number(points || 0).toLocaleString("fr-FR");
+      document.getElementById("rank").textContent = rank ? ("#" + rank) : "—";
+    }
+
+    async function init(){
+      window.setState("Chargement…", true);
+
+      const userId = getUserIdFromUrl();
+      if (!userId){
+        window.setState("Paramètre manquant. Ouvre un profil via un lien du feed (player.html?u=...).", true);
+        return;
+      }
+
+      // Auth state (optional)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) await setAuthedFromSession(session);
+      else setNotAuthed();
+
+      // Profile
+      const profile = await fetchProfile(userId);
+      if (!profile){
+        window.setState("Profil introuvable.", true);
+        return;
+      }
+      setHeader(profile);
+
+      const isSelf = !!session?.user?.id && session.user.id === userId;
+
+      // Privacy gating:
+      // - profile table select: public_read/self_read (OK)
+      // - cards_public_read_if_profile_public (OK)
+      // If private and not self, cards query should return 0 (RLS), so on montre un message clair.
+      const monthISO = monthStartISO();
+      let points = 0;
+      let rank = null;
+
+      // points table is public read (policy true) => ok
+      points = await fetchUserPointsMonth(userId, monthISO).catch(() => 0);
+      rank = await computeRank(userId, monthISO, points).catch(() => null);
+      setPointsAndRank(points, rank);
+
+      // Cards
+      const rows = await fetchUserCards(userId).catch(() => []);
+      const cards = normalizeCards(rows);
+
+      if (!profile.is_public && !isSelf && cards.length === 0){
+        window.setState("Profil privé : collection non visible.", true);
+        // on laisse les stats à zéro mais on garde points/rank (public)
+        window.renderStacks([]);
+        return;
+      }
+
+      window.setState("", false);
+      window.renderStacks(cards);
+    }
+
+    // INIT AUTH listeners + logout
+    supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      if (newSession?.user) await setAuthedFromSession(newSession);
+      else setNotAuthed();
+    });
+    logoutBtn?.addEventListener("click", async () => { await supabase.auth.signOut(); });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      init().catch((e) => {
+        console.error(e);
+        window.setState("Erreur chargement (voir console).", true);
+      });
+    });
+  </script>
+</body>
+</html>
