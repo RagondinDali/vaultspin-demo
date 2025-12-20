@@ -508,7 +508,7 @@
             <h1>Ma collection</h1>
             <div class="sub">
               Vue “Stacks” : groupé par <b>pack</b> + <b>cardTypeIndex</b>.
-              Clique sur <b>Owned</b> pour filtrer. Filtre aussi via <b>?pack=PLANT|WATER&ct=</b>.
+              Clique sur <b>Owned</b> pour filtrer. Filtre aussi via <b>?pack=PLANT|WATER|FIRE&ct=</b>.
               <br/>
               ✅ Source of truth = Supabase <b>user_cards</b> (si connecté). Sinon fallback localStorage (démo).
             </div>
@@ -527,6 +527,7 @@
             <option value="ALL">Pack: All</option>
             <option value="PLANT">Pack: PLANT</option>
             <option value="WATER">Pack: WATER</option>
+            <option value="FIRE">Pack: FIRE</option>
           </select>
 
           <select id="rarity">
@@ -598,7 +599,6 @@
       /********************
        * Catalog (OPTIONNEL)
        * - Sert seulement de fallback d’affichage si DB n’a pas image_url/card_name.
-       * - Tu peux enrichir ici plus tard.
        ********************/
       const CATALOG = {
         PLANT: {
@@ -622,17 +622,49 @@
           17: { name:"Peterson",       img:"images/peterson.png" },
           18: { name:"Scovilain",      img:"images/scovilain.png" }
         },
-        // IMPORTANT: tes ct Water semblent être 120+ (vu sur ton screen).
-        // Ici on met juste un fallback minimal si jamais DB n’envoie pas card_name/image_url.
         WATER: {
-          // Exemple (mets tes vrais fichiers si tu veux fallback)
-          // 120: { name:"Givrali VSTAR", img:"images/givrali_vstar.png" },
+          // fallback optionnel (DB fournit déjà card_name/image_url normalement)
+        },
+        FIRE: {
+          // fallback optionnel (DB fournit déjà card_name/image_url normalement)
         }
       };
 
       function catalogFor(packKey, ct){
         const pk = (packKey || "PLANT").toUpperCase();
         return (CATALOG[pk] && CATALOG[pk][Number(ct)]) ? CATALOG[pk][Number(ct)] : null;
+      }
+
+      /********************
+       * Pack inference (IMPORTANT)
+       * - Si pack_key n’existe pas en DB (anciens inserts), on guess via ct.
+       * - Convention recommandée:
+       *    PLANT: 0..99
+       *    WATER: 100..199
+       *    FIRE : 200..299 (ou 200+)
+       ********************/
+      function guessPackKeyFromCt(ct){
+        const n = Number(ct);
+        if (!Number.isFinite(n)) return "PLANT";
+        if (n >= 200) return "FIRE";
+        if (n >= 100) return "WATER";
+        return "PLANT";
+      }
+
+      function normalizePackKey(input, ct){
+        const raw = String(input || "").trim().toLowerCase();
+
+        // support "plant|water|fire" (boosterKey index.html)
+        if (raw === "plant") return "PLANT";
+        if (raw === "water") return "WATER";
+        if (raw === "fire")  return "FIRE";
+
+        // support "PLANT|WATER|FIRE"
+        const up = String(input || "").trim().toUpperCase();
+        if (up === "PLANT" || up === "WATER" || up === "FIRE") return up;
+
+        // fallback: infer from ct
+        return guessPackKeyFromCt(ct);
       }
 
       /********************
@@ -663,10 +695,11 @@
         const ctRaw = p.get("ct");
         const pack = (p.get("pack") || "").toUpperCase();
         const ct = ctRaw === null ? null : Number(ctRaw);
-        return {
-          pack: (pack === "PLANT" || pack === "WATER") ? pack : null,
-          ct: (ctRaw === null) ? null : (Number.isFinite(ct) ? ct : null)
-        };
+
+        const packOk = (pack === "PLANT" || pack === "WATER" || pack === "FIRE") ? pack : null;
+        const ctOk = (ctRaw === null) ? null : (Number.isFinite(ct) ? ct : null);
+
+        return { pack: packOk, ct: ctOk };
       }
 
       function setPackCtInUrl(pack, ct){
@@ -747,19 +780,19 @@
       function normalizeFromLocal(localArr){
         // local schema (démo): { tokenId, ts, priceEur/valueEur, rarityKey, cardTypeIndex, img, name, boosterKey }
         return (localArr || []).map(x => {
-          const pack = (x.pack_key || x.boosterKey || "PLANT").toString().toUpperCase();
-          const packKey = (pack === "WATER" || pack === "PLANT") ? pack : (pack === "PLANT" ? "PLANT" : "PLANT");
+          const ct = Number(x.cardTypeIndex ?? -1);
+          const packKey = normalizePackKey((x.pack_key || x.boosterKey || x.pack || ""), ct);
           return {
             source: "local",
             dbId: null,
             pack_key: packKey,
             tokenId: x.tokenId ?? null,
             ts: x.ts ?? Date.now(),
-            cardTypeIndex: Number(x.cardTypeIndex ?? -1),
-            rarity_key: (x.rarityKey || "").toUpperCase() || null,
+            cardTypeIndex: ct,
+            rarity_key: (x.rarityKey || x.rarity_key || "").toUpperCase() || null,
             img: x.img || "",
             name: x.name || "",
-            estimated_value_eur: Number(x.priceEur ?? x.valueEur ?? 0) || 0
+            estimated_value_eur: Number(x.priceEur ?? x.valueEur ?? x.estimated_value_eur ?? 0) || 0
           };
         }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
       }
@@ -767,24 +800,22 @@
       function normalizeFromDb(rows){
         // db schema: user_cards: { id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at }
         return (rows || []).map(r => {
-          const packKey = (r.pack_key || "PLANT").toString().toUpperCase();
-          const pk = (packKey === "WATER" || packKey === "PLANT") ? packKey : "PLANT";
-
           const ct = Number(r.card_type_index ?? -1);
-          const cat = catalogFor(pk, ct);
+          const packKey = normalizePackKey(r.pack_key, ct);
 
+          const cat = catalogFor(packKey, ct);
           const ts = r.opened_at ? new Date(r.opened_at).getTime() : Date.now();
+
           return {
             source: "db",
             dbId: r.id,
-            pack_key: pk,
+            pack_key: packKey,
             tokenId: r.token_id ?? null,
             ts,
             cardTypeIndex: ct,
             rarity_key: (r.rarity_key || "").toUpperCase() || null,
             img: r.image_url || (cat && cat.img) || "",
             name: r.card_name || (cat && cat.name) || ("Card #" + ct),
-            // ✅ FIX PRIX: on utilise DB estimated_value_eur (donc Water s’affiche)
             estimated_value_eur: Number(r.estimated_value_eur ?? 0) || 0
           };
         }).filter(x => Number.isFinite(x.cardTypeIndex) && x.cardTypeIndex >= 0);
@@ -805,7 +836,6 @@
       }
 
       function vaultValue(items){
-        // DB authoritative: sum of estimated_value_eur
         let sum = 0;
         for (const x of items){
           sum += Number(x.estimated_value_eur || 0) || 0;
@@ -830,12 +860,13 @@
       }
 
       function groupByStack(items){
-        // key = pack_key + ":" + ct
         const map = new Map();
 
         for (const x of items){
           const ct = Number(x.cardTypeIndex ?? -1);
-          const pk = (x.pack_key || "PLANT").toUpperCase();
+          if (!Number.isFinite(ct) || ct < 0) continue;
+
+          const pk = normalizePackKey(x.pack_key, ct);
           const key = pk + ":" + String(ct);
 
           if (!map.has(key)){
@@ -848,7 +879,6 @@
               owned: 0,
               lastTs: 0,
               lastTokenId: null,
-              // on prend le meilleur “prix” sur la stack (et aussi utile si certaines cartes ont été enregistrées sans prix)
               price: Number(x.estimated_value_eur || 0) || 0,
               rarity_key: (x.rarity_key || "").toUpperCase() || null
             });
@@ -866,7 +896,6 @@
           const px = Number(x.estimated_value_eur || 0) || 0;
           if (px > g.price) g.price = px;
 
-          // si la rareté DB est présente et “plus haute” que celle stockée
           const rk = (x.rarity_key || "").toUpperCase();
           if (rk && rarityRank(rk) > rarityRank(g.rarity_key)) g.rarity_key = rk;
 
@@ -908,9 +937,9 @@
 
         // Apply pack dropdown + URL pack
         if (packFilterFromUrl){
-          items = items.filter(x => (x.pack_key || "").toUpperCase() === packFilterFromUrl);
+          items = items.filter(x => normalizePackKey(x.pack_key, x.cardTypeIndex) === packFilterFromUrl);
         } else if (packSel !== "ALL"){
-          items = items.filter(x => (x.pack_key || "").toUpperCase() === packSel);
+          items = items.filter(x => normalizePackKey(x.pack_key, x.cardTypeIndex) === packSel);
         }
 
         // Apply rarity dropdown
@@ -932,7 +961,7 @@
         if (best){
           document.getElementById("stat-best").textContent = (best.rarity_key || "—");
           document.getElementById("stat-best-sub").textContent =
-            `${best.pack_key || "—"} · ct ${best.cardTypeIndex} · ${fmtDate(best.ts || Date.now())}`;
+            `${normalizePackKey(best.pack_key, best.cardTypeIndex)} · ct ${best.cardTypeIndex} · ${fmtDate(best.ts || Date.now())}`;
         } else {
           document.getElementById("stat-best").textContent = "—";
           document.getElementById("stat-best-sub").textContent = "—";
@@ -977,11 +1006,7 @@
 
         // Empty state
         grid.innerHTML = "";
-        if (!CARDS.length){
-          empty.style.display = "inline-flex";
-        } else {
-          empty.style.display = "none";
-        }
+        empty.style.display = (!CARDS.length) ? "inline-flex" : "none";
 
         if (!stacks.length){
           const d = document.createElement("div");
@@ -1175,7 +1200,7 @@
         document.getElementById("pack").addEventListener("change", render);
         document.getElementById("rarity").addEventListener("change", render);
 
-        // If URL has pack/ct, reflect it in dropdown pack (nice UX)
+        // URL -> dropdown pack (nice UX)
         const urlF = getFiltersFromUrl();
         if (urlF.pack){
           document.getElementById("pack").value = urlF.pack;
