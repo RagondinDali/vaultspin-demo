@@ -5,11 +5,17 @@ function eur(n) {
 }
 
 /**
- * Règles (cohérentes avec ton BoosterEngine) :
- * - hidden:true => HIDDEN (pool majoritaire)
- * - legendary:true => LEGENDARY (tirage 1/5000 si pool non vide)
- * - ultra:true => ULTRA (tirage 1/50)
- * - sinon => EPIC (tirage 1/20)
+ * Convention VaultSpin :
+ * - hidden:true      => HIDDEN
+ * - legendary:true   => LEGENDARY (pool dédié)
+ * - ultra:true       => ULTRA (pool dédié)
+ * - sinon            => EPIC
+ *
+ * Drop logic côté UI :
+ * - LEGENDARY : 1/5000
+ * - ULTRA     : 1/50
+ * - EPIC      : 1/20
+ * - sinon     : HIDDEN
  */
 export const BOOSTERS = {
   plant: {
@@ -18,7 +24,6 @@ export const BOOSTERS = {
     icon: "🌿",
     packPriceEur: 24.99,
     theme: "plant",
-
     cards: [
       // HIDDEN
       { id: "phyllali_pca", name: "Phyllali PCA", img: "images/phyllali_PCA.png", price: eur(5.5), hidden: true },
@@ -55,17 +60,16 @@ export const BOOSTERS = {
     icon: "💧",
     packPriceEur: 24.99,
     theme: "water",
-
     cards: [
       // HIDDEN
-      { id: "givrali_vstar", name: "Givrali VSTAR", img: "images/givrali_vstar.png", price: eur(5.5), hidden: true },
+      { id: "givrali_vstar", name: "Givrali VSTAR", img: "images/givrali_vstar.png", price: eur(5.50), hidden: true },
       { id: "keldeo", name: "Keldeo", img: "images/keldeo.png", price: eur(8.05), hidden: true },
-      { id: "leviator_vmax", name: "Léviator VMAX", img: "images/leviator_vmax.png", price: eur(15.1), hidden: true },
-      { id: "tortank_pca", name: "Tortank PCA", img: "images/tortank_PCA.png", price: eur(4.0), hidden: true },
+      { id: "leviator_vmax", name: "Léviator VMAX", img: "images/leviator_vmax.png", price: eur(15.10), hidden: true },
+      { id: "tortank_pca", name: "Tortank PCA", img: "images/tortank_PCA.png", price: eur(4.00), hidden: true },
 
       // EPIC
       { id: "aquali", name: "Aquali", img: "images/aquali.png", price: eur(40) },
-      { id: "energie_eau", name: "Énergie Eau", img: "images/energie_eau.png", price: eur(119) }, // EPIC
+      { id: "energie_eau", name: "Énergie Eau", img: "images/energie_eau.png", price: eur(119) },
       { id: "lumineon", name: "Lumineon", img: "images/lumineon.png", price: eur(54) },
       { id: "pingoleon", name: "Pingoléon", img: "images/pingoleon.png", price: eur(100) },
       { id: "poissirene", name: "Poissirène", img: "images/poissirene.png", price: eur(109) },
@@ -91,7 +95,6 @@ export const BOOSTERS = {
     icon: "🔥",
     packPriceEur: 24.99,
     theme: "fire",
-
     cards: [
       // HIDDEN
       { id: "galopa_cgg", name: "Galopa CGG", img: "images/galopa_cgg.png", price: eur(7.5), hidden: true },
@@ -103,7 +106,7 @@ export const BOOSTERS = {
       { id: "pyrobut", name: "Pyrobut", img: "images/pyrobut.png", price: eur(35.5) },
       { id: "reptincel", name: "Reptincel", img: "images/reptincel.png", price: eur(78.99) },
       { id: "scolocendre_vmax", name: "Scolocendre VMAX", img: "images/scolocendre_vmax.png", price: eur(60) },
-      { id: "hericendre", name: "Héricendre", img: "images/hericendre.png", price: eur(120) }, // EPIC
+      { id: "hericendre", name: "Héricendre", img: "images/hericendre.png", price: eur(120) }, // 120 => EPIC
 
       // ULTRA
       { id: "dracaufeu_vmax", name: "Dracaufeu VMAX", img: "images/dracaufeu_vmax.png", price: eur(145), ultra: true },
