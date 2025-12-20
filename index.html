@@ -1583,35 +1583,59 @@
       track.style.transform = `translateX(${finalX}px)`;
     }
 
-    function fillResultUI(){
-      const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
-      const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+async function fillResultUI(){
+  const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
+  const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
 
-      document.getElementById("result-img").src = imgSrc;
-      document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
+  // ✅ Image: reset -> set -> wait decode/load
+  const imgEl = document.getElementById("result-img");
+  imgEl.src = ""; // reset (force repaint)
+  imgEl.removeAttribute("srcset"); // safety
+  imgEl.loading = "eager";
 
-      const isHidden = HIDDEN_SET.has(winningCt);
-      const desc = isHidden
-        ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
-        : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
+  // force reflow to apply reset
+  void imgEl.offsetHeight;
 
-      document.getElementById("result-desc").textContent = desc;
+  imgEl.src = imgSrc;
 
-      const pill = document.getElementById("result-pill");
-      if (isHidden){
-        pill.style.display = "none";
-      } else {
-        pill.style.display = "inline-flex";
-        pill.textContent = rarityKey;
-        pill.className = "result-pill " + rarityKey.toLowerCase();
-      }
-
-      document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
-
-      const sellBtn = document.getElementById("result-sell");
-      sellBtn.disabled = false;
-      sellBtn.textContent = "Revendre · " + fmtEur(price);
+  try{
+    if (imgEl.decode) {
+      await imgEl.decode();
+    } else {
+      await new Promise((res, rej) => {
+        imgEl.onload = () => res();
+        imgEl.onerror = () => rej(new Error("Image load failed"));
+      });
     }
+  } catch(e){
+    console.warn("Result img decode/load failed:", imgSrc, e);
+    // On continue quand même, mais au moins on ne bloque pas l’UI
+  }
+
+  document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
+
+  const isHidden = HIDDEN_SET.has(winningCt);
+  const desc = isHidden
+    ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
+    : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
+
+  document.getElementById("result-desc").textContent = desc;
+
+  const pill = document.getElementById("result-pill");
+  if (isHidden){
+    pill.style.display = "none";
+  } else {
+    pill.style.display = "inline-flex";
+    pill.textContent = rarityKey;
+    pill.className = "result-pill " + rarityKey.toLowerCase();
+  }
+
+  document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
+
+  const sellBtn = document.getElementById("result-sell");
+  sellBtn.disabled = false;
+  sellBtn.textContent = "Revendre · " + fmtEur(price);
+}
 
     function commitToCollection(){
       const { winningCt, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
@@ -1725,7 +1749,7 @@
         setStatus("Pack ouvert ✅ (DB en retard / erreur)", "pending");
       }
 
-      fillResultUI();
+      await fillResultUI();
 
       /* ✅ FIX: pas de double ajout de points.
          - si Supabase est connecté, vsSaveCardToDb ajoute les points via RPC
@@ -2225,6 +2249,7 @@
 
 </body>
 </html>
+
 
 
 
