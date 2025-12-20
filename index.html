@@ -20,6 +20,13 @@
   <link rel="preload" as="image" href="images/lokhlass.png">
   <link rel="preload" as="image" href="images/tortank.png">
 
+  <!-- ✅ Preload feu (quelques clés) -->
+  <link rel="preload" as="image" href="images/dracaufeu.png">
+  <link rel="preload" as="image" href="images/dracaufeu_vmax.png">
+  <link rel="preload" as="image" href="images/energie_feu.png">
+  <link rel="preload" as="image" href="images/reshiram.png">
+  <link rel="preload" as="image" href="images/typhlosion.png">
+
   <style>
     html, body { overflow-x:hidden; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,17 +41,17 @@
     body{
       min-height:100vh;
       display:flex;
-      align-items:flex-start;      /* ✅ */
-      justify-content:flex-start;  /* ✅ */
+      align-items:flex-start;
+      justify-content:flex-start;
       background:radial-gradient(circle at top,#101827,#020617 60%);
       font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       color:#e5e7eb;
-      overflow-x:hidden;           /* sécurité */
+      overflow-x:hidden;
     }
 
     .page{
       width:100%;
-      max-width: min(1200px, calc(100vw - 32px)); /* ✅ FIX overflow subtil */
+      max-width: min(1200px, calc(100vw - 32px));
       padding:96px 16px 40px;
       display:flex;
       flex-direction:column;
@@ -216,21 +223,33 @@
       background:radial-gradient(circle at top,#22c55e,#064e3b 70%);
       box-shadow:0 0 36px rgba(34,197,94,.45);
       transition: transform .16s ease-out, box-shadow .16s ease-out;
+      min-width:0; /* ✅ */
     }
     .card-inner{ width:100%; height:100%; border-radius:22px; overflow:hidden; }
 
-    /* ✅ 2 boosters côte à côte + shrink */
+    /* ✅ NEW: 3 boosters en grid (pas de scroll horizontal) */
     .booster-grid{
-      display:flex;
-      gap:18px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:16px;
       align-items:center;
       justify-content:center;
       width:100%;
-      flex-wrap:wrap;
+      max-width:100%;
+      overflow:hidden; /* ✅ */
     }
+    @media (max-width: 980px){
+      .booster-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px){
+      .booster-grid{ grid-template-columns: 1fr; }
+    }
+
     .card-frame--sm{
-      width:220px;
+      width:100%;
+      max-width:220px; /* ✅ tient bien à 3 */
       height:330px;
+      justify-self:center;
     }
     .card-frame[data-selected="true"]{
       box-shadow: 0 0 44px rgba(255,255,255,.10), 0 0 26px rgba(165,180,252,.22);
@@ -245,6 +264,14 @@
     }
     .booster-closed[data-theme="water"]::before{
       background: radial-gradient(circle at top left, rgba(186,230,253,.22), transparent 60%);
+    }
+
+    /* ✅ Theme feu (sur la face du booster) */
+    .booster-closed[data-theme="fire"]{
+      background: radial-gradient(circle at 20% 0%, #fb7185 0, #7f1d1d 60%);
+    }
+    .booster-closed[data-theme="fire"]::before{
+      background: radial-gradient(circle at top left, rgba(254,202,202,.20), transparent 60%);
     }
 
     /* Top bar */
@@ -689,7 +716,6 @@
     }
   </style>
 </head>
-
 <body>
   <!-- Hover preview -->
   <div class="preview-float" id="preview-float" aria-hidden="true">
@@ -900,6 +926,20 @@
             </div>
           </div>
 
+          <!-- ✅ Booster FEU -->
+          <div class="card-frame card-frame--sm" data-booster="fire" data-selected="false">
+            <div class="card-inner">
+              <div class="booster-closed booster-mode-idle" data-theme="fire">
+                <div class="booster-label">
+                  <div class="booster-leaf-icon">🔥</div>
+                  <div class="booster-chip">VaultSpin Pack</div>
+                  <div class="booster-title">Booster Feu</div>
+                  <div class="booster-subtitle">1 carte à révéler</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -1063,6 +1103,86 @@
             <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
           </div>
         </div>
+
+        <!-- ✅ DROP GRID FEU -->
+        <div class="drop-grid" id="drop-grid-fire" style="display:none;">
+          <!-- EPIC -->
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Feu Perçant" data-img="images/feu_percant.png" data-ct="204">
+            <div class="drop-thumb"><img src="images/feu_percant.png" alt="Feu Perçant" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Feu</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Pyrobut" data-img="images/pyrobut.png" data-ct="205">
+            <div class="drop-thumb"><img src="images/pyrobut.png" alt="Pyrobut" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Pyrobut</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Dracaufeu EX" data-img="images/dracaufeu_ex.png" data-ct="201">
+            <div class="drop-thumb"><img src="images/dracaufeu_ex.png" alt="Dracaufeu EX" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">EX</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Reptincel" data-img="images/reptincel.png" data-ct="206">
+            <div class="drop-thumb"><img src="images/reptincel.png" alt="Reptincel" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Rept.</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Scolocendre VMAX" data-img="images/scolocendre_vmax.png" data-ct="207">
+            <div class="drop-thumb"><img src="images/scolocendre_vmax.png" alt="Scolocendre VMAX" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Scolo</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Héricendre" data-img="images/hericendre.png" data-ct="208">
+            <div class="drop-thumb"><img src="images/hericendre.png" alt="Héricendre" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Héri.</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+
+          <!-- ULTRA -->
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Dracaufeu VMAX" data-img="images/dracaufeu_vmax.png" data-ct="202">
+            <div class="drop-thumb"><img src="images/dracaufeu_vmax.png" alt="Dracaufeu VMAX" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">VMAX</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Énergie Feu" data-img="images/energie_feu.png" data-ct="203">
+            <div class="drop-thumb"><img src="images/energie_feu.png" alt="Énergie Feu" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Énergie</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Feurisson" data-img="images/feurisson.png" data-ct="209">
+            <div class="drop-thumb"><img src="images/feurisson.png" alt="Feurisson" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Feuri.</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Galopa" data-img="images/galopa.png" data-ct="210">
+            <div class="drop-thumb"><img src="images/galopa.png" alt="Galopa" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Galopa</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Pyroli" data-img="images/pyroli.png" data-ct="211">
+            <div class="drop-thumb"><img src="images/pyroli.png" alt="Pyroli" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Pyroli</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Reshiram" data-img="images/reshiram.png" data-ct="212">
+            <div class="drop-thumb"><img src="images/reshiram.png" alt="Reshiram" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Reshi.</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Typhlosion" data-img="images/typhlosion.png" data-ct="213">
+            <div class="drop-thumb"><img src="images/typhlosion.png" alt="Typhlosion" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Typh.</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+
+          <!-- LEGENDARY -->
+          <div class="drop-item" data-booster="fire" data-rarity="LEGENDARY" data-name="Dracaufeu" data-img="images/dracaufeu.png" data-ct="200">
+            <div class="drop-thumb"><img src="images/dracaufeu.png" alt="Dracaufeu" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Drac.</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1072,7 +1192,6 @@
   <audio id="sfx-reveal" src="sounds/card_reveal.mp3" preload="auto"></audio>
   <audio id="sfx-legendary" src="sounds/legendary_fx.mp3" preload="auto"></audio>
   <audio id="sfx-tick" src="sounds/clic_clic.mp3" preload="auto"></audio>
-
   <script>
     /********************
      * STORAGE KEYS
@@ -1239,7 +1358,7 @@
     }
 
     /********************
-     * ✅ BOOSTERS CONFIG (PLANT + WATER)
+     * ✅ BOOSTERS CONFIG (PLANT + WATER + FIRE)
      ********************/
     let selectedBoosterKey = "plant";
 
@@ -1251,69 +1370,18 @@
         packPriceEur: PACK_PRICE_EUR,
 
         prices: {
-          0: 5.50,
-          1: 135,
-          2: 60,
-          3: 70,
-          4: 109,
-          5: 209,
-          6: 69,
-          7: 129,
-          8: 70,
-          9: 109,
-          10: 1350,
-          11: 199,
-          12: 109,
-          13: 109,
-          14: 77,
-          15: 15.50,
-          16: 4.00,
-          17: 3.00,
-          18: 7.00
+          0: 5.50, 1: 135, 2: 60, 3: 70, 4: 109, 5: 209, 6: 69, 7: 129, 8: 70, 9: 109, 10: 1350, 11: 199, 12: 109, 13: 109, 14: 77, 15: 15.50, 16: 4.00, 17: 3.00, 18: 7.00
         },
-
         images: {
-          0:"images/phyllali_PCA.png",
-          1:"images/aeromite.png",
-          2:"images/germignon.png",
-          3:"images/astronelle.png",
-          4:"images/chetiflor.png",
-          5:"images/jungko.png",
-          6:"images/chenipan.png",
-          7:"images/energie_plante.png",
-          8:"images/majaspic.png",
-          9:"images/mimitoss.png",
-          10:"images/florizarre.png",
-          11:"images/nidoking.png",
-          12:"images/noeufnoeuf.png",
-          13:"images/paras.png",
-          14:"images/phyllali.png",
-          15:"images/boskara.png",
-          16:"images/filentrappe.png",
-          17:"images/peterson.png",
-          18:"images/scovilain.png"
+          0:"images/phyllali_PCA.png", 1:"images/aeromite.png", 2:"images/germignon.png", 3:"images/astronelle.png", 4:"images/chetiflor.png",
+          5:"images/jungko.png", 6:"images/chenipan.png", 7:"images/energie_plante.png", 8:"images/majaspic.png", 9:"images/mimitoss.png",
+          10:"images/florizarre.png", 11:"images/nidoking.png", 12:"images/noeufnoeuf.png", 13:"images/paras.png", 14:"images/phyllali.png",
+          15:"images/boskara.png", 16:"images/filentrappe.png", 17:"images/peterson.png", 18:"images/scovilain.png"
         },
-
         names: {
-          0:"Phyllali PCA",
-          1:"Aéromite",
-          2:"Germignon",
-          3:"Astronelle",
-          4:"Chétiflor",
-          5:"Jungko",
-          6:"Chenipan",
-          7:"Énergie Plante",
-          8:"Majaspic",
-          9:"Mimitoss",
-          10:"Florizarre",
-          11:"Nidoking",
-          12:"Noeufnoeuf",
-          13:"Paras",
-          14:"Phyllali",
-          15:"Boskara",
-          16:"Filentrappe",
-          17:"Peterson",
-          18:"Scovilain"
+          0:"Phyllali PCA", 1:"Aéromite", 2:"Germignon", 3:"Astronelle", 4:"Chétiflor", 5:"Jungko", 6:"Chenipan",
+          7:"Énergie Plante", 8:"Majaspic", 9:"Mimitoss", 10:"Florizarre", 11:"Nidoking", 12:"Noeufnoeuf", 13:"Paras", 14:"Phyllali",
+          15:"Boskara", 16:"Filentrappe", 17:"Peterson", 18:"Scovilain"
         },
 
         legendaryCts: [10],
@@ -1335,84 +1403,115 @@
         openTitle: "VAULTSPIN · OPENING · EAU",
         packPriceEur: PACK_PRICE_EUR,
 
-        // ✅ indices offset 100+ pour ne pas collisionner avec Plante
         prices: {
-          100: 40.00,     // aquali
-          101: 119.00,    // energie_eau
-          102: 249.00,    // flobio (ULTRA)
-          103: 125.99,    // givrali (ULTRA)
-          104: 229.00,    // leviator (ULTRA)
-          105: 1049.00,   // leviator_obscur (LEGENDARY)
-          106: 499.00,    // lokhlass (LEGENDARY)
-          107: 200.00,    // ludicolo (ULTRA)
-          108: 54.00,     // lumineon
-          109: 145.99,    // palkia (ULTRA)
-          110: 100.00,    // pingoleon
-          111: 109.00,    // poissirene
-          112: 215.00,    // staross (ULTRA)
-          113: 1689.00,   // tortank (LEGENDARY)
-
-          // hidden
-          120: 5.50,      // givrali_vstar
-          121: 8.05,      // keldeo
-          122: 15.10,     // leviator_vmax
-          123: 4.00       // tortank_PCA
+          100: 40.00, 101: 119.00, 102: 249.00, 103: 125.99, 104: 229.00, 105: 1049.00, 106: 499.00, 107: 200.00,
+          108: 54.00, 109: 145.99, 110: 100.00, 111: 109.00, 112: 215.00, 113: 1689.00,
+          120: 5.50, 121: 8.05, 122: 15.10, 123: 4.00
         },
 
         images: {
-          100:"images/aquali.png",
-          101:"images/energie_eau.png",
-          102:"images/flobio.png",
-          103:"images/givrali.png",
-          104:"images/leviator.png",
-          105:"images/leviator_obscur.png",
-          106:"images/lokhlass.png",
-          107:"images/ludicolo.png",
-          108:"images/lumineon.png",
-          109:"images/palkia.png",
-          110:"images/pingoleon.png",
-          111:"images/poissirene.png",
-          112:"images/staross.png",
-          113:"images/tortank.png",
-
-          120:"images/givrali_vstar.png",
-          121:"images/keldeo.png",
-          122:"images/leviator_vmax.png",
-          123:"images/tortank_PCA.png"
+          100:"images/aquali.png", 101:"images/energie_eau.png", 102:"images/flobio.png", 103:"images/givrali.png", 104:"images/leviator.png",
+          105:"images/leviator_obscur.png", 106:"images/lokhlass.png", 107:"images/ludicolo.png", 108:"images/lumineon.png", 109:"images/palkia.png",
+          110:"images/pingoleon.png", 111:"images/poissirene.png", 112:"images/staross.png", 113:"images/tortank.png",
+          120:"images/givrali_vstar.png", 121:"images/keldeo.png", 122:"images/leviator_vmax.png", 123:"images/tortank_PCA.png"
         },
 
         names: {
-          100:"Aquali",
-          101:"Énergie Eau",
-          102:"Flobio",
-          103:"Givrali",
-          104:"Léviator",
-          105:"Léviator Obscur",
-          106:"Lokhlass",
-          107:"Ludicolo",
-          108:"Lumineon",
-          109:"Palkia",
-          110:"Pingoléon",
-          111:"Poissirène",
-          112:"Staross",
-          113:"Tortank",
-
-          120:"Givrali VSTAR",
-          121:"Keldeo",
-          122:"Léviator VMAX",
-          123:"Tortank PCA"
+          100:"Aquali", 101:"Énergie Eau", 102:"Flobio", 103:"Givrali", 104:"Léviator", 105:"Léviator Obscur", 106:"Lokhlass",
+          107:"Ludicolo", 108:"Lumineon", 109:"Palkia", 110:"Pingoléon", 111:"Poissirène", 112:"Staross", 113:"Tortank",
+          120:"Givrali VSTAR", 121:"Keldeo", 122:"Léviator VMAX", 123:"Tortank PCA"
         },
 
-        // ✅ 3 Legendary demandés
         legendaryCts: [113, 105, 106],
         hiddenSet: new Set([120,121,122,123]),
         poolUltra: [102,103,104,107,109,112],
         poolEpic: [100,101,108,110,111],
         hiddenWeights: [
-          { ct: 120, w: 60 }, // givrali_vstar
-          { ct: 122, w: 22 }, // leviator_vmax
-          { ct: 123, w: 12 }, // tortank_PCA
-          { ct: 121, w: 6 }   // keldeo
+          { ct: 120, w: 60 },
+          { ct: 122, w: 22 },
+          { ct: 123, w: 12 },
+          { ct: 121, w: 6 }
+        ]
+      },
+
+      fire: {
+        key: "fire",
+        uiName: "Booster Feu",
+        openTitle: "VAULTSPIN · OPENING · FEU",
+        packPriceEur: PACK_PRICE_EUR,
+
+        // ✅ indices 200+ (pas de collision)
+        prices: {
+          200: 6299.00,  // dracaufeu
+          201: 75.00,    // dracaufeu_ex
+          202: 145.00,   // dracaufeu_vmax
+          203: 149.00,   // energie_feu
+          204: 53.00,    // feu_percant
+          205: 35.50,    // pyrobut
+          206: 78.99,    // reptincel
+          207: 60.00,    // scolocendre_vmax
+          208: 120.00,   // hericendre
+          209: 249.00,   // feurisson
+          210: 145.00,   // galopa
+          211: 239.00,   // pyroli
+          212: 200.00,   // reshiram
+          213: 199.00,   // typhlosion
+
+          // hidden
+          220: 7.50,     // galopa_cgg
+          221: 7.00      // lugulabre
+        },
+
+        images: {
+          200:"images/dracaufeu.png",
+          201:"images/dracaufeu_ex.png",
+          202:"images/dracaufeu_vmax.png",
+          203:"images/energie_feu.png",
+          204:"images/feu_percant.png",
+          205:"images/pyrobut.png",
+          206:"images/reptincel.png",
+          207:"images/scolocendre_vmax.png",
+          208:"images/hericendre.png",
+          209:"images/feurisson.png",
+          210:"images/galopa.png",
+          211:"images/pyroli.png",
+          212:"images/reshiram.png",
+          213:"images/typhlosion.png",
+          220:"images/galopa_cgg.png",
+          221:"images/lugulabre.png"
+        },
+
+        names: {
+          200:"Dracaufeu",
+          201:"Dracaufeu EX",
+          202:"Dracaufeu VMAX",
+          203:"Énergie Feu",
+          204:"Feu Perçant",
+          205:"Pyrobut",
+          206:"Reptincel",
+          207:"Scolocendre VMAX",
+          208:"Héricendre",
+          209:"Feurisson",
+          210:"Galopa",
+          211:"Pyroli",
+          212:"Reshiram",
+          213:"Typhlosion",
+          220:"Galopa CGG",
+          221:"Lugulabre"
+        },
+
+        legendaryCts: [200],
+        hiddenSet: new Set([220,221]),
+
+        // ULTRA: prix 121–300 (sauf legendary, hidden)
+        poolUltra: [202,203,209,210,211,212,213],
+        // EPIC: le reste visible < 121
+        poolEpic: [201,204,205,206,207,208],
+
+        // HIDDEN weights (même esprit que tes autres boosters)
+        hiddenWeights: [
+          { ct: 220, w: 60 }, // galopa_cgg
+          { ct: 221, w: 40 }  // lugulabre
         ]
       }
     };
@@ -1521,7 +1620,6 @@
         const ct = Number(x.cardTypeIndex ?? -1);
         if (!Number.isFinite(ct) || ct < 0) continue;
 
-        // valeur dépend du booster sauvegardé
         const bkey = x.boosterKey || "plant";
         const b = BOOSTERS[bkey] || BOOSTERS.plant;
         sum += (b.prices[ct] ?? 0);
@@ -1890,7 +1988,6 @@
       if (mode === "paid"){
         if (!debitPack()) return;
       } else {
-        // ✅ spend points server-side if available (authoritative)
         try{
           if (window.vsSpendPointsServer){
             const res = await window.vsSpendPointsServer(FREE_PACK_COST_PTS);
@@ -1928,7 +2025,7 @@
 
       const winningCt = pickCardIndex();
       const rarityKey = rarityKeyForCt(winningCt);
-      const imgSrc = b.images[winningCt] ?? b.images[b.poolEpic?.[0]] ?? "images/germignon.png";
+      const imgSrc = b.images[winningCt] ?? "images/germignon.png";
       const name = b.names[winningCt] || "Card";
       const tokenId = nextLocalTokenId();
       const ts = Date.now();
@@ -1944,17 +2041,15 @@
       playSound(sfxReveal);
       if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
 
-      // ✅ 1) localStorage (démo)
       commitToCollection();
 
-      // ✅ 2) DB Supabase (si dispo)
       try{
         if (window.vsSaveCardToDb){
           const price = b.prices[winningCt] ?? 0;
           await window.vsSaveCardToDb({
             token_id: tokenId,
             card_type_index: winningCt,
-            rarity_key: rarityKey,              // ✅ on envoie HIDDEN / EPIC / ULTRA / LEGENDARY
+            rarity_key: rarityKey,
             image_url: imgSrc,
             card_name: name,
             estimated_value_eur: price,
@@ -1968,10 +2063,6 @@
 
       fillResultUI();
 
-      /* ✅ FIX: pas de double ajout de points.
-         - si Supabase est connecté, vsSaveCardToDb ajoute les points via RPC
-         - si pas de Supabase, on ajoute localement ici
-      */
       if (!window.vsSaveCardToDb){
         addPoints(POINTS_PER_PACK);
       }
@@ -2035,10 +2126,10 @@
     }
 
     /********************
-     * Booster selection UI
+     * ✅ Booster selection UI
      ********************/
     function setSelectedBooster(key){
-      selectedBoosterKey = (key === "water") ? "water" : "plant";
+      selectedBoosterKey = (key === "water" || key === "fire") ? key : "plant";
 
       // sélection visuelle
       document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
@@ -2048,10 +2139,11 @@
       // switch drop grid
       const gPlant = document.getElementById("drop-grid-plant");
       const gWater = document.getElementById("drop-grid-water");
-      if (gPlant && gWater){
-        gPlant.style.display = (selectedBoosterKey === "plant") ? "" : "none";
-        gWater.style.display = (selectedBoosterKey === "water") ? "" : "none";
-      }
+      const gFire  = document.getElementById("drop-grid-fire");
+
+      if (gPlant) gPlant.style.display = (selectedBoosterKey === "plant") ? "" : "none";
+      if (gWater) gWater.style.display = (selectedBoosterKey === "water") ? "" : "none";
+      if (gFire)  gFire.style.display  = (selectedBoosterKey === "fire")  ? "" : "none";
 
       // bouton open label
       const b = getBooster();
@@ -2060,7 +2152,6 @@
         btn.textContent = `Open ${b.uiName} — ${b.packPriceEur.toFixed(2).replace(".", ",")} €`;
       }
 
-      // status
       setStatus(`Sélectionné : ${b.uiName}`, "ok");
     }
 
@@ -2150,7 +2241,7 @@
         });
       });
 
-      // Hover preview + click filter (sur les 2 grids)
+      // Hover preview + click filter (sur les 3 grids)
       document.querySelectorAll(".drop-item").forEach((el) => {
         const img = el.getAttribute("data-img");
         const name = el.getAttribute("data-name");
@@ -2246,7 +2337,6 @@
         window.location.href = "login.html";
         return null;
       }
-      // Optionnel: forcer un username
       try{
         const { data } = await supabase
           .from("profiles")
@@ -2293,13 +2383,10 @@
       }
     }
 
-    // expose spend pour openPackRoulette("free")
     window.vsSpendPointsServer = async (cost) => {
       return await vsSpendPoints(cost);
     };
 
-    // ✅ EXPOSE: DB save utilisable par <script> classique
-    // ✅ FIX: on attribue +25 points ICI seulement (server authoritative)
     window.vsSaveCardToDb = async (card) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) throw new Error("Not authenticated");
@@ -2308,7 +2395,7 @@
         user_id: session.user.id,
         token_id: card.token_id ?? null,
         card_type_index: card.card_type_index,
-        rarity_key: card.rarity_key ?? null, // ✅ garde HIDDEN si envoyé
+        rarity_key: card.rarity_key ?? null,
         image_url: card.image_url ?? null,
         card_name: card.card_name ?? null,
         estimated_value_eur: card.estimated_value_eur ?? 0,
@@ -2324,7 +2411,6 @@
 
       if (error) throw error;
 
-      // ✅ add points server-side (authoritative)
       try{
         const newPts = await vsAddPoints(POINTS_PER_PACK);
         localStorage.setItem("vaultspin_points_v1", String(newPts));
@@ -2335,7 +2421,6 @@
       return true;
     };
 
-    // 1) Etat initial
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user){
       await setAuthedFromSession(session);
@@ -2344,7 +2429,6 @@
       setNotAuthed();
     }
 
-    // 2) React aux changements login/logout
     supabase.auth.onAuthStateChange(async (_event, newSession) => {
       if (newSession?.user){
         await setAuthedFromSession(newSession);
@@ -2354,12 +2438,10 @@
       }
     });
 
-    // 3) Logout
     logoutBtn?.addEventListener("click", async () => {
       await supabase.auth.signOut();
     });
 
-    // 4) GUARD (capture)
     paidBtn?.addEventListener("click", async (e) => {
       const s = await requireAuthOrRedirect();
       if (!s){
@@ -2410,7 +2492,6 @@
     }
 
     async function fetchLatestLoots(limit = 30){
-      // ⚠️ join via FK user_cards.user_id -> profiles.id
       const { data, error } = await supabase
         .from("user_cards")
         .select(`
