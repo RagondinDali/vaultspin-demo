@@ -635,58 +635,24 @@
       justify-content:space-between;
       gap:8px;
     }
+      
+.loot-user-link{
+  font-size:11px;
+  font-weight:900;
+  color:#f9fafb;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  text-decoration:none;
+  cursor:pointer;
+}
+.loot-user-link:hover{
+  text-decoration:underline;
+  opacity:.95;
+}
 
-    /* Hover overlay + bouton profil */
-    .loot-hover{
-      position:absolute;
-      inset:0;
-      border-radius:14px;
-      background:rgba(2,6,23,.78);
-      backdrop-filter: blur(6px);
-      border:1px solid rgba(165,180,252,.35);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px;
-      opacity:0;
-      pointer-events:none;
-      transition:opacity .12s ease;
-    }
-    .loot-item:hover .loot-hover{
-      opacity:1;
-      pointer-events:auto;
-    }
-    .loot-hover-left{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
-    .loot-hover-title{
-      font-size:11px;
-      font-weight:900;
-      color:#f9fafb;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .loot-hover-sub{ font-size:11px; color:#9ca3af; }
-
-    .loot-profile-btn{
-      border-radius:999px;
-      padding:8px 10px;
-      font-size:11px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      border:1px solid rgba(148,163,184,.20);
-      cursor:pointer;
-      background:rgba(15,23,42,.55);
-      color:#e5e7eb;
-    }
-    .loot-profile-btn:hover{
-      border-color: rgba(165,180,252,.7);
-      box-shadow:0 0 10px rgba(129,140,248,.25);
-    }
   </style>
 </head>
 
@@ -2211,7 +2177,9 @@
 
           <div class="loot-meta">
             <div class="loot-line1">
-              <div class="loot-user">${escapeHtml(it.player)}</div>
+            <a class="loot-user-link" href="player.html?u=${encodeURIComponent(it.user_id)}">
+  ${escapeHtml(it.player)}
+</a>
               <div class="loot-pill ${pillClass(it.rarity)}">${escapeHtml(it.rarity)}</div>
             </div>
             <div class="loot-line2">${escapeHtml(it.name)}</div>
@@ -2220,22 +2188,7 @@
               <span>${fmtTime(it.opened_at)}</span>
             </div>
           </div>
-
-          <div class="loot-hover">
-            <div class="loot-hover-left">
-              <div class="loot-hover-title">${escapeHtml(it.player)}</div>
-              <div class="loot-hover-sub">Voir la collection & le rank</div>
-            </div>
-            <button class="loot-profile-btn" type="button">Profil</button>
-          </div>
         `;
-
-        row.querySelector(".loot-profile-btn")?.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          // page profil joueur (à créer ensuite)
-          window.location.href = `player.html?u=${encodeURIComponent(it.user_id)}`;
-        });
 
         listEl.appendChild(row);
       }
@@ -2272,6 +2225,7 @@
 
 </body>
 </html>
+
 
 
 
