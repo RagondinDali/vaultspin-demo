@@ -1,210 +1,201 @@
-/* === Booster – 4 variantes contrôlées par JS === */
+/* animations.css
+   VaultSpin booster card styles + animations
+   ✅ Ajout thème EAU + compat 2 boosters côte à côte
+   ✅ Compatible avec index.html fourni (classes booster-closed / booster-label / booster-mode-idle)
+*/
 
-.booster-closed {
-  width: 100%;
-  height: 100%;
-  border-radius: 22px;
-  background: radial-gradient(circle at 20% 0%, #22c55e 0, #052e16 55%);
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+/* ========== Base booster face ========== */
+.booster-closed{
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:22px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  /* fallback: theme plant-like */
+  background: radial-gradient(circle at 20% 0%, #22c55e 0, #064e3b 55%);
 }
 
-/* halo vert doux */
-.booster-closed::before {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: radial-gradient(
-    circle at top left,
-    rgba(190, 242, 100, 0.22),
-    transparent 60%
-  );
-  opacity: 0.9;
-  mix-blend-mode: screen;
-  animation: leafGlow 3.2s ease-in-out infinite alternate;
-}
-
-@keyframes leafGlow {
-  from {
-    transform: translate3d(-10px, 0, 0) rotate(-4deg);
-    opacity: 0.7;
-  }
-  to {
-    transform: translate3d(12px, 6px, 0) rotate(3deg);
-    opacity: 1;
-  }
-}
-
-.booster-label {
-  position: relative;
-  text-align: center;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-
-.booster-chip {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  padding: 4px 12px;
-  border: 1px solid rgba(190, 242, 100, 0.6);
-  background: rgba(15, 23, 42, 0.5);
-  color: #bbf7d0;
-}
-
-.booster-title {
-  font-size: 18px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #ecfdf5;
-}
-
-.booster-subtitle {
-  font-size: 12px;
-  color: #bbf7d0;
-  opacity: 0.85;
-}
-
-.booster-leaf-icon {
-  font-size: 26px;
-  margin-bottom: 4px;
-  filter: drop-shadow(0 0 14px rgba(190, 242, 100, 0.9));
-}
-
-/* Mode 1 – idle / respiration verte */
-.booster-mode-idle {
-  animation: boosterBreath 1.8s ease-in-out infinite alternate;
-}
-
-@keyframes boosterBreath {
-  from {
-    transform: translateY(0px) scale(1);
-    box-shadow: 0 0 26px rgba(34, 197, 94, 0.4);
-  }
-  to {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 0 40px rgba(34, 197, 94, 0.8);
-  }
-}
-
-/* Mode 2 – ouverture rapide/pulse quand la transaction part */
-.booster-mode-opening {
-  animation: boosterOpening 0.7s ease-in-out;
-}
-
-@keyframes boosterOpening {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 18px rgba(250, 250, 250, 0.2);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 40px rgba(250, 250, 250, 0.35);
-  }
-  100% {
-    transform: scale(1.02);
-    box-shadow: 0 0 22px rgba(250, 250, 250, 0.22);
-  }
-}
-
-/* Mode 3 – split : le booster se fend en deux plus lentement (~2.2s) */
-.booster-mode-split {
-  animation: boosterSplit 2.2s ease-out forwards;
-}
-
-@keyframes boosterSplit {
-  0% {
-    transform: scale(1);
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.02);
-    clip-path: inset(0 50% 0 50%);
-    opacity: 0;
-  }
-}
-
-/* Mode 4 – hidden : booster masqué entre deux états */
-.booster-mode-hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* === FX Result – ULTRA / LEGENDARY (nouveau) === */
-/* Déclenché sur #result-imgwrap via classes .fx-ultra / .fx-legendary */
-
-#result-imgwrap {
-  position: relative;
-  overflow: hidden;
-}
-
-#result-imgwrap::after,
-#result-imgwrap::before{
+/* soft gloss layer */
+.booster-closed::before{
   content:"";
   position:absolute;
-  inset:-40%;
-  opacity:0;
+  inset:-10%;
+  background: radial-gradient(circle at top left, rgba(167,243,208,.20), transparent 60%);
+  transform: rotate(-12deg);
   pointer-events:none;
 }
 
-/* ULTRA : bulle violette qui “explose” */
-#result-imgwrap.fx-ultra::before{
-  inset:-35%;
-  border-radius:999px;
-  background: radial-gradient(circle, rgba(168,85,247,.65) 0, rgba(168,85,247,.10) 45%, rgba(168,85,247,0) 70%);
-  mix-blend-mode: screen;
-  opacity:1;
-  animation: ultraBubble 900ms ease-out forwards;
-}
-
-@keyframes ultraBubble{
-  0%{ transform: scale(.25); filter: blur(0px); opacity:.0; }
-  15%{ opacity:1; }
-  70%{ transform: scale(1.08); filter: blur(.2px); opacity:.85; }
-  100%{ transform: scale(1.28); filter: blur(1.2px); opacity:0; }
-}
-
-/* LEGENDARY : explosion orange + étincelles */
-#result-imgwrap.fx-legendary::before{
-  inset:-40%;
-  border-radius:999px;
-  background: radial-gradient(circle, rgba(249,115,22,.75) 0, rgba(250,204,21,.22) 38%, rgba(249,115,22,0) 70%);
-  mix-blend-mode: screen;
-  opacity:1;
-  animation: legendaryBurstA 1100ms ease-out forwards;
-}
-
-#result-imgwrap.fx-legendary::after{
-  inset:-10%;
+/* vignette / depth */
+.booster-closed::after{
+  content:"";
+  position:absolute;
+  inset:0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(250,204,21,.9), rgba(250,204,21,0) 35%),
-    radial-gradient(circle at 70% 25%, rgba(249,115,22,.9), rgba(249,115,22,0) 40%),
-    radial-gradient(circle at 55% 70%, rgba(250,204,21,.8), rgba(250,204,21,0) 35%),
-    radial-gradient(circle at 30% 75%, rgba(249,115,22,.8), rgba(249,115,22,0) 40%);
-  mix-blend-mode: screen;
-  opacity:1;
-  animation: legendarySparks 1100ms ease-out forwards;
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.08), transparent 55%),
+    linear-gradient(to bottom, rgba(2,6,23,.00), rgba(2,6,23,.38));
+  pointer-events:none;
 }
 
-@keyframes legendaryBurstA{
-  0%{ transform: scale(.22); opacity:0; filter: blur(0px); }
-  12%{ opacity:1; }
-  70%{ transform: scale(1.12); opacity:.9; filter: blur(.2px); }
-  100%{ transform: scale(1.42); opacity:0; filter: blur(1.2px); }
+/* ========== Theme variants ========== */
+/* Plant (default if not specified) */
+.booster-closed[data-theme="plant"]{
+  background: radial-gradient(circle at 20% 0%, #22c55e 0, #064e3b 55%);
+}
+.booster-closed[data-theme="plant"]::before{
+  background: radial-gradient(circle at top left, rgba(167,243,208,.22), transparent 60%);
 }
 
-@keyframes legendarySparks{
-  0%{ transform: scale(.9) rotate(0deg); opacity:0; }
-  18%{ opacity:1; }
-  75%{ transform: scale(1.12) rotate(10deg); opacity:.85; }
-  100%{ transform: scale(1.22) rotate(18deg); opacity:0; }
+/* Water */
+.booster-closed[data-theme="water"]{
+  background: radial-gradient(circle at 20% 0%, #38bdf8 0, #082f49 55%);
+}
+.booster-closed[data-theme="water"]::before{
+  background: radial-gradient(circle at top left, rgba(186,230,253,.22), transparent 60%);
+}
+
+/* ========== Label block ========== */
+.booster-label{
+  position:relative;
+  z-index:2;
+  width:88%;
+  max-width: 220px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  padding:14px 10px;
+}
+
+/* top icon */
+.booster-leaf-icon{
+  width:64px;
+  height:64px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  line-height:1;
+  color:#e5e7eb;
+
+  background: rgba(2,6,23,.22);
+  border: 1px solid rgba(226,232,240,.18);
+  box-shadow: 0 0 22px rgba(2,6,23,.22);
+  backdrop-filter: blur(10px);
+}
+
+/* small chip */
+.booster-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:6px 12px;
+  border-radius:999px;
+
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#e5e7eb;
+
+  background: rgba(2,6,23,.26);
+  border: 1px solid rgba(226,232,240,.18);
+  box-shadow: 0 0 16px rgba(2,6,23,.16) inset;
+  backdrop-filter: blur(10px);
+}
+
+/* title */
+.booster-title{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#f9fafb;
+  text-shadow: 0 1px 0 rgba(2,6,23,.35);
+}
+
+/* subtitle */
+.booster-subtitle{
+  font-size:12px;
+  color:#e5e7eb;
+  opacity:.92;
+}
+
+/* ========== Idle animation ========== */
+.booster-mode-idle{
+  animation: boosterIdleFloat 3.4s ease-in-out infinite;
+}
+
+/* subtle shimmer band */
+.booster-mode-idle::marker{ content:""; } /* noop for safety */
+
+.booster-mode-idle .booster-chip{
+  animation: chipGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes boosterIdleFloat{
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-3px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes chipGlow{
+  0%   { box-shadow: 0 0 16px rgba(2,6,23,.16) inset, 0 0 0 rgba(255,255,255,0); }
+  50%  { box-shadow: 0 0 16px rgba(2,6,23,.16) inset, 0 0 14px rgba(255,255,255,.10); }
+  100% { box-shadow: 0 0 16px rgba(2,6,23,.16) inset, 0 0 0 rgba(255,255,255,0); }
+}
+
+/* ========== Hover micro-interactions (optional) ========== */
+.card-frame:hover .booster-closed{
+  filter: saturate(1.05) contrast(1.02);
+}
+.card-frame:hover .booster-leaf-icon{
+  box-shadow: 0 0 26px rgba(2,6,23,.28);
+  transform: translateY(-1px);
+  transition: transform .16s ease-out, box-shadow .16s ease-out;
+}
+.card-frame .booster-leaf-icon{
+  transition: transform .16s ease-out, box-shadow .16s ease-out;
+}
+
+/* ========== “Scanlines” texture overlay (very subtle) ========== */
+.booster-closed .booster-label::before{
+  content:"";
+  position:absolute;
+  inset:-24px -18px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.05) 0px,
+      rgba(255,255,255,.05) 1px,
+      rgba(255,255,255,0) 3px,
+      rgba(255,255,255,0) 7px
+    );
+  opacity:.07;
+  pointer-events:none;
+  z-index:-1;
+  transform: rotate(-1deg);
+}
+
+/* ========== Selection highlight (works with HTML data-selected) ========== */
+.card-frame[data-selected="true"] .booster-closed::after{
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), transparent 55%),
+    linear-gradient(to bottom, rgba(2,6,23,.00), rgba(2,6,23,.38));
+}
+
+.card-frame[data-selected="true"] .booster-chip{
+  border-color: rgba(165,180,252,.55);
+}
+
+/* ========== Reduced motion ========== */
+@media (prefers-reduced-motion: reduce){
+  .booster-mode-idle{ animation:none !important; }
+  .booster-mode-idle .booster-chip{ animation:none !important; }
+  .card-frame:hover .booster-leaf-icon{ transform:none !important; }
 }

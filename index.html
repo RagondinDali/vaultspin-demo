@@ -13,6 +13,13 @@
   <link rel="preload" as="image" href="images/chenipan.png">
   <link rel="preload" as="image" href="images/phyllali.png">
 
+  <!-- ✅ Preload eau (quelques clés) -->
+  <link rel="preload" as="image" href="images/aquali.png">
+  <link rel="preload" as="image" href="images/givrali.png">
+  <link rel="preload" as="image" href="images/flobio.png">
+  <link rel="preload" as="image" href="images/lokhlass.png">
+  <link rel="preload" as="image" href="images/tortank.png">
+
   <style>
     html, body { overflow-x:hidden; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,16 +32,15 @@
     }
 
     body{
-  min-height:100vh;
-  display:flex;
-  align-items:flex-start;      /* ✅ */
-  justify-content:flex-start;  /* ✅ */
-  background:radial-gradient(circle at top,#101827,#020617 60%);
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:#e5e7eb;
-  overflow-x:hidden;           /* sécurité */
-}
-
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;      /* ✅ */
+      justify-content:flex-start;  /* ✅ */
+      background:radial-gradient(circle at top,#101827,#020617 60%);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:#e5e7eb;
+      overflow-x:hidden;           /* sécurité */
+    }
 
     .page{
       width:100%;
@@ -53,12 +59,12 @@
         align-items:flex-start;
       }
       .live-panel{
-  flex:0 0 280px;
-  max-width:280px;
-  min-width:280px;
-  box-sizing:border-box;
-}
-
+        flex:0 0 280px;
+        max-width:280px;
+        min-width:280px;
+        box-sizing:border-box;
+      }
+    }
 
     .left-panel,.right-panel{
       background:radial-gradient(circle at top left,#020617,#020617 70%);
@@ -209,8 +215,37 @@
       padding:2px;
       background:radial-gradient(circle at top,#22c55e,#064e3b 70%);
       box-shadow:0 0 36px rgba(34,197,94,.45);
+      transition: transform .16s ease-out, box-shadow .16s ease-out;
     }
     .card-inner{ width:100%; height:100%; border-radius:22px; overflow:hidden; }
+
+    /* ✅ 2 boosters côte à côte + shrink */
+    .booster-grid{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      flex-wrap:wrap;
+    }
+    .card-frame--sm{
+      width:220px;
+      height:330px;
+    }
+    .card-frame[data-selected="true"]{
+      box-shadow: 0 0 44px rgba(255,255,255,.10), 0 0 26px rgba(165,180,252,.22);
+      transform: translateY(-2px);
+    }
+    .card-frame--sm .booster-title{ font-size:16px; }
+    .card-frame--sm .booster-subtitle{ font-size:11px; }
+
+    /* ✅ Theme eau (sur la face du booster) */
+    .booster-closed[data-theme="water"]{
+      background: radial-gradient(circle at 20% 0%, #38bdf8 0, #082f49 55%);
+    }
+    .booster-closed[data-theme="water"]::before{
+      background: radial-gradient(circle at top left, rgba(186,230,253,.22), transparent 60%);
+    }
 
     /* Top bar */
     .top-bar{
@@ -635,24 +670,23 @@
       justify-content:space-between;
       gap:8px;
     }
-      
-.loot-user-link{
-  font-size:11px;
-  font-weight:900;
-  color:#f9fafb;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  text-decoration:none;
-  cursor:pointer;
-}
-.loot-user-link:hover{
-  text-decoration:underline;
-  opacity:.95;
-}
 
+    .loot-user-link{
+      font-size:11px;
+      font-weight:900;
+      color:#f9fafb;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      text-decoration:none;
+      cursor:pointer;
+    }
+    .loot-user-link:hover{
+      text-decoration:underline;
+      opacity:.95;
+    }
   </style>
 </head>
 
@@ -671,7 +705,7 @@
     <div class="open-modal" role="dialog" aria-modal="true">
       <div class="open-top">
         <div>
-          <div class="open-title">VAULTSPIN · OPENING</div>
+          <div class="open-title" id="open-title">VAULTSPIN · OPENING</div>
         </div>
         <div class="open-right">
           <button class="open-btn" id="open-skip">Skip</button>
@@ -728,8 +762,6 @@
   <!-- Top bar -->
   <div class="top-bar">
     <div class="top-right">
-      <!-- ✅ NEW: Profil bouton avant Ma collection -->
-
       <a class="top-link glow" href="me.html">Profil</a>
       <a class="top-link glow" href="collection.html">Ma collection</a>
       <a class="top-link" href="leaderboard.html">Leaderboard</a>
@@ -838,96 +870,196 @@
     <!-- RIGHT -->
     <div class="right-panel">
       <div class="card-zone">
-        <div class="card-frame">
-          <div class="card-inner">
-            <div id="booster-closed" class="booster-closed booster-mode-idle">
-              <div class="booster-label">
-                <div class="booster-leaf-icon">🌿</div>
-                <div class="booster-chip">VaultSpin Pack</div>
-                <div class="booster-title">Booster Plante</div>
-                <div class="booster-subtitle">1 carte à révéler</div>
+        <div class="booster-grid">
+
+          <!-- ✅ Booster PLANTE -->
+          <div class="card-frame card-frame--sm" data-booster="plant" data-selected="true">
+            <div class="card-inner">
+              <div class="booster-closed booster-mode-idle" data-theme="plant">
+                <div class="booster-label">
+                  <div class="booster-leaf-icon">🌿</div>
+                  <div class="booster-chip">VaultSpin Pack</div>
+                  <div class="booster-title">Booster Plante</div>
+                  <div class="booster-subtitle">1 carte à révéler</div>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- ✅ Booster EAU -->
+          <div class="card-frame card-frame--sm" data-booster="water" data-selected="false">
+            <div class="card-inner">
+              <div class="booster-closed booster-mode-idle" data-theme="water">
+                <div class="booster-label">
+                  <div class="booster-leaf-icon">💧</div>
+                  <div class="booster-chip">VaultSpin Pack</div>
+                  <div class="booster-title">Booster Eau</div>
+                  <div class="booster-subtitle">1 carte à révéler</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
       <div class="drop-table">
-        <div class="drop-title">Cartes potentiellement obtenables</div>
-        <div class="drop-grid" id="drop-grid">
+        <div class="drop-title" id="drop-title">Cartes potentiellement obtenables</div>
+
+        <!-- ✅ DROP GRID PLANTE -->
+        <div class="drop-grid" id="drop-grid-plant">
           <!-- EPIC -->
-          <div class="drop-item" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
             <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Germignon</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Astronelle" data-img="images/astronelle.png" data-ct="3">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Astronelle" data-img="images/astronelle.png" data-ct="3">
             <div class="drop-thumb"><img src="images/astronelle.png" alt="Astronelle" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Astronelle</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Majaspic" data-img="images/majaspic.png" data-ct="8">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Majaspic" data-img="images/majaspic.png" data-ct="8">
             <div class="drop-thumb"><img src="images/majaspic.png" alt="Majaspic" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Majaspic</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Chenipan" data-img="images/chenipan.png" data-ct="6">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Chenipan" data-img="images/chenipan.png" data-ct="6">
             <div class="drop-thumb"><img src="images/chenipan.png" alt="Chenipan" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Chenipan</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Phyllali" data-img="images/phyllali.png" data-ct="14">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Phyllali" data-img="images/phyllali.png" data-ct="14">
             <div class="drop-thumb"><img src="images/phyllali.png" alt="Phyllali" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Phyllali</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Paras" data-img="images/paras.png" data-ct="13">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Paras" data-img="images/paras.png" data-ct="13">
             <div class="drop-thumb"><img src="images/paras.png" alt="Paras" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Paras</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Chétiflor" data-img="images/chetiflor.png" data-ct="4">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Chétiflor" data-img="images/chetiflor.png" data-ct="4">
             <div class="drop-thumb"><img src="images/chetiflor.png" alt="Chétiflor" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Chétiflor</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Mimitoss" data-img="images/mimitoss.png" data-ct="9">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Mimitoss" data-img="images/mimitoss.png" data-ct="9">
             <div class="drop-thumb"><img src="images/mimitoss.png" alt="Mimitoss" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Mimitoss</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
-          <div class="drop-item" data-rarity="EPIC" data-name="Noeufnoeuf" data-img="images/noeufnoeuf.png" data-ct="12">
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Noeufnoeuf" data-img="images/noeufnoeuf.png" data-ct="12">
             <div class="drop-thumb"><img src="images/noeufnoeuf.png" alt="Noeufnoeuf" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Noeufnoeuf</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
 
           <!-- ULTRA -->
-          <div class="drop-item" data-rarity="ULTRA" data-name="Énergie Plante" data-img="images/energie_plante.png" data-ct="7">
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Énergie Plante" data-img="images/energie_plante.png" data-ct="7">
             <div class="drop-thumb"><img src="images/energie_plante.png" alt="Énergie Plante" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Énergie</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
-          <div class="drop-item" data-rarity="ULTRA" data-name="Aéromite" data-img="images/aeromite.png" data-ct="1">
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Aéromite" data-img="images/aeromite.png" data-ct="1">
             <div class="drop-thumb"><img src="images/aeromite.png" alt="Aéromite" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Aéromite</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
-          <div class="drop-item" data-rarity="ULTRA" data-name="Jungko" data-img="images/jungko.png" data-ct="5">
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Jungko" data-img="images/jungko.png" data-ct="5">
             <div class="drop-thumb"><img src="images/jungko.png" alt="Jungko" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Jungko</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
-          <div class="drop-item" data-rarity="ULTRA" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
             <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Nidoking</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
 
           <!-- LEGENDARY -->
-          <div class="drop-item" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
+          <div class="drop-item" data-booster="plant" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
             <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" loading="lazy" decoding="async" /></div>
             <div class="drop-name">Florizarre</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- ✅ DROP GRID EAU -->
+        <div class="drop-grid" id="drop-grid-water" style="display:none;">
+          <!-- EPIC -->
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Aquali" data-img="images/aquali.png" data-ct="100">
+            <div class="drop-thumb"><img src="images/aquali.png" alt="Aquali" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Aquali</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Énergie Eau" data-img="images/energie_eau.png" data-ct="101">
+            <div class="drop-thumb"><img src="images/energie_eau.png" alt="Énergie Eau" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Énergie</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Lumineon" data-img="images/lumineon.png" data-ct="108">
+            <div class="drop-thumb"><img src="images/lumineon.png" alt="Lumineon" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Lumineon</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Pingoléon" data-img="images/pingoleon.png" data-ct="110">
+            <div class="drop-thumb"><img src="images/pingoleon.png" alt="Pingoléon" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Pingoléon</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Poissirène" data-img="images/poissirene.png" data-ct="111">
+            <div class="drop-thumb"><img src="images/poissirene.png" alt="Poissirène" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Poissirène</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+
+          <!-- ULTRA -->
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Flobio" data-img="images/flobio.png" data-ct="102">
+            <div class="drop-thumb"><img src="images/flobio.png" alt="Flobio" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Flobio</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Givrali" data-img="images/givrali.png" data-ct="103">
+            <div class="drop-thumb"><img src="images/givrali.png" alt="Givrali" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Givrali</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Léviator" data-img="images/leviator.png" data-ct="104">
+            <div class="drop-thumb"><img src="images/leviator.png" alt="Léviator" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Léviator</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Ludicolo" data-img="images/ludicolo.png" data-ct="107">
+            <div class="drop-thumb"><img src="images/ludicolo.png" alt="Ludicolo" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Ludicolo</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Palkia" data-img="images/palkia.png" data-ct="109">
+            <div class="drop-thumb"><img src="images/palkia.png" alt="Palkia" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Palkia</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Staross" data-img="images/staross.png" data-ct="112">
+            <div class="drop-thumb"><img src="images/staross.png" alt="Staross" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Staross</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+
+          <!-- LEGENDARY (3) -->
+          <div class="drop-item" data-booster="water" data-rarity="LEGENDARY" data-name="Lokhlass" data-img="images/lokhlass.png" data-ct="106">
+            <div class="drop-thumb"><img src="images/lokhlass.png" alt="Lokhlass" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Lokhlass</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="LEGENDARY" data-name="Léviator Obscur" data-img="images/leviator_obscur.png" data-ct="105">
+            <div class="drop-thumb"><img src="images/leviator_obscur.png" alt="Léviator Obscur" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Obscur</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="LEGENDARY" data-name="Tortank" data-img="images/tortank.png" data-ct="113">
+            <div class="drop-thumb"><img src="images/tortank.png" alt="Tortank" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Tortank</div>
             <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
           </div>
         </div>
@@ -1107,94 +1239,196 @@
     }
 
     /********************
-     * PRICES (source of truth)
+     * ✅ BOOSTERS CONFIG (PLANT + WATER)
      ********************/
-    const CARD_PRICE_EUR_BY_INDEX = {
-      0: 5.50,  // Phyllali PCA (HIDDEN)
-      1: 135,
-      2: 60,
-      3: 70,
-      4: 109,
-      5: 209,
-      6: 69,
-      7: 129,
-      8: 70,
-      9: 109,
-      10: 1350, // Florizarre
-      11: 199,  // Nidoking
-      12: 109,
-      13: 109,
-      14: 77,
-      15: 15.50, // Boskara (HIDDEN)
-      16: 4.00,  // Filentrappe (HIDDEN)
-      17: 3.00,  // Peterson (HIDDEN)
-      18: 7.00   // Scovilain (HIDDEN)
+    let selectedBoosterKey = "plant";
+
+    const BOOSTERS = {
+      plant: {
+        key: "plant",
+        uiName: "Booster Plante",
+        openTitle: "VAULTSPIN · OPENING · PLANTE",
+        packPriceEur: PACK_PRICE_EUR,
+
+        prices: {
+          0: 5.50,
+          1: 135,
+          2: 60,
+          3: 70,
+          4: 109,
+          5: 209,
+          6: 69,
+          7: 129,
+          8: 70,
+          9: 109,
+          10: 1350,
+          11: 199,
+          12: 109,
+          13: 109,
+          14: 77,
+          15: 15.50,
+          16: 4.00,
+          17: 3.00,
+          18: 7.00
+        },
+
+        images: {
+          0:"images/phyllali_PCA.png",
+          1:"images/aeromite.png",
+          2:"images/germignon.png",
+          3:"images/astronelle.png",
+          4:"images/chetiflor.png",
+          5:"images/jungko.png",
+          6:"images/chenipan.png",
+          7:"images/energie_plante.png",
+          8:"images/majaspic.png",
+          9:"images/mimitoss.png",
+          10:"images/florizarre.png",
+          11:"images/nidoking.png",
+          12:"images/noeufnoeuf.png",
+          13:"images/paras.png",
+          14:"images/phyllali.png",
+          15:"images/boskara.png",
+          16:"images/filentrappe.png",
+          17:"images/peterson.png",
+          18:"images/scovilain.png"
+        },
+
+        names: {
+          0:"Phyllali PCA",
+          1:"Aéromite",
+          2:"Germignon",
+          3:"Astronelle",
+          4:"Chétiflor",
+          5:"Jungko",
+          6:"Chenipan",
+          7:"Énergie Plante",
+          8:"Majaspic",
+          9:"Mimitoss",
+          10:"Florizarre",
+          11:"Nidoking",
+          12:"Noeufnoeuf",
+          13:"Paras",
+          14:"Phyllali",
+          15:"Boskara",
+          16:"Filentrappe",
+          17:"Peterson",
+          18:"Scovilain"
+        },
+
+        legendaryCts: [10],
+        hiddenSet: new Set([0,15,16,17,18]),
+        poolUltra: [11, 1, 7, 5],
+        poolEpic: [2, 3, 8, 6, 14, 13, 4, 9, 12],
+        hiddenWeights: [
+          { ct: 17, w: 60 },
+          { ct: 16, w: 22 },
+          { ct: 0,  w: 12 },
+          { ct: 18, w: 5 },
+          { ct: 15, w: 1 }
+        ]
+      },
+
+      water: {
+        key: "water",
+        uiName: "Booster Eau",
+        openTitle: "VAULTSPIN · OPENING · EAU",
+        packPriceEur: PACK_PRICE_EUR,
+
+        // ✅ indices offset 100+ pour ne pas collisionner avec Plante
+        prices: {
+          100: 40.00,     // aquali
+          101: 119.00,    // energie_eau
+          102: 249.00,    // flobio (ULTRA)
+          103: 125.99,    // givrali (ULTRA)
+          104: 229.00,    // leviator (ULTRA)
+          105: 1049.00,   // leviator_obscur (LEGENDARY)
+          106: 499.00,    // lokhlass (LEGENDARY)
+          107: 200.00,    // ludicolo (ULTRA)
+          108: 54.00,     // lumineon
+          109: 145.99,    // palkia (ULTRA)
+          110: 100.00,    // pingoleon
+          111: 109.00,    // poissirene
+          112: 215.00,    // staross (ULTRA)
+          113: 1689.00,   // tortank (LEGENDARY)
+
+          // hidden
+          120: 5.50,      // givrali_vstar
+          121: 8.05,      // keldeo
+          122: 15.10,     // leviator_vmax
+          123: 4.00       // tortank_PCA
+        },
+
+        images: {
+          100:"images/aquali.png",
+          101:"images/energie_eau.png",
+          102:"images/flobio.png",
+          103:"images/givrali.png",
+          104:"images/leviator.png",
+          105:"images/leviator_obscur.png",
+          106:"images/lokhlass.png",
+          107:"images/ludicolo.png",
+          108:"images/lumineon.png",
+          109:"images/palkia.png",
+          110:"images/pingoleon.png",
+          111:"images/poissirene.png",
+          112:"images/staross.png",
+          113:"images/tortank.png",
+
+          120:"images/givrali_vstar.png",
+          121:"images/keldeo.png",
+          122:"images/leviator_vmax.png",
+          123:"images/tortank_PCA.png"
+        },
+
+        names: {
+          100:"Aquali",
+          101:"Énergie Eau",
+          102:"Flobio",
+          103:"Givrali",
+          104:"Léviator",
+          105:"Léviator Obscur",
+          106:"Lokhlass",
+          107:"Ludicolo",
+          108:"Lumineon",
+          109:"Palkia",
+          110:"Pingoléon",
+          111:"Poissirène",
+          112:"Staross",
+          113:"Tortank",
+
+          120:"Givrali VSTAR",
+          121:"Keldeo",
+          122:"Léviator VMAX",
+          123:"Tortank PCA"
+        },
+
+        // ✅ 3 Legendary demandés
+        legendaryCts: [113, 105, 106],
+        hiddenSet: new Set([120,121,122,123]),
+        poolUltra: [102,103,104,107,109,112],
+        poolEpic: [100,101,108,110,111],
+        hiddenWeights: [
+          { ct: 120, w: 60 }, // givrali_vstar
+          { ct: 122, w: 22 }, // leviator_vmax
+          { ct: 123, w: 12 }, // tortank_PCA
+          { ct: 121, w: 6 }   // keldeo
+        ]
+      }
     };
 
-    /********************
-     * Cards meta
-     ********************/
-    const CARD_IMAGE_BY_INDEX = {
-      0:"images/phyllali_PCA.png",
-      1:"images/aeromite.png",
-      2:"images/germignon.png",
-      3:"images/astronelle.png",
-      4:"images/chetiflor.png",
-      5:"images/jungko.png",
-      6:"images/chenipan.png",
-      7:"images/energie_plante.png",
-      8:"images/majaspic.png",
-      9:"images/mimitoss.png",
-      10:"images/florizarre.png",
-      11:"images/nidoking.png",
-      12:"images/noeufnoeuf.png",
-      13:"images/paras.png",
-      14:"images/phyllali.png",
-      15:"images/boskara.png",
-      16:"images/filentrappe.png",
-      17:"images/peterson.png",
-      18:"images/scovilain.png"
-    };
-
-    const CARD_NAME_BY_INDEX = {
-      0:"Phyllali PCA",
-      1:"Aéromite",
-      2:"Germignon",
-      3:"Astronelle",
-      4:"Chétiflor",
-      5:"Jungko",
-      6:"Chenipan",
-      7:"Énergie Plante",
-      8:"Majaspic",
-      9:"Mimitoss",
-      10:"Florizarre",
-      11:"Nidoking",
-      12:"Noeufnoeuf",
-      13:"Paras",
-      14:"Phyllali",
-      15:"Boskara",
-      16:"Filentrappe",
-      17:"Peterson",
-      18:"Scovilain"
-    };
+    function getBooster(){
+      return BOOSTERS[selectedBoosterKey] || BOOSTERS.plant;
+    }
 
     /********************
      * RARITY (display rules)
-     * HIDDEN = aucun tag affiché
      ********************/
-    const CT_HIDDEN_PCA = 0;
-    const CT_BOSKARA = 15;
-    const CT_FILENTRAPPE = 16;
-    const CT_PETERSON = 17;
-    const CT_SCOVILAIN = 18;
-    const CT_FLORIZARRE = 10;
-
-    const HIDDEN_SET = new Set([CT_HIDDEN_PCA, CT_BOSKARA, CT_FILENTRAPPE, CT_PETERSON, CT_SCOVILAIN]);
-
     function rarityKeyForCt(ct){
-      if (HIDDEN_SET.has(ct)) return "HIDDEN";
-      if (ct === CT_FLORIZARRE) return "LEGENDARY";
-      const price = CARD_PRICE_EUR_BY_INDEX[ct] ?? 0;
+      const b = getBooster();
+      if (b.hiddenSet.has(ct)) return "HIDDEN";
+      if (b.legendaryCts.includes(ct)) return "LEGENDARY";
+      const price = b.prices[ct] ?? 0;
       if (price >= 121 && price <= 300) return "ULTRA";
       return "EPIC";
     }
@@ -1214,8 +1448,6 @@
     /********************
      * Drop logic (bucketed)
      ********************/
-    const POOL_ULTRA = [11, 1, 7, 5];
-    const POOL_EPIC = [2, 3, 8, 6, 14, 13, 4, 9, 12];
     function pickFrom(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
     function pickWeighted(pairs){
       let total = 0;
@@ -1228,19 +1460,17 @@
       return pairs[pairs.length - 1].ct;
     }
     function pickHiddenCt(){
-      return pickWeighted([
-        { ct: CT_PETERSON, w: 60 },
-        { ct: CT_FILENTRAPPE, w: 22 },
-        { ct: CT_HIDDEN_PCA, w: 12 },
-        { ct: CT_SCOVILAIN, w: 5 },
-        { ct: CT_BOSKARA, w: 1 }
-      ]);
+      const b = getBooster();
+      return pickWeighted(b.hiddenWeights);
     }
     function pickCardIndex(){
+      const b = getBooster();
       const r = Math.random();
-      if (r < (1/5000)) return CT_FLORIZARRE;
-      if (r < (1/5000) + (1/50)) return pickFrom(POOL_ULTRA);
-      if (r < (1/5000) + (1/50) + (1/20)) return pickFrom(POOL_EPIC);
+
+      // même logique que Plante
+      if (r < (1/5000)) return pickFrom(b.legendaryCts);
+      if (r < (1/5000) + (1/50)) return pickFrom(b.poolUltra);
+      if (r < (1/5000) + (1/50) + (1/20)) return pickFrom(b.poolEpic);
       return pickHiddenCt();
     }
 
@@ -1290,7 +1520,11 @@
       for (const x of arr){
         const ct = Number(x.cardTypeIndex ?? -1);
         if (!Number.isFinite(ct) || ct < 0) continue;
-        sum += (CARD_PRICE_EUR_BY_INDEX[ct] ?? 0);
+
+        // valeur dépend du booster sauvegardé
+        const bkey = x.boosterKey || "plant";
+        const b = BOOSTERS[bkey] || BOOSTERS.plant;
+        sum += (b.prices[ct] ?? 0);
       }
       return sum;
     }
@@ -1458,6 +1692,7 @@
     }
 
     function renderReel(reelItems){
+      const b = getBooster();
       const track = document.getElementById("reel-track");
       track.innerHTML = "";
       track.classList.remove("spinning");
@@ -1473,10 +1708,10 @@
         el.setAttribute("data-i", String(i));
         el.innerHTML = `
           <div class="reel-thumb">
-            <img src="${CARD_IMAGE_BY_INDEX[ct]}" alt="${escapeHtml(CARD_NAME_BY_INDEX[ct] || "Card")}" loading="lazy" decoding="async"/>
+            <img src="${b.images[ct]}" alt="${escapeHtml(b.names[ct] || "Card")}" loading="lazy" decoding="async"/>
           </div>
           <div class="reel-meta">
-            <div class="reel-name">${escapeHtml(CARD_NAME_BY_INDEX[ct] || "Card")}</div>
+            <div class="reel-name">${escapeHtml(b.names[ct] || "Card")}</div>
             <div class="reel-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "" : rk}</div>
           </div>
         `;
@@ -1583,65 +1818,43 @@
       track.style.transform = `translateX(${finalX}px)`;
     }
 
-async function fillResultUI(){
-  const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
-  const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+    function fillResultUI(){
+      const b = getBooster();
+      const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
+      const price = b.prices[winningCt] ?? 0;
 
-  // ✅ Image: reset -> set -> wait decode/load
-  const imgEl = document.getElementById("result-img");
-  imgEl.src = ""; // reset (force repaint)
-  imgEl.removeAttribute("srcset"); // safety
-  imgEl.loading = "eager";
+      document.getElementById("result-img").src = imgSrc;
+      document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
 
-  // force reflow to apply reset
-  void imgEl.offsetHeight;
+      const isHidden = b.hiddenSet.has(winningCt);
+      const desc = isHidden
+        ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
+        : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
 
-  imgEl.src = imgSrc;
+      document.getElementById("result-desc").textContent = desc;
 
-  try{
-    if (imgEl.decode) {
-      await imgEl.decode();
-    } else {
-      await new Promise((res, rej) => {
-        imgEl.onload = () => res();
-        imgEl.onerror = () => rej(new Error("Image load failed"));
-      });
+      const pill = document.getElementById("result-pill");
+      if (isHidden){
+        pill.style.display = "none";
+      } else {
+        pill.style.display = "inline-flex";
+        pill.textContent = rarityKey;
+        pill.className = "result-pill " + rarityKey.toLowerCase();
+      }
+
+      document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
+
+      const sellBtn = document.getElementById("result-sell");
+      sellBtn.disabled = false;
+      sellBtn.textContent = "Revendre · " + fmtEur(price);
     }
-  } catch(e){
-    console.warn("Result img decode/load failed:", imgSrc, e);
-    // On continue quand même, mais au moins on ne bloque pas l’UI
-  }
-
-  document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
-
-  const isHidden = HIDDEN_SET.has(winningCt);
-  const desc = isHidden
-    ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
-    : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
-
-  document.getElementById("result-desc").textContent = desc;
-
-  const pill = document.getElementById("result-pill");
-  if (isHidden){
-    pill.style.display = "none";
-  } else {
-    pill.style.display = "inline-flex";
-    pill.textContent = rarityKey;
-    pill.className = "result-pill " + rarityKey.toLowerCase();
-  }
-
-  document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
-
-  const sellBtn = document.getElementById("result-sell");
-  sellBtn.disabled = false;
-  sellBtn.textContent = "Revendre · " + fmtEur(price);
-}
 
     function commitToCollection(){
-      const { winningCt, rarityKey, imgSrc, name, tokenId, ts } = currentOpen;
+      const { winningCt, rarityKey, imgSrc, name, tokenId, ts, boosterKey } = currentOpen;
       const entry = {
         tokenId,
         ts,
+        boosterKey,
         priceEur: PACK_PRICE_EUR,
         rarityKey,
         rarityLabel: rarityLabelForKey(rarityKey),
@@ -1657,8 +1870,9 @@ async function fillResultUI(){
 
     function sellCurrentPull(){
       if (!currentOpen) return;
-      const { winningCt, tokenId } = currentOpen;
-      const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+      const { winningCt, tokenId, boosterKey } = currentOpen;
+      const b = BOOSTERS[boosterKey] || BOOSTERS.plant;
+      const price = b.prices[winningCt] ?? 0;
 
       removeTokenFromCollection(tokenId);
       creditWallet(price);
@@ -1693,7 +1907,6 @@ async function fillResultUI(){
             }
           }
         }catch(e){
-          // fallback demo local
           if (!spendPoints(FREE_PACK_COST_PTS)){
             setStatus("Points insuffisants pour un booster gratuit.", "error");
             return;
@@ -1709,14 +1922,18 @@ async function fillResultUI(){
       openOverlay();
       showReel();
 
+      const b = getBooster();
+      const openTitle = document.getElementById("open-title");
+      if (openTitle) openTitle.textContent = b.openTitle;
+
       const winningCt = pickCardIndex();
       const rarityKey = rarityKeyForCt(winningCt);
-      const imgSrc = CARD_IMAGE_BY_INDEX[winningCt] ?? CARD_IMAGE_BY_INDEX[2];
-      const name = CARD_NAME_BY_INDEX[winningCt] || "Card";
+      const imgSrc = b.images[winningCt] ?? b.images[b.poolEpic?.[0]] ?? "images/germignon.png";
+      const name = b.names[winningCt] || "Card";
       const tokenId = nextLocalTokenId();
       const ts = Date.now();
 
-      currentOpen = { winningCt, rarityKey, imgSrc, name, tokenId, ts };
+      currentOpen = { boosterKey: b.key, winningCt, rarityKey, imgSrc, name, tokenId, ts };
 
       const reelItems = buildReelItems(winningCt);
       renderReel(reelItems);
@@ -1733,11 +1950,11 @@ async function fillResultUI(){
       // ✅ 2) DB Supabase (si dispo)
       try{
         if (window.vsSaveCardToDb){
-          const price = CARD_PRICE_EUR_BY_INDEX[winningCt] ?? 0;
+          const price = b.prices[winningCt] ?? 0;
           await window.vsSaveCardToDb({
             token_id: tokenId,
             card_type_index: winningCt,
-            rarity_key: (rarityKey === "HIDDEN") ? null : rarityKey,
+            rarity_key: rarityKey,              // ✅ on envoie HIDDEN / EPIC / ULTRA / LEGENDARY
             image_url: imgSrc,
             card_name: name,
             estimated_value_eur: price,
@@ -1749,7 +1966,7 @@ async function fillResultUI(){
         setStatus("Pack ouvert ✅ (DB en retard / erreur)", "pending");
       }
 
-      await fillResultUI();
+      fillResultUI();
 
       /* ✅ FIX: pas de double ajout de points.
          - si Supabase est connecté, vsSaveCardToDb ajoute les points via RPC
@@ -1818,6 +2035,36 @@ async function fillResultUI(){
     }
 
     /********************
+     * Booster selection UI
+     ********************/
+    function setSelectedBooster(key){
+      selectedBoosterKey = (key === "water") ? "water" : "plant";
+
+      // sélection visuelle
+      document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
+        el.setAttribute("data-selected", String(el.getAttribute("data-booster") === selectedBoosterKey));
+      });
+
+      // switch drop grid
+      const gPlant = document.getElementById("drop-grid-plant");
+      const gWater = document.getElementById("drop-grid-water");
+      if (gPlant && gWater){
+        gPlant.style.display = (selectedBoosterKey === "plant") ? "" : "none";
+        gWater.style.display = (selectedBoosterKey === "water") ? "" : "none";
+      }
+
+      // bouton open label
+      const b = getBooster();
+      const btn = document.getElementById("open-pack-btn");
+      if (btn){
+        btn.textContent = `Open ${b.uiName} — ${b.packPriceEur.toFixed(2).replace(".", ",")} €`;
+      }
+
+      // status
+      setStatus(`Sélectionné : ${b.uiName}`, "ok");
+    }
+
+    /********************
      * Init
      ********************/
     document.addEventListener("DOMContentLoaded", () => {
@@ -1846,14 +2093,18 @@ async function fillResultUI(){
       renderStats();
       renderHistory();
       renderPoints();
-      setStatus("Prêt. Ouvre un pack.", "ok");
+
+      // default booster
+      setSelectedBooster("plant");
 
       // ✅ expose pour module (sync server points)
       window.renderPoints = renderPoints;
 
+      // open buttons
       document.getElementById("open-pack-btn").addEventListener("click", () => openPackRoulette("paid"));
       document.getElementById("free-pack-btn").addEventListener("click", () => openPackRoulette("free"));
 
+      // overlay buttons
       document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
       document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
       document.getElementById("result-sell").addEventListener("click", sellCurrentPull);
@@ -1875,6 +2126,7 @@ async function fillResultUI(){
         }
       });
 
+      // wallet
       document.getElementById("wallet-topup-100").addEventListener("click", () => {
         creditWallet(100);
         setStatus("+100€ ajoutés ✅", "ok");
@@ -1889,7 +2141,16 @@ async function fillResultUI(){
         renderHistory();
       });
 
-      // Hover preview + click filter
+      // ✅ Booster click selection
+      document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
+        el.style.cursor = "pointer";
+        el.addEventListener("click", () => {
+          const key = el.getAttribute("data-booster");
+          setSelectedBooster(key);
+        });
+      });
+
+      // Hover preview + click filter (sur les 2 grids)
       document.querySelectorAll(".drop-item").forEach((el) => {
         const img = el.getAttribute("data-img");
         const name = el.getAttribute("data-name");
@@ -1934,6 +2195,7 @@ async function fillResultUI(){
       100%{ transform: scale(1.15); opacity:0; }
     }
   </style>
+
   <!-- ✅ AUTH + DB SAVE (Supabase) + ✅ POINTS RPC -->
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
@@ -2036,7 +2298,7 @@ async function fillResultUI(){
       return await vsSpendPoints(cost);
     };
 
-    // ✅ EXPOSE: fonction DB save utilisable par ton <script> classique
+    // ✅ EXPOSE: DB save utilisable par <script> classique
     // ✅ FIX: on attribue +25 points ICI seulement (server authoritative)
     window.vsSaveCardToDb = async (card) => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -2046,7 +2308,7 @@ async function fillResultUI(){
         user_id: session.user.id,
         token_id: card.token_id ?? null,
         card_type_index: card.card_type_index,
-        rarity_key: card.rarity_key ?? null,
+        rarity_key: card.rarity_key ?? null, // ✅ garde HIDDEN si envoyé
         image_url: card.image_url ?? null,
         card_name: card.card_name ?? null,
         estimated_value_eur: card.estimated_value_eur ?? 0,
@@ -2188,7 +2450,6 @@ async function fillResultUI(){
         return;
       }
 
-      // ✅ 6 visibles + scroll => déjà assuré par CSS height + overflow:auto
       for (const it of items){
         const row = document.createElement("div");
         row.className = "loot-item";
@@ -2201,9 +2462,9 @@ async function fillResultUI(){
 
           <div class="loot-meta">
             <div class="loot-line1">
-            <a class="loot-user-link" href="player.html?u=${encodeURIComponent(it.user_id)}">
-  ${escapeHtml(it.player)}
-</a>
+              <a class="loot-user-link" href="player.html?u=${encodeURIComponent(it.user_id)}">
+                ${escapeHtml(it.player)}
+              </a>
               <div class="loot-pill ${pillClass(it.rarity)}">${escapeHtml(it.rarity)}</div>
             </div>
             <div class="loot-line2">${escapeHtml(it.name)}</div>
@@ -2228,7 +2489,6 @@ async function fillResultUI(){
 
         renderItems(items);
 
-        // si nouveau loot en top => on remonte en haut comme Hellcase
         if (isNewTop){
           listEl.scrollTop = 0;
         }
@@ -2249,8 +2509,3 @@ async function fillResultUI(){
 
 </body>
 </html>
-
-
-
-
-
