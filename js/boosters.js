@@ -88,3 +88,74 @@ export const BOOSTERS = {
     ],
   },
 };
+
+// js/boosters.js
+
+function eur(n) {
+  return Number(n || 0);
+}
+
+/**
+ * Règles :
+ * - hidden:true => HIDDEN (pas de tag)
+ * - legendary:true => LEGENDARY (pool dédié)
+ * - ultra:true => ULTRA (pool dédié)
+ * - sinon => EPIC
+ *
+ * Le prix "détermine" la rareté => ici on met les flags selon tes seuils :
+ *   LEGENDARY : > 300
+ *   ULTRA     : 121–300
+ *   EPIC      : < 121
+ *   HIDDEN    : hidden:true
+ */
+export const BOOSTERS = {
+  plant: {
+    /* ... ton code ... */
+  },
+
+  water: {
+    /* ... ton code ... */
+  },
+
+  fire: {
+    key: "fire",
+    uiName: "Booster Feu",
+    icon: "🔥",
+    packPriceEur: 24.99,
+    theme: "fire",
+
+    cards: [
+      // -------------------
+      // HIDDEN
+      // -------------------
+      { id: "galopa_cgg", name: "Galopa CGG", img: "images/galopa_cgg.png", price: eur(7.5), hidden: true },
+      { id: "lugulabre", name: "Lugulabre", img: "images/lugulabre.png", price: eur(7.0), hidden: true },
+
+      // -------------------
+      // EPIC (< 121)
+      // -------------------
+      { id: "dracaufeu_ex", name: "Dracaufeu EX", img: "images/dracaufeu_ex.png", price: eur(75) },
+      { id: "feu_percant", name: "Feu Perçant", img: "images/feu_percant.png", price: eur(53) },
+      { id: "pyrobut", name: "Pyrobut", img: "images/pyrobut.png", price: eur(35.5) },
+      { id: "reptincel", name: "Reptincel", img: "images/reptincel.png", price: eur(78.99) },
+      { id: "scolocendre_vmax", name: "Scolocendre VMAX", img: "images/scolocendre_vmax.png", price: eur(60) },
+      { id: "hericendre", name: "Héricendre", img: "images/hericendre.png", price: eur(120) }, // 120 => EPIC
+
+      // -------------------
+      // ULTRA (121–300)
+      // -------------------
+      { id: "dracaufeu_vmax", name: "Dracaufeu VMAX", img: "images/dracaufeu_vmax.png", price: eur(145), ultra: true },
+      { id: "energie_feu", name: "Énergie Feu", img: "images/energie_feu.png", price: eur(149), ultra: true },
+      { id: "feurisson", name: "Feurisson", img: "images/feurisson.png", price: eur(249), ultra: true },
+      { id: "galopa", name: "Galopa", img: "images/galopa.png", price: eur(145), ultra: true },
+      { id: "pyroli", name: "Pyroli", img: "images/pyroli.png", price: eur(239), ultra: true },
+      { id: "reshiram", name: "Reshiram", img: "images/reshiram.png", price: eur(200), ultra: true },
+      { id: "typhlosion", name: "Typhlosion", img: "images/typhlosion.png", price: eur(199), ultra: true },
+
+      // -------------------
+      // LEGENDARY (> 300)
+      // -------------------
+      { id: "dracaufeu", name: "Dracaufeu", img: "images/dracaufeu.png", price: eur(6299), legendary: true },
+    ],
+  },
+};
