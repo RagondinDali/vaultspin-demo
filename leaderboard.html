@@ -65,6 +65,10 @@
       text-transform:uppercase;
       color:#e5e7eb;
       cursor:default;
+      max-width: 340px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
     .btn{
@@ -94,6 +98,13 @@
 
     .btn.primary:hover{
       box-shadow: 0 0 22px rgba(168,85,247,.55);
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none !important;
+      box-shadow:none !important;
     }
 
     /* Panels */
@@ -224,6 +235,7 @@
 
     @media (max-width: 680px){
       .thead, .trow{ grid-template-columns: 60px 1.2fr 1fr 1fr; }
+      .pill{ max-width: 220px; }
     }
   </style>
 </head>
@@ -248,7 +260,7 @@
       <div>
         <h1>Classement mensuel</h1>
         <div class="sub">
-          Leaderboard (100 joueurs). Reset automatique chaque mois.
+          Leaderboard (Top 100). Reset automatique chaque mois.
           <br />
           Points : +25 par booster ouvert. Booster gratuit : 2500 points.
           <br />
@@ -260,7 +272,7 @@
         <div class="stat">
           <div class="k">Players</div>
           <div class="v" id="stat-players">—</div>
-          <div class="s">Classement global</div>
+          <div class="s">Top 100 (mois courant)</div>
         </div>
         <div class="stat">
           <div class="k">Your rank</div>
@@ -306,7 +318,7 @@
       return `${y}-${m}`;
     }
 
-    // ✅ PATCH: timezone-safe, no toISOString()
+    // ✅ timezone-safe: DATE "YYYY-MM-01" (pas de toISOString)
     function monthStartISO(d = new Date()){
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
@@ -332,10 +344,23 @@
       return session?.user || null;
     }
 
-    async function fetchLeaderboard(){
-      const month = monthStartISO(new Date());
+    async function fetchMyMonthlyPoints(month){
+      const me = await fetchMe();
+      if (!me?.id) return 0;
 
-      // ✅ PATCH: join profiles more robust (no FK-name dependency)
+      const { data, error } = await supabase
+        .from("user_points_monthly")
+        .select("points")
+        .eq("user_id", me.id)
+        .eq("month", month)
+        .maybeSingle();
+
+      if (error) throw error;
+      return Number(data?.points || 0);
+    }
+
+    async function fetchLeaderboard(month){
+      // ✅ join profiles robuste (pas de dépendance de nom FK)
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("user_id, month, points, profiles(display_name, username, email)")
@@ -351,7 +376,22 @@
         name: (x.profiles?.display_name || x.profiles?.username || x.profiles?.email || "Player")
       }));
 
-      return { month, rows };
+      return rows;
+    }
+
+    async function computeMyRank(month, myPoints){
+      // Rank global = count(users with points > myPoints) + 1
+      // (policy points_public_read = true)
+      if (!myPoints) return null;
+
+      const { count, error } = await supabase
+        .from("user_points_monthly")
+        .select("user_id", { count: "exact", head: true })
+        .eq("month", month)
+        .gt("points", myPoints);
+
+      if (error) throw error;
+      return Number(count || 0) + 1;
     }
 
     function renderEmpty(tbody, text){
@@ -363,30 +403,57 @@
     }
 
     async function render(){
+      const month = monthStartISO(new Date());
       document.getElementById("month-pill").textContent = "Mois : " + monthKey();
+
+      const resetBtn = document.getElementById("reset-month");
+      if (resetBtn) resetBtn.disabled = true; // UI-only en MVP
 
       const me = await fetchMe();
       const meId = me?.id || null;
 
-      const { rows } = await fetchLeaderboard();
+      // Leaderboard top 100
+      const rows = await fetchLeaderboard(month);
+
+      // ✅ Mes points: même si je ne suis pas dans le top 100
+      const myPoints = meId ? await fetchMyMonthlyPoints(month) : 0;
+
+      // ✅ Mon rank global: même si je ne suis pas dans le top 100
+      const myRank = meId ? await computeMyRank(month, myPoints) : null;
 
       document.getElementById("stat-players").textContent = String(rows.length);
-
-      const meIdx = meId ? rows.findIndex(r => r.user_id === meId) : -1;
-      const myRank = (meIdx >= 0) ? (meIdx + 1) : null;
-      const myPoints = (meIdx >= 0) ? rows[meIdx].points : 0;
-
       document.getElementById("stat-points").textContent = fmtPts(myPoints);
-      document.getElementById("me-pill").textContent =
-        meId ? ((rows[meIdx]?.name || "Moi") + " · " + fmtPts(myPoints) + " pts") : "Non connecté";
 
+      // me pill
+      if (meId){
+        // si je suis dans le top 100, on prend le nom depuis le leaderboard,
+        // sinon on prend mon profile
+        const inTop = rows.find(r => r.user_id === meId);
+        if (inTop){
+          document.getElementById("me-pill").textContent = `${inTop.name} · ${fmtPts(myPoints)} pts`;
+        } else {
+          const { data: prof } = await supabase
+            .from("profiles")
+            .select("display_name, username, email")
+            .eq("id", meId)
+            .maybeSingle();
+          const name = (prof?.display_name || prof?.username || prof?.email || me.email || "Moi");
+          document.getElementById("me-pill").textContent = `${name} · ${fmtPts(myPoints)} pts`;
+        }
+      } else {
+        document.getElementById("me-pill").textContent = "Non connecté";
+      }
+
+      // rank stat
       if (myRank){
         document.getElementById("stat-rank").textContent = "#" + myRank;
         const r = rewardForRank(myRank);
         document.getElementById("stat-rank-sub").textContent = r ? ("Reward actuelle : " + fmtEur(r)) : "Hors top 10";
       } else {
         document.getElementById("stat-rank").textContent = "—";
-        document.getElementById("stat-rank-sub").textContent = meId ? "Pas encore classé ce mois-ci" : "Connecte-toi pour apparaître";
+        document.getElementById("stat-rank-sub").textContent = meId
+          ? "Pas encore classé ce mois-ci"
+          : "Connecte-toi pour apparaître";
       }
 
       const tbody = document.getElementById("tbody");
@@ -401,6 +468,7 @@
         return;
       }
 
+      // rows
       tbody.innerHTML = "";
       for (let i=0;i<rows.length;i++){
         const p = rows[i];
@@ -425,7 +493,7 @@
 
       // En prod => reset via job/cron admin.
       document.getElementById("reset-month").addEventListener("click", () => {
-        alert("Reset mois: en prod => cron/admin. Ici on ne reset pas côté backend.");
+        alert("Reset mois : en prod => cron/admin. Ici on ne reset pas côté backend.");
       });
 
       render().catch(err => {
