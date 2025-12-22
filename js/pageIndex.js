@@ -1,9 +1,20 @@
 // js/pageIndex.js
-import { BOOSTERS } from "./boosters.js";
+import { supabase } from "./supabaseClient.js";
+import { BOOSTERS, boosterByKey, buildCardIndex } from "./boosters.js";
 import { BoosterEngine } from "./boosterEngine.js";
 
 function fmtEur(n){
   return (Number(n)||0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+}
+
+async function openPackRpc(packKey, mode){
+  // mode: "paid" | "free"
+  const { data, error } = await supabase.rpc("vs_open_pack", {
+    p_pack_key: String(packKey || "").toUpperCase(),
+    p_mode: mode
+  });
+  if (error) throw error;
+  return data; // { card_id, pack_key, rarity_key, estimated_value_eur, ... }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,13 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const boosterSubtitle = document.getElementById("booster-subtitle");
   const boosterClosed = document.getElementById("booster-closed");
 
-  // ✅ moteur
+  const cardIndex = buildCardIndex();
+
   const engine = new BoosterEngine({
-    booster: BOOSTERS.plant,
+    booster: BOOSTERS.PLANT,
+    cardIndex,
     hooks: {
+      openPackRpc,
       onCollectionChanged: () => {
-        // si tu veux rebrancher tes stats/history existants :
-        // -> on pourra migrer ça en module aussi, step suivante
+        // tu peux rebrancher stats/history ici plus tard
       }
     }
   });
@@ -31,22 +44,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (boosterTitle) boosterTitle.textContent = booster.uiName;
     if (boosterSubtitle) boosterSubtitle.textContent = "1 carte à révéler";
     if (boosterClosed) {
-      // option simple : change juste l’emoji + label (si tu veux)
       const icon = boosterClosed.querySelector(".booster-leaf-icon");
       if (icon) icon.textContent = booster.icon || "🎴";
-
-      // option style rapide (si tu veux)
       boosterClosed.setAttribute("data-theme", booster.theme || booster.key);
     }
-
     if (openBtn){
       openBtn.textContent = `Open ${booster.uiName} — ${fmtEur(booster.packPriceEur)}`;
     }
   }
 
   function getSelectedBooster(){
-    const key = select?.value || "plant";
-    return BOOSTERS[key] || BOOSTERS.plant;
+    const raw = (select?.value || "PLANT").toUpperCase();
+    return boosterByKey(raw) || BOOSTERS.PLANT;
   }
 
   applyBoosterUI(getSelectedBooster());
@@ -57,13 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
     applyBoosterUI(b);
   });
 
-  // ✅ bouton paid
+  // ✅ paid => RPC server
   openBtn?.addEventListener("click", async () => {
-    // Ton guard Supabase en capture (dans index.html) continue de fonctionner
     await engine.openPack({ mode: "paid" });
   });
 
-  // ✅ bouton free (si tu gardes la logique points ailleurs)
+  // ✅ free => RPC server (si ton RPC le gère)
   freeBtn?.addEventListener("click", async () => {
     await engine.openPack({ mode: "free" });
   });
