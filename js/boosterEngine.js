@@ -1,5 +1,6 @@
 // js/boosterEngine.js
-import { saveCardToDb, addMonthlyPointsForOpen, spendPoints } from "./db.js";
+// Animation/UI only.
+// Le gagnant vient de hooks.openPackRpc(packKey, mode) => RPC vs_open_pack (server-authoritative)
 
 const UI_STATE = { IDLE: "idle", OPENING: "opening", RESULT: "result" };
 
@@ -17,42 +18,11 @@ function escapeHtml(s) {
   }[c]));
 }
 
-function rarityKeyFromCard(card) {
-  if (card.hidden) return "HIDDEN";
-  if (card.legendary) return "LEGENDARY";
-  if (card.ultra) return "ULTRA";
-  return "EPIC";
-}
-
-function rarityLabelForKey(k) {
-  if (k === "ULTRA") return "Ultra";
-  if (k === "LEGENDARY") return "Legendary";
-  if (k === "HIDDEN") return "";
-  return "Epic";
-}
-
-function packKeyFromBooster(booster) {
-  // booster.key = "plant"|"water"|"fire" => DB wants PLANT|WATER|FIRE
-  const k = String(booster?.key || "").toUpperCase();
-  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
-  // if key is lowercase, uppercase already fixed
-  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
-  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
-  // common case: "PLANT" after uppercasing "plant"
-  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
-
-  // map lowercase keys
-  if (String(booster?.key || "") === "plant") return "PLANT";
-  if (String(booster?.key || "") === "water") return "WATER";
-  if (String(booster?.key || "") === "fire") return "FIRE";
-
-  return "PLANT";
-}
-
 export class BoosterEngine {
-  constructor({ booster, hooks = {} }) {
-    this.booster = booster;
-    this.hooks = hooks;
+  constructor({ booster, cardIndex, hooks = {} }) {
+    this.booster = booster;      // { key:'PLANT', uiName,..., cards:[...] }
+    this.cardIndex = cardIndex;  // Map(card_id -> card meta)
+    this.hooks = hooks;          // { openPackRpc(packKey, mode), onCollectionChanged? }
 
     this.uiState = UI_STATE.IDLE;
     this.currentOpen = null;
@@ -74,8 +44,8 @@ export class BoosterEngine {
     this.tickFlip = false;
     this.lastTickAt = 0;
 
-    // local token id (MVP)
-    this.TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v2";
+    // local history (optionnel) : on garde pour l’UI MVP
+    this.COLLECTION_KEY = "vaultspin_collection_v3";
   }
 
   setBooster(booster) {
@@ -142,43 +112,18 @@ export class BoosterEngine {
     try { a.currentTime = 0; a.play().catch(() => {}); } catch (_) {}
   }
 
-  // ---------- Local token id ----------
-  nextLocalTokenId() {
-    const raw = localStorage.getItem(this.TOKEN_COUNTER_KEY);
-    const n = raw ? Number(raw) : 1;
-    const next = Number.isFinite(n) && n > 0 ? n : 1;
-    localStorage.setItem(this.TOKEN_COUNTER_KEY, String(next + 1));
-    return next;
+  // ---------- local history ----------
+  getCollection() {
+    try { return JSON.parse(localStorage.getItem(this.COLLECTION_KEY) || "[]"); }
+    catch { return []; }
   }
-
-  // ---------- Pools ----------
-  buildPools() {
-    const cards = this.booster.cards;
-
-    const hidden = cards.filter(c => c.hidden);
-    const epic = cards.filter(c => !c.hidden && !c.ultra && !c.legendary);
-    const ultra = cards.filter(c => c.ultra);
-    const legendary = cards.filter(c => c.legendary);
-
-    return { hidden, epic, ultra, legendary };
+  setCollection(arr) {
+    localStorage.setItem(this.COLLECTION_KEY, JSON.stringify(arr));
   }
-
-  pickFrom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-
-  pickHiddenCard(hiddenArr) {
-    return this.pickFrom(hiddenArr);
-  }
-
-  pickCard() {
-    const { hidden, epic, ultra, legendary } = this.buildPools();
-
-    const r = Math.random();
-    if (legendary.length && r < (1 / 5000)) return this.pickFrom(legendary);
-    if (ultra.length && r < (1 / 5000) + (1 / 50)) return this.pickFrom(ultra);
-    if (epic.length && r < (1 / 5000) + (1 / 50) + (1 / 20)) return this.pickFrom(epic);
-    return this.pickHiddenCard(hidden);
+  pushToCollection(entry) {
+    const arr = this.getCollection();
+    arr.unshift(entry);
+    this.setCollection(arr);
   }
 
   // ---------- Overlay / Sections ----------
@@ -214,9 +159,15 @@ export class BoosterEngine {
   }
 
   // ---------- Reel rendering ----------
+  pickFrom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
   buildReelItems(winningCard) {
+    // IMPORTANT : ceci est un "reel visuel", pas le tirage réel
+    const pool = this.booster?.cards || [];
     const arr = [];
-    for (let i = 0; i < this.REEL_TOTAL_ITEMS; i++) arr.push(this.pickCard());
+    for (let i = 0; i < this.REEL_TOTAL_ITEMS; i++) arr.push(this.pickFrom(pool));
     this.stopIndex = Math.max(20, this.REEL_TOTAL_ITEMS - 10);
     arr[this.stopIndex] = winningCard;
     return arr;
@@ -234,7 +185,6 @@ export class BoosterEngine {
 
     for (let i = 0; i < reelItems.length; i++) {
       const card = reelItems[i];
-      const rk = rarityKeyFromCard(card);
 
       const el = document.createElement("div");
       el.className = "reel-item";
@@ -245,7 +195,7 @@ export class BoosterEngine {
         </div>
         <div class="reel-meta">
           <div class="reel-name">${escapeHtml(card.name)}</div>
-          <div class="reel-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "" : rk}</div>
+          <div class="reel-tag"></div>
         </div>
       `;
       track.appendChild(el);
@@ -360,9 +310,7 @@ export class BoosterEngine {
 
   // ---------- Result UI ----------
   fillResultUI() {
-    const { card, tokenId, ts } = this.currentOpen;
-    const rk = rarityKeyFromCard(card);
-    const price = card.price || 0;
+    const { card, ts, rarity_key, estimated_value_eur } = this.currentOpen;
 
     const imgEl = document.getElementById("result-img");
     const nameEl = document.getElementById("result-name");
@@ -371,17 +319,21 @@ export class BoosterEngine {
     const profit = document.getElementById("result-profit");
     const sellBtn = document.getElementById("result-sell");
 
+    const price = Number(estimated_value_eur ?? card.price ?? 0);
+
     if (imgEl) imgEl.src = card.img;
-    if (nameEl) nameEl.textContent = `${card.name} — #${tokenId}`;
+    if (nameEl) nameEl.textContent = `${card.name}`;
 
     const d = new Date(ts).toLocaleString("fr-FR", {
-      day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit"
+      day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit"
     });
 
-    const isHidden = rk === "HIDDEN";
+    const rk = String(rarity_key || "").toUpperCase(); // HIDDEN/EPIC/ULTRA/LEGENDARY
+    const isHidden = rk === "HIDDEN" || rk === "";
+
     const desc = isHidden
       ? `${d}\nValeur estimée : ${fmtEur(price)}`
-      : `${rarityLabelForKey(rk)} · ${d}\nValeur estimée : ${fmtEur(price)}`;
+      : `${rk} · ${d}\nValeur estimée : ${fmtEur(price)}`;
 
     if (descEl) descEl.textContent = desc;
 
@@ -403,100 +355,76 @@ export class BoosterEngine {
     }
   }
 
-  /**
-   * ✅ Persistance DB + points (ALL + pack)
-   */
-  async commitToDb({ mode }) {
-    const { card, tokenId, ts } = this.currentOpen;
+  commitToLocalHistory() {
+    const { card, ts, pack_key, rarity_key, estimated_value_eur } = this.currentOpen;
 
-    const packKey = packKeyFromBooster(this.booster);
-    const rk = rarityKeyFromCard(card);
+    const entry = {
+      ts,
+      pack_key,
+      boosterName: this.booster.uiName,
+      rarity_key: String(rarity_key || "").toUpperCase(),
+      img: card.img,
+      name: card.name,
+      valueEur: Number(estimated_value_eur ?? card.price ?? 0),
+    };
 
-    // 1) save card
-    const res = await saveCardToDb({
-      pack_key: packKey,
-      token_id: tokenId,                 // MVP local token id (OK)
-      card_type_index: Number(card.cardTypeIndex ?? card.ct ?? card.index ?? 0), // fallback if you add later
-      rarity_key: rk,
-      image_url: card.img,
-      card_name: card.name,
-      estimated_value_eur: Number(card.price || 0),
-      opened_at: new Date(ts).toISOString(),
-      // chain_id / contract_address / onchain_token_id : plus tard
-    });
-
-    if (!res?.ok) throw (res?.error || new Error("DB insert failed"));
-
-    // 2) points only if paid (you can change rules)
-    if (mode === "paid") {
-      await addMonthlyPointsForOpen({ delta: 25, packKey });
-    }
-
-    // hook
-    this.hooks?.onDbCommitted?.({ packKey, rarity: rk, tokenId, openedAt: ts, dbId: res.id });
+    this.pushToCollection(entry);
+    this.hooks?.onCollectionChanged?.(entry, this.getCollection());
+    return entry;
   }
 
-  /**
-   * Open pack
-   * mode:
-   *  - "paid" => +25 points (ALL + pack)
-   *  - "free" => spend 2500 ALL points before opening
-   */
   async openPack({ mode = "paid" } = {}) {
     if (this.isBusy()) return;
 
-    // ✅ free gate
-    if (mode === "free") {
-      this.setStatus("Vérification points…", "pending");
-      const spend = await spendPoints({ cost: 2500, packKey: "ALL" });
-      if (!spend.ok) {
-        this.setStatus("Points insuffisants ❌", "error");
-        alert(`Points insuffisants. Il te reste ${Number(spend.points || 0).toLocaleString("fr-FR")} pts.`);
-        return;
-      }
-    }
-
     this.uiState = UI_STATE.OPENING;
-
     this.openOverlay();
     this.showReel();
 
-    const winningCard = this.pickCard();
-    const tokenId = this.nextLocalTokenId();
-    const ts = Date.now();
-
-    // IMPORTANT: pour DB, on a besoin d’un card_type_index stable.
-    // Pour l’instant, ton booster.cards ne porte pas de cardTypeIndex.
-    // ✅ On dérive un index stable via la position dans booster.cards.
-    const idx = this.booster.cards.findIndex(c => c.id === winningCard.id);
-    winningCard.cardTypeIndex = idx >= 0 ? idx : 0;
-
-    this.currentOpen = { card: winningCard, tokenId, ts };
-
-    const reelItems = this.buildReelItems(winningCard);
-    this.renderReel(reelItems);
-
-    await sleep(70);
-    await this.spinToStop();
-
-    this.playSound(this.sfxReveal);
-    if (rarityKeyFromCard(winningCard) === "LEGENDARY") this.playSound(this.sfxLegendary);
-
-    // UI result
-    this.fillResultUI();
-
-    // ✅ DB commit (card + points)
     try {
-      await this.commitToDb({ mode });
+      const packKey = this.booster?.key; // "PLANT" | "WATER" | "FIRE"
+      if (!packKey) throw new Error("Missing booster.key");
+      if (!this.hooks?.openPackRpc) throw new Error("Missing hooks.openPackRpc(packKey, mode)");
+
+      // ✅ vérité serveur
+      const res = await this.hooks.openPackRpc(packKey, mode);
+      // res attendu: { card_id, pack_key, rarity_key, estimated_value_eur, card_name, mode, ... }
+
+      const card = this.cardIndex?.get(res.card_id);
+      if (!card) throw new Error(`Card not found in client index: ${res.card_id}`);
+
+      this.currentOpen = {
+        ts: Date.now(),
+        card,
+        pack_key: res.pack_key,
+        rarity_key: res.rarity_key,
+        estimated_value_eur: res.estimated_value_eur,
+        mode: res.mode,
+      };
+
+      // reel visuel
+      const reelItems = this.buildReelItems(card);
+      this.renderReel(reelItems);
+
+      await sleep(70);
+      await this.spinToStop();
+
+      this.playSound(this.sfxReveal);
+      if (String(res.rarity_key || "").toUpperCase() === "LEGENDARY") this.playSound(this.sfxLegendary);
+
+      this.commitToLocalHistory();
+      this.fillResultUI();
+
+      this.uiState = UI_STATE.RESULT;
+      this.showResult();
+      this.setStatus("Pack ouvert ✅", "ok");
     } catch (e) {
       console.error(e);
-      this.setStatus("Erreur DB ❌", "error");
-      alert(e?.message || "Erreur DB (voir console)");
-      // on laisse quand même l’UI afficher la carte (mais elle n’est pas persistée)
+      this.setStatus("Erreur ouverture ❌", "error");
+      this.uiState = UI_STATE.IDLE;
+      // option : fermer overlay
+      // this.closeOverlay();
+      const hint = document.getElementById("open-hint");
+      if (hint) hint.textContent = e?.message || "Erreur";
     }
-
-    this.uiState = UI_STATE.RESULT;
-    this.showResult();
-    this.setStatus("Pack ouvert ✅", "ok");
   }
 }
