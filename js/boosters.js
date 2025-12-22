@@ -5,18 +5,24 @@ function eur(n) {
 }
 
 /**
- * Convention VaultSpin :
- * - hidden:true      => HIDDEN
- * - legendary:true   => LEGENDARY (pool dédié)
- * - ultra:true       => ULTRA (pool dédié)
- * - sinon            => EPIC
+ * VaultSpin rarity convention:
+ * - hidden:true    => HIDDEN
+ * - legendary:true => LEGENDARY
+ * - ultra:true     => ULTRA
+ * - else           => EPIC
  *
- * Drop logic côté UI :
- * - LEGENDARY : 1/5000
- * - ULTRA     : 1/50
- * - EPIC      : 1/20
- * - sinon     : HIDDEN
+ * IMPORTANT:
+ * Chaque carte DOIT avoir un cardTypeIndex stable.
+ * On le génère automatiquement via l'ordre dans le tableau.
  */
+
+function withIndex(cards){
+  return cards.map((c, i) => ({
+    ...c,
+    cardTypeIndex: i
+  }));
+}
+
 export const BOOSTERS = {
   plant: {
     key: "plant",
@@ -24,7 +30,7 @@ export const BOOSTERS = {
     icon: "🌿",
     packPriceEur: 24.99,
     theme: "plant",
-    cards: [
+    cards: withIndex([
       // HIDDEN
       { id: "phyllali_pca", name: "Phyllali PCA", img: "images/phyllali_PCA.png", price: eur(5.5), hidden: true },
       { id: "boskara", name: "Boskara", img: "images/boskara.png", price: eur(15.5), hidden: true },
@@ -51,7 +57,7 @@ export const BOOSTERS = {
 
       // LEGENDARY
       { id: "florizarre", name: "Florizarre", img: "images/florizarre.png", price: eur(1350), legendary: true },
-    ],
+    ]),
   },
 
   water: {
@@ -60,21 +66,18 @@ export const BOOSTERS = {
     icon: "💧",
     packPriceEur: 24.99,
     theme: "water",
-    cards: [
-      // HIDDEN
+    cards: withIndex([
       { id: "givrali_vstar", name: "Givrali VSTAR", img: "images/givrali_vstar.png", price: eur(5.50), hidden: true },
       { id: "keldeo", name: "Keldeo", img: "images/keldeo.png", price: eur(8.05), hidden: true },
       { id: "leviator_vmax", name: "Léviator VMAX", img: "images/leviator_vmax.png", price: eur(15.10), hidden: true },
       { id: "tortank_pca", name: "Tortank PCA", img: "images/tortank_PCA.png", price: eur(4.00), hidden: true },
 
-      // EPIC
       { id: "aquali", name: "Aquali", img: "images/aquali.png", price: eur(40) },
       { id: "energie_eau", name: "Énergie Eau", img: "images/energie_eau.png", price: eur(119) },
       { id: "lumineon", name: "Lumineon", img: "images/lumineon.png", price: eur(54) },
       { id: "pingoleon", name: "Pingoléon", img: "images/pingoleon.png", price: eur(100) },
       { id: "poissirene", name: "Poissirène", img: "images/poissirene.png", price: eur(109) },
 
-      // ULTRA
       { id: "flobio", name: "Flobio", img: "images/flobio.png", price: eur(249), ultra: true },
       { id: "givrali", name: "Givrali", img: "images/givrali.png", price: eur(125.99), ultra: true },
       { id: "leviator", name: "Léviator", img: "images/leviator.png", price: eur(229), ultra: true },
@@ -82,11 +85,10 @@ export const BOOSTERS = {
       { id: "palkia", name: "Palkia", img: "images/palkia.png", price: eur(145.99), ultra: true },
       { id: "staross", name: "Staross", img: "images/staross.png", price: eur(215), ultra: true },
 
-      // LEGENDARY
       { id: "lokhlass", name: "Lokhlass", img: "images/lokhlass.png", price: eur(499), legendary: true },
       { id: "leviator_obscur", name: "Léviator Obscur", img: "images/leviator_obscur.png", price: eur(1049), legendary: true },
       { id: "tortank", name: "Tortank", img: "images/tortank.png", price: eur(1689), legendary: true },
-    ],
+    ]),
   },
 
   fire: {
@@ -95,20 +97,17 @@ export const BOOSTERS = {
     icon: "🔥",
     packPriceEur: 24.99,
     theme: "fire",
-    cards: [
-      // HIDDEN
+    cards: withIndex([
       { id: "galopa_cgg", name: "Galopa CGG", img: "images/galopa_cgg.png", price: eur(7.5), hidden: true },
       { id: "lugulabre", name: "Lugulabre", img: "images/lugulabre.png", price: eur(7.0), hidden: true },
 
-      // EPIC
       { id: "dracaufeu_ex", name: "Dracaufeu EX", img: "images/dracaufeu_ex.png", price: eur(75) },
       { id: "feu_percant", name: "Feu Perçant", img: "images/feu_percant.png", price: eur(53) },
       { id: "pyrobut", name: "Pyrobut", img: "images/pyrobut.png", price: eur(35.5) },
       { id: "reptincel", name: "Reptincel", img: "images/reptincel.png", price: eur(78.99) },
       { id: "scolocendre_vmax", name: "Scolocendre VMAX", img: "images/scolocendre_vmax.png", price: eur(60) },
-      { id: "hericendre", name: "Héricendre", img: "images/hericendre.png", price: eur(120) }, // 120 => EPIC
+      { id: "hericendre", name: "Héricendre", img: "images/hericendre.png", price: eur(120) },
 
-      // ULTRA
       { id: "dracaufeu_vmax", name: "Dracaufeu VMAX", img: "images/dracaufeu_vmax.png", price: eur(145), ultra: true },
       { id: "energie_feu", name: "Énergie Feu", img: "images/energie_feu.png", price: eur(149), ultra: true },
       { id: "feurisson", name: "Feurisson", img: "images/feurisson.png", price: eur(249), ultra: true },
@@ -117,8 +116,7 @@ export const BOOSTERS = {
       { id: "reshiram", name: "Reshiram", img: "images/reshiram.png", price: eur(200), ultra: true },
       { id: "typhlosion", name: "Typhlosion", img: "images/typhlosion.png", price: eur(199), ultra: true },
 
-      // LEGENDARY
       { id: "dracaufeu", name: "Dracaufeu", img: "images/dracaufeu.png", price: eur(6299), legendary: true },
-    ],
+    ]),
   },
 };
