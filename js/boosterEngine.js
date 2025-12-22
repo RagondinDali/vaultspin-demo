@@ -1,5 +1,5 @@
 // js/boosterEngine.js
-import { saveCardToDb, addMonthlyPoints, spendMonthlyPoints, monthStartISO, normalizePackKey } from "./db.js";
+import { saveCardToDb, addMonthlyPointsForOpen, spendPoints } from "./db.js";
 
 const UI_STATE = { IDLE: "idle", OPENING: "opening", RESULT: "result" };
 
@@ -23,6 +23,7 @@ function rarityKeyFromCard(card) {
   if (card.ultra) return "ULTRA";
   return "EPIC";
 }
+
 function rarityLabelForKey(k) {
   if (k === "ULTRA") return "Ultra";
   if (k === "LEGENDARY") return "Legendary";
@@ -30,8 +31,22 @@ function rarityLabelForKey(k) {
   return "Epic";
 }
 
-function packKeyFromBoosterKey(k) {
-  return normalizePackKey(String(k || "").toUpperCase());
+function packKeyFromBooster(booster) {
+  // booster.key = "plant"|"water"|"fire" => DB wants PLANT|WATER|FIRE
+  const k = String(booster?.key || "").toUpperCase();
+  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
+  // if key is lowercase, uppercase already fixed
+  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
+  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
+  // common case: "PLANT" after uppercasing "plant"
+  if (k === "PLANT" || k === "WATER" || k === "FIRE") return k;
+
+  // map lowercase keys
+  if (String(booster?.key || "") === "plant") return "PLANT";
+  if (String(booster?.key || "") === "water") return "WATER";
+  if (String(booster?.key || "") === "fire") return "FIRE";
+
+  return "PLANT";
 }
 
 export class BoosterEngine {
@@ -59,7 +74,7 @@ export class BoosterEngine {
     this.tickFlip = false;
     this.lastTickAt = 0;
 
-    // local token counter (demo)
+    // local token id (MVP)
     this.TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v2";
   }
 
@@ -137,18 +152,14 @@ export class BoosterEngine {
   }
 
   // ---------- Pools ----------
-  // IMPORTANT: on injecte un card_type_index stable = index dans booster.cards
-  buildCardsWithIndex() {
-    const cards = Array.isArray(this.booster?.cards) ? this.booster.cards : [];
-    return cards.map((c, i) => ({ ...c, __ct: i }));
-  }
-
   buildPools() {
-    const cards = this.buildCardsWithIndex();
+    const cards = this.booster.cards;
+
     const hidden = cards.filter(c => c.hidden);
     const epic = cards.filter(c => !c.hidden && !c.ultra && !c.legendary);
     const ultra = cards.filter(c => c.ultra);
     const legendary = cards.filter(c => c.legendary);
+
     return { hidden, epic, ultra, legendary };
   }
 
@@ -363,7 +374,10 @@ export class BoosterEngine {
     if (imgEl) imgEl.src = card.img;
     if (nameEl) nameEl.textContent = `${card.name} — #${tokenId}`;
 
-    const d = new Date(ts).toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
+    const d = new Date(ts).toLocaleString("fr-FR", {
+      day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit"
+    });
+
     const isHidden = rk === "HIDDEN";
     const desc = isHidden
       ? `${d}\nValeur estimée : ${fmtEur(price)}`
@@ -390,88 +404,72 @@ export class BoosterEngine {
   }
 
   /**
-   * ✅ Persist DB + points (server-authoritative)
-   * - saveCardToDb()
-   * - addMonthlyPoints(+25) si paid
+   * ✅ Persistance DB + points (ALL + pack)
    */
   async commitToDb({ mode }) {
     const { card, tokenId, ts } = this.currentOpen;
 
-    const pack_key = packKeyFromBoosterKey(this.booster.key); // PLANT/WATER/FIRE
-    const rarity_key = rarityKeyFromCard(card);
-    const estimated_value_eur = Number(card.price || 0);
-
-    // card_type_index = index stable dans booster.cards (injecté dans pickCard via __ct)
-    const card_type_index = Number(card.__ct ?? -1);
+    const packKey = packKeyFromBooster(this.booster);
+    const rk = rarityKeyFromCard(card);
 
     // 1) save card
     const res = await saveCardToDb({
-      token_id: tokenId,
-      pack_key,
-      card_type_index,
-      rarity_key,
+      pack_key: packKey,
+      token_id: tokenId,                 // MVP local token id (OK)
+      card_type_index: Number(card.cardTypeIndex ?? card.ct ?? card.index ?? 0), // fallback if you add later
+      rarity_key: rk,
       image_url: card.img,
       card_name: card.name,
-      estimated_value_eur,
+      estimated_value_eur: Number(card.price || 0),
       opened_at: new Date(ts).toISOString(),
-      chain_id: null,
-      contract_address: null,
-      onchain_token_id: null,
+      // chain_id / contract_address / onchain_token_id : plus tard
     });
 
-    if (!res.ok) {
-      // Si DB échoue, on remonte une erreur mais on ne casse pas l’UI (tu peux décider)
-      console.warn("[commitToDb] saveCardToDb failed:", res.error || res.reason);
-      this.hooks?.onDbSaveFailed?.(res);
-    } else {
-      this.hooks?.onDbSaved?.({ id: res.id });
-    }
+    if (!res?.ok) throw (res?.error || new Error("DB insert failed"));
 
-    // 2) points
+    // 2) points only if paid (you can change rules)
     if (mode === "paid") {
-      const pts = await addMonthlyPoints(25, monthStartISO());
-      if (!pts.ok) {
-        console.warn("[commitToDb] addMonthlyPoints failed:", pts.error || pts.reason);
-        this.hooks?.onPointsFailed?.(pts);
-      } else {
-        this.hooks?.onPointsChanged?.(pts.points);
-      }
+      await addMonthlyPointsForOpen({ delta: 25, packKey });
     }
 
-    return res;
+    // hook
+    this.hooks?.onDbCommitted?.({ packKey, rarity: rk, tokenId, openedAt: ts, dbId: res.id });
   }
 
   /**
-   * ✅ openPack
-   * - mode="paid": ajoute +25 points
-   * - mode="free": dépense 2500 points AVANT d’ouvrir
+   * Open pack
+   * mode:
+   *  - "paid" => +25 points (ALL + pack)
+   *  - "free" => spend 2500 ALL points before opening
    */
   async openPack({ mode = "paid" } = {}) {
     if (this.isBusy()) return;
 
-    // Guard: free pack cost
+    // ✅ free gate
     if (mode === "free") {
-      this.setStatus("Vérification des points…", "pending");
-      const spend = await spendMonthlyPoints(2500, monthStartISO());
+      this.setStatus("Vérification points…", "pending");
+      const spend = await spendPoints({ cost: 2500, packKey: "ALL" });
       if (!spend.ok) {
         this.setStatus("Points insuffisants ❌", "error");
-        this.hooks?.onFreePackDenied?.(spend);
-        alert(`Points insuffisants (${spend.points} pts). Il faut 2500 pts.`);
+        alert(`Points insuffisants. Il te reste ${Number(spend.points || 0).toLocaleString("fr-FR")} pts.`);
         return;
       }
-      this.hooks?.onPointsChanged?.(spend.points);
     }
 
-    // UI flow
     this.uiState = UI_STATE.OPENING;
 
     this.openOverlay();
     this.showReel();
 
-    // Pick winning card
     const winningCard = this.pickCard();
     const tokenId = this.nextLocalTokenId();
     const ts = Date.now();
+
+    // IMPORTANT: pour DB, on a besoin d’un card_type_index stable.
+    // Pour l’instant, ton booster.cards ne porte pas de cardTypeIndex.
+    // ✅ On dérive un index stable via la position dans booster.cards.
+    const idx = this.booster.cards.findIndex(c => c.id === winningCard.id);
+    winningCard.cardTypeIndex = idx >= 0 ? idx : 0;
 
     this.currentOpen = { card: winningCard, tokenId, ts };
 
@@ -484,21 +482,21 @@ export class BoosterEngine {
     this.playSound(this.sfxReveal);
     if (rarityKeyFromCard(winningCard) === "LEGENDARY") this.playSound(this.sfxLegendary);
 
-    // Fill UI
+    // UI result
     this.fillResultUI();
 
-    // ✅ Persist DB + points
+    // ✅ DB commit (card + points)
     try {
-      this.setStatus("Sync…", "pending");
       await this.commitToDb({ mode });
-      this.setStatus("Pack ouvert ✅", "ok");
     } catch (e) {
       console.error(e);
-      this.setStatus("Ouvert (sync failed)", "error");
-      this.hooks?.onCommitError?.(e);
+      this.setStatus("Erreur DB ❌", "error");
+      alert(e?.message || "Erreur DB (voir console)");
+      // on laisse quand même l’UI afficher la carte (mais elle n’est pas persistée)
     }
 
     this.uiState = UI_STATE.RESULT;
     this.showResult();
+    this.setStatus("Pack ouvert ✅", "ok");
   }
 }
