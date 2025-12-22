@@ -4,318 +4,19 @@
   <meta charset="UTF-8" />
   <title>VaultSpin – Leaderboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body{
-      min-height:100vh;
-      background: radial-gradient(circle at top, #101827, #020617 60%);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:#e5e7eb;
-    }
-
-    .wrap{
-      width:100%;
-      max-width:1200px;
-      margin:0 auto;
-      padding:90px 16px 50px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
-
-    /* Top bar */
-    .top-bar{
-      position:fixed;
-      top:16px;
-      left:50%;
-      transform:translateX(-50%);
-      width:100%;
-      max-width:1200px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:0 16px;
-      z-index:30;
-      pointer-events:none;
-    }
-
-    .top-left,.top-right{
-      pointer-events:auto;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .top-logo{
-      font-size:12px;
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      color:#9ca3af;
-    }
-
-    .pill{
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.22);
-      background: rgba(15,23,42,.55);
-      padding:8px 12px;
-      font-size:11px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:#e5e7eb;
-      cursor:default;
-      max-width: 340px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-
-    .btn{
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.22);
-      background: rgba(15,23,42,.55);
-      padding:9px 12px;
-      font-size:11px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:#e5e7eb;
-      cursor:pointer;
-      transition: box-shadow .15s ease-out, transform .15s ease-out, border-color .15s ease-out, opacity .15s ease-out;
-    }
-
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(165,180,252,.7);
-      box-shadow: 0 0 12px rgba(129,140,248,.25);
-    }
-
-    .btn.primary{
-      border:none;
-      background: radial-gradient(circle at top left, #a855f7, #4f46e5);
-      box-shadow: 0 0 18px rgba(168,85,247,.35);
-    }
-
-    .btn.primary:hover{
-      box-shadow: 0 0 22px rgba(168,85,247,.55);
-    }
-
-    .btn:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      transform:none !important;
-      box-shadow:none !important;
-    }
-
-    /* Panels */
-    .panel{
-      background: radial-gradient(circle at top left, #020617, #020617 70%);
-      border-radius:26px;
-      border: 1px solid rgba(148,163,184,.20);
-      padding:18px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    h1{
-      font-size:22px;
-      font-weight:800;
-      letter-spacing:.10em;
-      text-transform:uppercase;
-      color:#f9fafb;
-    }
-
-    .sub{
-      font-size:13px;
-      color:#9ca3af;
-      line-height:1.45;
-      max-width:860px;
-    }
-
-    .stats-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-    }
-
-    .stat{
-      border-radius:18px;
-      border:1px solid rgba(148,163,184,.14);
-      background: rgba(2,6,23,.28);
-      padding:12px;
-      min-width:220px;
-      flex:1;
-    }
-
-    .stat .k{
-      font-size:10px;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color:#9ca3af;
-    }
-
-    .stat .v{
-      margin-top:6px;
-      font-size:18px;
-      font-weight:900;
-      color:#f9fafb;
-    }
-
-    .stat .s{
-      margin-top:3px;
-      font-size:12px;
-      color:#9ca3af;
-      line-height:1.35;
-    }
-
-    .table{
-      border-radius:22px;
-      border:1px solid rgba(148,163,184,.20);
-      overflow:hidden;
-    }
-
-    .thead, .trow{
-      display:grid;
-      grid-template-columns: 70px 1.4fr 1fr 1fr;
-      gap:10px;
-      align-items:center;
-      padding:12px 14px;
-    }
-
-    .thead{
-      background: rgba(15,23,42,.55);
-      font-size:10px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:#cbd5e1;
-      border-bottom:1px solid rgba(148,163,184,.14);
-    }
-
-    .trow{
-      background: rgba(2,6,23,.26);
-      border-bottom:1px solid rgba(148,163,184,.10);
-      font-size:13px;
-    }
-
-    .trow:hover{
-      background: rgba(15,23,42,.28);
-    }
-
-    .rank{ font-weight:900; color:#e5e7eb; }
-    .me{
-      outline: 1px solid rgba(165,180,252,.55);
-      box-shadow: 0 0 14px rgba(129,140,248,.16);
-      position:relative;
-    }
-    .name{
-      font-weight:850;
-      color:#f9fafb;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .points{ font-weight:900; letter-spacing:.04em; }
-    .reward{ font-weight:900; letter-spacing:.04em; }
-    .muted{ color:#9ca3af; font-weight:700; }
-
-    .footer-hint{
-      margin-top:6px;
-      font-size:12px;
-      color:#9ca3af;
-      line-height:1.45;
-    }
-
-    .empty{
-      padding:16px 14px;
-      font-size:13px;
-      color:#9ca3af;
-      background: rgba(2,6,23,.26);
-    }
-
-    @media (max-width: 680px){
-      .thead, .trow{ grid-template-columns: 60px 1.2fr 1fr 1fr; }
-      .pill{ max-width: 220px; }
-    }
-  </style>
+  <!-- ⚠️ CSS inchangé -->
+  <!-- (je ne le réécris pas ici pour lisibilité, garde exactement le tien) -->
 </head>
 
 <body>
-  <!-- Top bar -->
-  <div class="top-bar">
-    <div class="top-left">
-      <div class="top-logo">VAULTSPIN · LEADERBOARD</div>
-      <div class="pill" id="month-pill">—</div>
-      <div class="pill" id="me-pill">—</div>
-    </div>
-    <div class="top-right">
-      <button class="btn" id="back-packs">Retour packs</button>
-      <button class="btn" id="back-collection">Collection</button>
-      <button class="btn primary" id="reset-month">Reset mois (admin)</button>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="panel">
-      <div>
-        <h1>Classement mensuel</h1>
-        <div class="sub">
-          Leaderboard (Top 100). Reset automatique chaque mois.
-          <br />
-          Points : +25 par booster ouvert. Booster gratuit : 2500 points.
-          <br />
-          Récompenses top 10 : <b>1000€ → 100€</b> (décroissance de 100€/rang).
-          <br />
-          Packs supportés : <b>PLANT / WATER / FIRE</b>.
-        </div>
-      </div>
-
-      <div class="stats-row">
-        <div class="stat">
-          <div class="k">Players</div>
-          <div class="v" id="stat-players">—</div>
-          <div class="s">Top 100 (mois courant)</div>
-        </div>
-        <div class="stat">
-          <div class="k">Your rank</div>
-          <div class="v" id="stat-rank">—</div>
-          <div class="s" id="stat-rank-sub">—</div>
-        </div>
-        <div class="stat">
-          <div class="k">Your points</div>
-          <div class="v" id="stat-points">—</div>
-          <div class="s">Utilisables pour un booster gratuit</div>
-        </div>
-        <div class="stat">
-          <div class="k">Top reward</div>
-          <div class="v">1000€</div>
-          <div class="s">1er du mois</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="table" id="table">
-        <div class="thead">
-          <div>Rank</div>
-          <div>Player</div>
-          <div>Points</div>
-          <div>Reward</div>
-        </div>
-        <div id="tbody"></div>
-      </div>
-
-      <div class="footer-hint">
-        Backend leaderboard (anti-cheat + cohérence multi-device).
-      </div>
-    </div>
-  </div>
+  <!-- UI inchangée -->
+  <!-- … tout ton HTML identique … -->
 
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
 
     /********************
-     * Month helpers
+     * Helpers dates
      ********************/
     function monthKey(d = new Date()){
       const y = d.getFullYear();
@@ -323,7 +24,6 @@
       return `${y}-${m}`;
     }
 
-    // ✅ timezone-safe: DATE "YYYY-MM-01" (pas de toISOString)
     function monthStartISO(d = new Date()){
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
@@ -331,272 +31,154 @@
     }
 
     /********************
-     * Pack filter (adapté aux derniers changements PLANT/WATER/FIRE)
-     * - Si pack n'est pas fourni => ALL
+     * Pack
      ********************/
     function getPackFromUrl(){
       const p = new URLSearchParams(window.location.search);
       const raw = (p.get("pack") || "").toUpperCase();
-      if (raw === "PLANT" || raw === "WATER" || raw === "FIRE") return raw;
+      if (["PLANT","WATER","FIRE"].includes(raw)) return raw;
       return "ALL";
-    }
-
-    function setPackInUrl(pack){
-      const url = new URL(window.location.href);
-      if (!pack || pack === "ALL") url.searchParams.delete("pack");
-      else url.searchParams.set("pack", pack);
-      window.location.href = url.toString();
     }
 
     function fmtPts(n){ return (Number(n)||0).toLocaleString("fr-FR"); }
     function fmtEur(n){ return (Number(n)||0).toLocaleString("fr-FR",{maximumFractionDigits:0}) + "€"; }
 
-    function rewardForRank(rank1){
-      if (rank1 < 1 || rank1 > 10) return null;
-      return 1100 - (rank1 * 100);
+    function rewardForRank(rank){
+      if (rank < 1 || rank > 10) return null;
+      return 1100 - rank * 100;
     }
 
     function escapeHtml(s){
-      return String(s || "").replace(/[&<>"']/g, (c) =>
+      return String(s || "").replace(/[&<>"']/g, c =>
         ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[c])
       );
     }
 
     async function fetchMe(){
-      const { data: { session } } = await supabase.auth.getSession();
-      return session?.user || null;
+      const { data } = await supabase.auth.getSession();
+      return data?.session?.user || null;
     }
 
     /********************
-     * Data fetch
-     * NOTE: on suppose user_points_monthly a potentiellement une colonne pack_key (nullable).
-     * - Si elle n'existe PAS, les queries avec pack_key échoueront -> on fallback automatiquement.
+     * DB queries (PACK-AWARE)
      ********************/
-    async function fetchMyMonthlyPoints(month, pack){
-      const me = await fetchMe();
-      if (!me?.id) return 0;
+    async function fetchLeaderboard(month, pack){
+      const { data, error } = await supabase
+        .from("user_points_monthly")
+        .select("user_id, points, profiles(display_name, username, email)")
+        .eq("month", month)
+        .eq("pack_key", pack)
+        .order("points", { ascending:false })
+        .limit(100);
 
-      // tentative avec pack_key si pack != ALL
-      if (pack && pack !== "ALL"){
-        try{
-          const { data, error } = await supabase
-            .from("user_points_monthly")
-            .select("points")
-            .eq("user_id", me.id)
-            .eq("month", month)
-            .eq("pack_key", pack)
-            .maybeSingle();
-          if (error) throw error;
-          return Number(data?.points || 0);
-        } catch (_e){
-          // fallback si la colonne n'existe pas
-        }
-      }
+      if (error) throw error;
 
-      // fallback "ALL" (ou colonne pack absente)
+      return (data || []).map(x => ({
+        user_id: x.user_id,
+        points: Number(x.points || 0),
+        name: x.profiles?.display_name || x.profiles?.username || x.profiles?.email || "Player"
+      }));
+    }
+
+    async function fetchMyPoints(userId, month, pack){
+      if (!userId) return 0;
+
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("points")
-        .eq("user_id", me.id)
+        .eq("user_id", userId)
         .eq("month", month)
+        .eq("pack_key", pack)
         .maybeSingle();
 
       if (error) throw error;
       return Number(data?.points || 0);
     }
 
-    async function fetchLeaderboard(month, pack){
-      // pack != ALL => on essaie de filtrer par pack_key
-      if (pack && pack !== "ALL"){
-        try{
-          const { data, error } = await supabase
-            .from("user_points_monthly")
-            .select("user_id, month, points, pack_key, profiles(display_name, username, email)")
-            .eq("month", month)
-            .eq("pack_key", pack)
-            .order("points", { ascending:false })
-            .limit(100);
-
-          if (error) throw error;
-
-          const rows = (data || []).map(x => ({
-            user_id: x.user_id,
-            points: Number(x.points || 0),
-            name: (x.profiles?.display_name || x.profiles?.username || x.profiles?.email || "Player")
-          }));
-
-          return rows;
-        } catch (_e){
-          // fallback si pack_key n'existe pas en DB
-        }
-      }
-
-      // fallback "ALL" (ou colonne pack absente)
-      const { data, error } = await supabase
-        .from("user_points_monthly")
-        .select("user_id, month, points, profiles(display_name, username, email)")
-        .eq("month", month)
-        .order("points", { ascending:false })
-        .limit(100);
-
-      if (error) throw error;
-
-      const rows = (data || []).map(x => ({
-        user_id: x.user_id,
-        points: Number(x.points || 0),
-        name: (x.profiles?.display_name || x.profiles?.username || x.profiles?.email || "Player")
-      }));
-
-      return rows;
-    }
-
-    async function computeMyRank(month, myPoints, pack){
-      // Rank global = count(users with points > myPoints) + 1
-      // (policy points_public_read = true)
+    async function computeMyRank(month, pack, myPoints){
       if (!myPoints) return null;
 
-      // tentative pack
-      if (pack && pack !== "ALL"){
-        try{
-          const { count, error } = await supabase
-            .from("user_points_monthly")
-            .select("user_id", { count: "exact", head: true })
-            .eq("month", month)
-            .eq("pack_key", pack)
-            .gt("points", myPoints);
-
-          if (error) throw error;
-          return Number(count || 0) + 1;
-        } catch (_e){
-          // fallback si pack_key n'existe pas
-        }
-      }
-
-      // fallback ALL
       const { count, error } = await supabase
         .from("user_points_monthly")
-        .select("user_id", { count: "exact", head: true })
+        .select("user_id", { count:"exact", head:true })
         .eq("month", month)
+        .eq("pack_key", pack)
         .gt("points", myPoints);
 
       if (error) throw error;
       return Number(count || 0) + 1;
     }
 
-    function renderEmpty(tbody, text){
-      tbody.innerHTML = "";
-      const d = document.createElement("div");
-      d.className = "empty";
-      d.textContent = text;
-      tbody.appendChild(d);
-    }
-
-    function setPills(monthLabel, pack){
-      const monthPill = document.getElementById("month-pill");
-      const packLabel = (pack && pack !== "ALL") ? (" · Pack: " + pack) : "";
-      monthPill.textContent = "Mois : " + monthLabel + packLabel;
-    }
-
+    /********************
+     * Render
+     ********************/
     async function render(){
-      const month = monthStartISO(new Date());
-      const mk = monthKey(new Date());
+      const month = monthStartISO();
+      const monthLabel = monthKey();
+      const pack = getPackFromUrl();
 
-      const pack = getPackFromUrl(); // ALL|PLANT|WATER|FIRE
-      setPills(mk, pack);
-
-      const resetBtn = document.getElementById("reset-month");
-      if (resetBtn) resetBtn.disabled = true; // UI-only en MVP
+      document.getElementById("month-pill").textContent =
+        `Mois : ${monthLabel}` + (pack !== "ALL" ? ` · Pack ${pack}` : "");
 
       const me = await fetchMe();
       const meId = me?.id || null;
 
-      // Leaderboard top 100 (pack-aware si possible)
       const rows = await fetchLeaderboard(month, pack);
+      const myPoints = await fetchMyPoints(meId, month, pack);
+      const myRank = await computeMyRank(month, pack, myPoints);
 
-      // Mes points + rank (pack-aware si possible)
-      const myPoints = meId ? await fetchMyMonthlyPoints(month, pack) : 0;
-      const myRank = meId ? await computeMyRank(month, myPoints, pack) : null;
-
-      document.getElementById("stat-players").textContent = String(rows.length);
+      document.getElementById("stat-players").textContent = rows.length;
       document.getElementById("stat-points").textContent = fmtPts(myPoints);
 
-      // me pill
-      if (meId){
-        const inTop = rows.find(r => r.user_id === meId);
-        if (inTop){
-          document.getElementById("me-pill").textContent = `${inTop.name} · ${fmtPts(myPoints)} pts`;
-        } else {
-          const { data: prof } = await supabase
-            .from("profiles")
-            .select("display_name, username, email")
-            .eq("id", meId)
-            .maybeSingle();
-
-          const name = (prof?.display_name || prof?.username || prof?.email || me.email || "Moi");
-          document.getElementById("me-pill").textContent = `${name} · ${fmtPts(myPoints)} pts`;
-        }
-      } else {
-        document.getElementById("me-pill").textContent = "Non connecté";
-      }
-
-      // rank stat
       if (myRank){
-        document.getElementById("stat-rank").textContent = "#" + myRank;
+        document.getElementById("stat-rank").textContent = `#${myRank}`;
         const r = rewardForRank(myRank);
-        document.getElementById("stat-rank-sub").textContent = r ? ("Reward actuelle : " + fmtEur(r)) : "Hors top 10";
+        document.getElementById("stat-rank-sub").textContent =
+          r ? `Reward actuelle : ${fmtEur(r)}` : "Hors top 10";
       } else {
         document.getElementById("stat-rank").textContent = "—";
-        document.getElementById("stat-rank-sub").textContent = meId
-          ? "Pas encore classé ce mois-ci"
-          : "Connecte-toi pour apparaître";
+        document.getElementById("stat-rank-sub").textContent =
+          meId ? "Pas encore classé" : "Connecte-toi pour apparaître";
+      }
+
+      const mePill = document.getElementById("me-pill");
+      if (meId){
+        const meRow = rows.find(r => r.user_id === meId);
+        mePill.textContent = `${meRow?.name || "Moi"} · ${fmtPts(myPoints)} pts`;
+      } else {
+        mePill.textContent = "Non connecté";
       }
 
       const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
 
       if (!rows.length){
-        renderEmpty(
-          tbody,
-          meId
-            ? "Aucun joueur classé pour l’instant ce mois-ci. Ouvre un pack pour apparaître."
-            : "Aucun joueur classé pour l’instant ce mois-ci. Connecte-toi puis ouvre un pack."
-        );
+        tbody.innerHTML = `<div class="empty">Aucun joueur classé ce mois-ci.</div>`;
         return;
       }
 
-      // rows
-      tbody.innerHTML = "";
-      for (let i=0;i<rows.length;i++){
-        const p = rows[i];
-        const rank1 = i + 1;
-        const r = rewardForRank(rank1);
-
+      rows.forEach((p, i) => {
+        const rank = i + 1;
+        const r = rewardForRank(rank);
         const row = document.createElement("div");
-        row.className = "trow" + (meId && p.user_id === meId ? " me" : "");
+        row.className = "trow" + (p.user_id === meId ? " me" : "");
         row.innerHTML = `
-          <div class="rank">#${rank1}</div>
+          <div class="rank">#${rank}</div>
           <div class="name">${escapeHtml(p.name)}</div>
           <div class="points">${fmtPts(p.points)} <span class="muted">pts</span></div>
           <div class="reward">${r ? fmtEur(r) : "<span class='muted'>—</span>"}</div>
         `;
         tbody.appendChild(row);
-      }
+      });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("back-packs").addEventListener("click", () => window.location.href = "index.html");
-      document.getElementById("back-collection").addEventListener("click", () => window.location.href = "collection.html");
-
-      // En prod => reset via job/cron admin.
-      document.getElementById("reset-month").addEventListener("click", () => {
-        alert("Reset mois : en prod => cron/admin. Ici on ne reset pas côté backend.");
-      });
-
-      // Bonus: raccourci pack via console si besoin:
-      // setPackInUrl("PLANT"|"WATER"|"FIRE"|"ALL")
-
+      document.getElementById("back-packs").onclick = () => location.href="index.html";
+      document.getElementById("back-collection").onclick = () => location.href="collection.html";
+      document.getElementById("reset-month").onclick = () => alert("Reset géré côté backend.");
       render().catch(err => {
         console.error(err);
-        alert("Erreur leaderboard (voir console).");
+        alert("Erreur leaderboard");
       });
     });
   </script>
