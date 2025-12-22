@@ -1,4 +1,5 @@
 // js/boosterEngine.js
+import { saveCardToDb, addMonthlyPoints, spendMonthlyPoints, monthStartISO, normalizePackKey } from "./db.js";
 
 const UI_STATE = { IDLE: "idle", OPENING: "opening", RESULT: "result" };
 
@@ -20,7 +21,6 @@ function rarityKeyFromCard(card) {
   if (card.hidden) return "HIDDEN";
   if (card.legendary) return "LEGENDARY";
   if (card.ultra) return "ULTRA";
-  // fallback : EPIC
   return "EPIC";
 }
 function rarityLabelForKey(k) {
@@ -28,6 +28,10 @@ function rarityLabelForKey(k) {
   if (k === "LEGENDARY") return "Legendary";
   if (k === "HIDDEN") return "";
   return "Epic";
+}
+
+function packKeyFromBoosterKey(k) {
+  return normalizePackKey(String(k || "").toUpperCase());
 }
 
 export class BoosterEngine {
@@ -55,8 +59,7 @@ export class BoosterEngine {
     this.tickFlip = false;
     this.lastTickAt = 0;
 
-    // storage
-    this.COLLECTION_KEY = "vaultspin_collection_v2"; // v2 : on stocke aussi boosterKey
+    // local token counter (demo)
     this.TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v2";
   }
 
@@ -124,14 +127,7 @@ export class BoosterEngine {
     try { a.currentTime = 0; a.play().catch(() => {}); } catch (_) {}
   }
 
-  // ---------- Collection ----------
-  getCollection() {
-    try { return JSON.parse(localStorage.getItem(this.COLLECTION_KEY) || "[]"); }
-    catch { return []; }
-  }
-  setCollection(arr) {
-    localStorage.setItem(this.COLLECTION_KEY, JSON.stringify(arr));
-  }
+  // ---------- Local token id ----------
   nextLocalTokenId() {
     const raw = localStorage.getItem(this.TOKEN_COUNTER_KEY);
     const n = raw ? Number(raw) : 1;
@@ -139,21 +135,20 @@ export class BoosterEngine {
     localStorage.setItem(this.TOKEN_COUNTER_KEY, String(next + 1));
     return next;
   }
-  pushToCollection(entry) {
-    const arr = this.getCollection();
-    arr.unshift(entry);
-    this.setCollection(arr);
+
+  // ---------- Pools ----------
+  // IMPORTANT: on injecte un card_type_index stable = index dans booster.cards
+  buildCardsWithIndex() {
+    const cards = Array.isArray(this.booster?.cards) ? this.booster.cards : [];
+    return cards.map((c, i) => ({ ...c, __ct: i }));
   }
 
-  // ---------- Pools (mêmes taux que plante) ----------
   buildPools() {
-    const cards = this.booster.cards;
-
+    const cards = this.buildCardsWithIndex();
     const hidden = cards.filter(c => c.hidden);
     const epic = cards.filter(c => !c.hidden && !c.ultra && !c.legendary);
     const ultra = cards.filter(c => c.ultra);
     const legendary = cards.filter(c => c.legendary);
-
     return { hidden, epic, ultra, legendary };
   }
 
@@ -161,20 +156,7 @@ export class BoosterEngine {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  pickWeighted(pairs) {
-    let total = 0;
-    for (const p of pairs) total += p.w;
-    let r = Math.random() * total;
-    for (const p of pairs) {
-      r -= p.w;
-      if (r <= 0) return p.item;
-    }
-    return pairs[pairs.length - 1].item;
-  }
-
   pickHiddenCard(hiddenArr) {
-    // même logique “common/hyper common” : on pondère un peu (si tu veux)
-    // par défaut : uniforme
     return this.pickFrom(hiddenArr);
   }
 
@@ -407,39 +389,86 @@ export class BoosterEngine {
     }
   }
 
-  commitToCollection() {
+  /**
+   * ✅ Persist DB + points (server-authoritative)
+   * - saveCardToDb()
+   * - addMonthlyPoints(+25) si paid
+   */
+  async commitToDb({ mode }) {
     const { card, tokenId, ts } = this.currentOpen;
-    const rk = rarityKeyFromCard(card);
 
-    const entry = {
-      tokenId,
-      ts,
-      boosterKey: this.booster.key,
-      boosterName: this.booster.uiName,
-      rarityKey: rk,
-      img: card.img,
-      name: card.name,
-      valueEur: Number(card.price || 0),
-    };
+    const pack_key = packKeyFromBoosterKey(this.booster.key); // PLANT/WATER/FIRE
+    const rarity_key = rarityKeyFromCard(card);
+    const estimated_value_eur = Number(card.price || 0);
 
-    this.pushToCollection(entry);
+    // card_type_index = index stable dans booster.cards (injecté dans pickCard via __ct)
+    const card_type_index = Number(card.__ct ?? -1);
 
-    // hooks UI (stats/history) => tu peux recâbler ensuite
-    this.hooks?.onCollectionChanged?.(entry, this.getCollection());
+    // 1) save card
+    const res = await saveCardToDb({
+      token_id: tokenId,
+      pack_key,
+      card_type_index,
+      rarity_key,
+      image_url: card.img,
+      card_name: card.name,
+      estimated_value_eur,
+      opened_at: new Date(ts).toISOString(),
+      chain_id: null,
+      contract_address: null,
+      onchain_token_id: null,
+    });
 
-    return entry;
+    if (!res.ok) {
+      // Si DB échoue, on remonte une erreur mais on ne casse pas l’UI (tu peux décider)
+      console.warn("[commitToDb] saveCardToDb failed:", res.error || res.reason);
+      this.hooks?.onDbSaveFailed?.(res);
+    } else {
+      this.hooks?.onDbSaved?.({ id: res.id });
+    }
+
+    // 2) points
+    if (mode === "paid") {
+      const pts = await addMonthlyPoints(25, monthStartISO());
+      if (!pts.ok) {
+        console.warn("[commitToDb] addMonthlyPoints failed:", pts.error || pts.reason);
+        this.hooks?.onPointsFailed?.(pts);
+      } else {
+        this.hooks?.onPointsChanged?.(pts.points);
+      }
+    }
+
+    return res;
   }
 
+  /**
+   * ✅ openPack
+   * - mode="paid": ajoute +25 points
+   * - mode="free": dépense 2500 points AVANT d’ouvrir
+   */
   async openPack({ mode = "paid" } = {}) {
     if (this.isBusy()) return;
 
-    // le paiement/points reste géré par ton code existant (wallet + points)
-    // ici on déclenche juste l’ouverture
+    // Guard: free pack cost
+    if (mode === "free") {
+      this.setStatus("Vérification des points…", "pending");
+      const spend = await spendMonthlyPoints(2500, monthStartISO());
+      if (!spend.ok) {
+        this.setStatus("Points insuffisants ❌", "error");
+        this.hooks?.onFreePackDenied?.(spend);
+        alert(`Points insuffisants (${spend.points} pts). Il faut 2500 pts.`);
+        return;
+      }
+      this.hooks?.onPointsChanged?.(spend.points);
+    }
+
+    // UI flow
     this.uiState = UI_STATE.OPENING;
 
     this.openOverlay();
     this.showReel();
 
+    // Pick winning card
     const winningCard = this.pickCard();
     const tokenId = this.nextLocalTokenId();
     const ts = Date.now();
@@ -455,11 +484,21 @@ export class BoosterEngine {
     this.playSound(this.sfxReveal);
     if (rarityKeyFromCard(winningCard) === "LEGENDARY") this.playSound(this.sfxLegendary);
 
-    this.commitToCollection();
+    // Fill UI
     this.fillResultUI();
+
+    // ✅ Persist DB + points
+    try {
+      this.setStatus("Sync…", "pending");
+      await this.commitToDb({ mode });
+      this.setStatus("Pack ouvert ✅", "ok");
+    } catch (e) {
+      console.error(e);
+      this.setStatus("Ouvert (sync failed)", "error");
+      this.hooks?.onCommitError?.(e);
+    }
 
     this.uiState = UI_STATE.RESULT;
     this.showResult();
-    this.setStatus("Pack ouvert ✅", "ok");
   }
 }
