@@ -204,17 +204,17 @@
     .hist-line2{ font-size:11px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
     /* Right preview booster */
-    .card-zone{
-      width:100%;
-      min-height:420px;
-      border-radius:28px;
-      border:1px dashed rgba(148,163,184,.30);
-      background:radial-gradient(circle at top,#0b1120,#020617 70%);
-      display:flex; align-items:center; justify-content:center;
-      padding:28px 16px;
-      position:relative;
-      overflow:hidden;
-    }
+.card-zone{
+  width:100%;
+  min-height:360px;          /* ✅ moins haut */
+  border-radius:28px;
+  border:1px dashed rgba(148,163,184,.22);
+  background:radial-gradient(circle at top,#0b1120,#020617 70%);
+  display:flex; align-items:center; justify-content:center;
+  padding:18px 14px;         /* ✅ moins de vide */
+  position:relative;
+  overflow:hidden;
+}
     .card-frame{
       position:relative;
       width:260px; height:380px;
@@ -2590,4 +2590,5 @@
 
 </body>
 </html>
+
 
