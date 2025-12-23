@@ -278,10 +278,8 @@
   justify-self:center;
 }
 .card-frame[data-selected="true"]{
-  border-color: rgba(165,180,252,.70);
-  background: rgba(15,23,42,.65);
-  transform: none;              /* ⛔ empêche le recentrage */
-  box-shadow: none;
+  outline: 1px solid rgba(165,180,252,.40);
+  outline-offset: -1px;
 }
     .card-frame--sm .booster-title{ font-size:16px; }
     .card-frame--sm .booster-subtitle{ font-size:11px; }
@@ -2875,6 +2873,7 @@ function setSelectedBooster(key){
 
 </body>
 </html>
+
 
 
 
