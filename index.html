@@ -280,8 +280,8 @@
 .card-frame[data-selected="true"]{
   border-color: rgba(165,180,252,.70);
   background: rgba(15,23,42,.65);
-  transform: translateY(-1px);
-  box-shadow:none; /* ✅ toujours no glow */
+  transform: none;              /* ⛔ empêche le recentrage */
+  box-shadow: none;
 }
     .card-frame--sm .booster-title{ font-size:16px; }
     .card-frame--sm .booster-subtitle{ font-size:11px; }
@@ -2875,6 +2875,7 @@ function setSelectedBooster(key){
 
 </body>
 </html>
+
 
 
 
