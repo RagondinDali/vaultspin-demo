@@ -823,9 +823,11 @@
   <!-- Top bar -->
   <div class="top-bar">
     <div class="top-right">
-      <a class="top-link  " href="me.html">Profil</a>
-      <a class="top-link" href="collection.html">Ma collection</a>
+      <a class="top-link glow" href="marketplace.html">Marketplace</a>
+      <a class="top-link glow" href="me.html">Profil</a>
+      <a class="top-link glow" href="collection.html">Ma collection</a>
       <a class="top-link" href="leaderboard.html">Leaderboard</a>
+
 
       <!-- ✅ AUTH -->
       <span id="vs-user-email" class="top-link" style="display:none; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
@@ -1341,6 +1343,7 @@
     const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
     const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
     const VS_WALLET_BALANCE_EUR_KEY = "vaultspin_wallet_balance_eur_v1";
+    const VS_MARKETPLACE_KEY = "vaultspin_marketplace_listings_v1";
 
     /* ✅ Points + leaderboard (démo/local UI) */
     const VS_USER_ID_KEY = "vaultspin_user_id_v1";
@@ -1912,7 +1915,24 @@ mythic: {
       }
       return sum;
     }
+function getMarketplaceListings(){
+  try{ return JSON.parse(localStorage.getItem(VS_MARKETPLACE_KEY) || "[]"); }
+  catch{ return []; }
+}
+function setMarketplaceListings(arr){
+  localStorage.setItem(VS_MARKETPLACE_KEY, JSON.stringify(arr));
+}
+function addListing(listing){
+  const arr = getMarketplaceListings();
 
+  // évite doublon tokenId
+  const exists = arr.some(x => Number(x.tokenId) === Number(listing.tokenId));
+  if (exists) return false;
+
+  arr.unshift(listing);
+  setMarketplaceListings(arr.slice(0, 200));
+  return true;
+}
     /********************
      * UI
      ********************/
@@ -2254,20 +2274,44 @@ mythic: {
       return entry;
     }
 
-    function listCurrentPull(){
+function listCurrentPull(){
   if (!currentOpen) return;
 
-  // TODO plus tard:
-  // - insert en DB market_listings
-  // - locker la carte / marquer en vente
-  // - retirer l’item de la collection ou le tagger "listed"
+  const { winningCt, tokenId, boosterKey, rarityKey, imgSrc, name, ts } = currentOpen;
+  const b = BOOSTERS[boosterKey] || BOOSTERS.plant;
+  const price = b.prices[winningCt] ?? 0;
 
-  const { name, imgSrc, rarityKey, boosterKey } = currentOpen;
-  setStatus(`✅ ${name} mise en vente sur le marketplace (démo).`, "ok");
+  // 1) Marque la carte comme listée (dans marketplace)
+  const ok = addListing({
+    tokenId,
+    boosterKey,
+    cardTypeIndex: winningCt,
+    rarityKey,
+    name,
+    img: imgSrc,
+    priceEur: price,
+    listedAt: new Date().toISOString(),
+    openedAt: new Date(ts).toISOString()
+  });
 
-  // Optionnel: disable le bouton pour éviter double-clic
-  const btn = document.getElementById("result-list");
-  if (btn) btn.disabled = true;
+  if (!ok){
+    setStatus("Déjà listée sur le marketplace.", "pending");
+    const btn = document.getElementById("result-sell");
+    if (btn) btn.disabled = true;
+    return;
+  }
+
+  // 2) IMPORTANT: on NE crédite PLUS le wallet.
+  // (On ne retire pas non plus automatiquement de la collection ici, au choix.
+  // Si tu veux la retirer de la collection quand elle est listée, dis-moi et je te le fais.)
+
+  setStatus(`Carte listée ✅ (${fmtEur(price)})`, "ok");
+
+  const btn = document.getElementById("result-sell");
+  if (btn){
+    btn.disabled = true;
+    btn.textContent = "Listée ✅";
+  }
 }
     async function openPackRoulette(mode="paid"){
       if (isBusy()) return;
@@ -2484,7 +2528,7 @@ function setSelectedBooster(key){
       // overlay buttons
       document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
       document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
-      document.getElementById("result-list")?.addEventListener("click", listCurrentPull);
+      document.getElementById("result-sell").addEventListener("click", listCurrentPull);
 
       document.getElementById("open-close").addEventListener("click", () => {
         if (spinning) return;
@@ -2876,6 +2920,7 @@ function setSelectedBooster(key){
 
 </body>
 </html>
+
 
 
 
