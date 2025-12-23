@@ -1,4 +1,4 @@
-<!-- player.html (UPDATED: public profile DB-first, multi-pack PLANT/WATER/FIRE-ready, stack = pack_key + cardTypeIndex, valeur = estimated_value_eur) -->
+<!-- player.html (FIXED: points/rank are pack-aware => uses pack_key='ALL' for global monthly stats) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -25,7 +25,6 @@
       gap:16px;
     }
 
-    /* Top bar */
     .top-bar{
       position:fixed; top:16px; left:50%; transform:translateX(-50%);
       width:100%; max-width:1200px;
@@ -108,7 +107,6 @@
 
     .hint{ font-size:12px; color:#9ca3af; line-height:1.45; }
 
-    /* Cards list (stacks) */
     .grid{ display:flex; flex-direction:column; gap:12px; }
     .card{
       border-radius:20px; border:1px solid rgba(148,163,184,.18);
@@ -170,7 +168,6 @@
       white-space:nowrap;
     }
 
-    /* Modal preview */
     .modal{
       position:fixed; inset:0; display:none;
       align-items:center; justify-content:center;
@@ -242,7 +239,6 @@
     </div>
   </div>
 
-  <!-- Modal -->
   <div class="modal" id="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true">
       <button class="modal-close" id="modal-close">✕</button>
@@ -280,12 +276,12 @@
         <div class="stat">
           <div class="k">Classement</div>
           <div class="v" id="stat-rank">—</div>
-          <div class="s">Rang global du mois</div>
+          <div class="s">Rang global du mois (pack ALL)</div>
         </div>
         <div class="stat">
           <div class="k">Total NFTs</div>
           <div class="v" id="stat-total">0</div>
-          <div class="s">Cartes enregistrées</div>
+          <div class="s">Cartes visibles</div>
         </div>
         <div class="stat">
           <div class="k">Vault value</div>
@@ -310,9 +306,6 @@
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
 
-    /********************
-     * Catalog (fallback)
-     ********************/
     const CATALOG = {
       PLANT: {
         0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
@@ -344,16 +337,13 @@
       return (CATALOG[pk] && CATALOG[pk][Number(ct)]) ? CATALOG[pk][Number(ct)] : null;
     }
 
-    /********************
-     * Helpers
-     ********************/
     function fmtEur(n){
       return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
     }
     function fmtMonthStartISO(d = new Date()){
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
-      return `${y}-${m}-01`; // DATE
+      return `${y}-${m}-01`;
     }
     function escapeHtml(s){
       return String(s || "").replace(/[&<>"']/g, (c) => ({
@@ -362,10 +352,7 @@
     }
     function escapeAttr(s){ return String(s || "").replace(/"/g, "&quot;"); }
 
-    /********************
-     * Rarity helpers (DB authoritative)
-     ********************/
-    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"]; // for sorting
+    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"];
     function rarityRank(k){
       const kk = (k || "").toUpperCase();
       const i = RARITY_ORDER.indexOf(kk);
@@ -380,9 +367,6 @@
       return "";
     }
 
-    /********************
-     * Modal
-     ********************/
     function openModal({ img, name, rarity, price }){
       document.getElementById("modal-img").src = img || "";
       document.getElementById("modal-name").textContent = name || "—";
@@ -408,20 +392,13 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
-    /********************
-     * URL
-     ********************/
     function getUserIdFromUrl(){
       const p = new URLSearchParams(window.location.search);
       const u = p.get("u");
       return u && u.length > 10 ? u : null;
     }
 
-    /********************
-     * DB fetch
-     ********************/
     async function fetchProfile(userId){
-      // public policy: profiles_public_read only if is_public = true
       const { data, error } = await supabase
         .from("profiles")
         .select("id, email, username, display_name, is_public")
@@ -433,7 +410,6 @@
     }
 
     async function fetchCardsPublic(userId){
-      // public policy: cards_public_read_if_profile_public
       const { data, error } = await supabase
         .from("user_cards")
         .select("id, user_id, token_id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur, opened_at")
@@ -445,18 +421,21 @@
       return data || [];
     }
 
+    // ✅ FIX: points are pack-aware => force pack_key='ALL'
     async function fetchMonthlyPoints(userId, monthISO){
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("points")
         .eq("user_id", userId)
         .eq("month", monthISO)
+        .eq("pack_key", "ALL")
         .maybeSingle();
 
       if (error) throw error;
       return Number(data?.points || 0);
     }
 
+    // ✅ FIX: rank must also filter pack_key='ALL'
     async function computeRank(monthISO, myPoints){
       if (!myPoints) return null;
 
@@ -464,15 +443,13 @@
         .from("user_points_monthly")
         .select("user_id", { count: "exact", head: true })
         .eq("month", monthISO)
+        .eq("pack_key", "ALL")
         .gt("points", myPoints);
 
       if (error) throw error;
       return Number(count || 0) + 1;
     }
 
-    /********************
-     * Normalize + stacks
-     ********************/
     function normalizeCards(rows){
       return (rows || []).map(r => {
         const pkRaw = (r.pack_key || "PLANT").toString().toUpperCase();
@@ -545,9 +522,6 @@
       return Array.from(map.values());
     }
 
-    /********************
-     * Render
-     ********************/
     function renderHeader(profile, userId){
       const name = profile?.display_name || profile?.username || profile?.email || "Player";
       document.getElementById("p-title").textContent = name;
@@ -640,9 +614,6 @@
       }
     }
 
-    /********************
-     * INIT
-     ********************/
     document.getElementById("modal-close").addEventListener("click", closeModal);
     document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });

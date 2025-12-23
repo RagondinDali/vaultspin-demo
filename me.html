@@ -1,4 +1,4 @@
-<!-- me.html (UPDATED: DB-first, multi-pack PLANT/WATER/FIRE-ready, stack = pack_key + cardTypeIndex, valeur = estimated_value_eur) -->
+<!-- me.html (FIXED: points/rank are pack-aware => uses pack_key='ALL' for global monthly stats) -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -109,7 +109,6 @@
       max-width: min(860px, 72vw);
     }
 
-    /* Toggle */
     .toggle{
       display:flex; align-items:center; gap:10px;
       padding:10px 12px;
@@ -136,7 +135,6 @@
       font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#e5e7eb;
     }
 
-    /* Cards list (stacks) */
     .grid{ display:flex; flex-direction:column; gap:12px; }
 
     .card{
@@ -199,7 +197,6 @@
       white-space:nowrap;
     }
 
-    /* Modal preview */
     .modal{
       position:fixed; inset:0; display:none;
       align-items:center; justify-content:center;
@@ -275,7 +272,6 @@
     </div>
   </div>
 
-  <!-- Modal -->
   <div class="modal" id="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true">
       <button class="modal-close" id="modal-close">✕</button>
@@ -316,7 +312,7 @@
         <div class="stat">
           <div class="k">Classement</div>
           <div class="v" id="stat-rank">—</div>
-          <div class="s">Rang global du mois</div>
+          <div class="s">Rang global du mois (pack ALL)</div>
         </div>
         <div class="stat">
           <div class="k">Total NFTs</div>
@@ -354,10 +350,6 @@
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
 
-    /********************
-     * Catalog (fallback)
-     * - Sert seulement si DB n'a pas image_url/card_name.
-     ********************/
     const CATALOG = {
       PLANT: {
         0:  { name:"Phyllali PCA",   img:"images/phyllali_PCA.png" },
@@ -380,12 +372,8 @@
         17: { name:"Peterson",       img:"images/peterson.png" },
         18: { name:"Scovilain",      img:"images/scovilain.png" }
       },
-      WATER: {
-        // 120: { name:"...", img:"images/....png" }
-      },
-      FIRE: {
-        // ready
-      }
+      WATER: {},
+      FIRE: {}
     };
 
     function catalogFor(packKey, ct){
@@ -393,16 +381,13 @@
       return (CATALOG[pk] && CATALOG[pk][Number(ct)]) ? CATALOG[pk][Number(ct)] : null;
     }
 
-    /********************
-     * Formatting
-     ********************/
     function fmtEur(n){
       return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
     }
     function fmtMonthStartISO(d = new Date()){
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
-      return `${y}-${m}-01`; // DATE
+      return `${y}-${m}-01`;
     }
     function escapeHtml(s){
       return String(s || "").replace(/[&<>"']/g, (c) => ({
@@ -411,10 +396,7 @@
     }
     function escapeAttr(s){ return String(s || "").replace(/"/g, "&quot;"); }
 
-    /********************
-     * Rarity helpers (DB authoritative)
-     ********************/
-    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"]; // for sorting
+    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"];
     function rarityRank(k){
       const kk = (k || "").toUpperCase();
       const i = RARITY_ORDER.indexOf(kk);
@@ -429,9 +411,6 @@
       return "";
     }
 
-    /********************
-     * Modal
-     ********************/
     function openModal({ img, name, rarity, price }){
       document.getElementById("modal-img").src = img || "";
       document.getElementById("modal-name").textContent = name || "—";
@@ -456,9 +435,6 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
-    /********************
-     * DB
-     ********************/
     async function requireAuth(){
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user){
@@ -495,17 +471,20 @@
       return data || [];
     }
 
+    // ✅ FIX: points are pack-aware => force pack_key = 'ALL'
     async function fetchMyPoints(userId, monthISO){
       const { data, error } = await supabase
         .from("user_points_monthly")
         .select("points")
         .eq("user_id", userId)
         .eq("month", monthISO)
+        .eq("pack_key", "ALL")
         .maybeSingle();
       if (error) throw error;
       return Number(data?.points || 0);
     }
 
+    // ✅ FIX: rank must also filter pack_key='ALL'
     async function computeRank(monthISO, myPoints){
       if (!myPoints) return null;
 
@@ -513,6 +492,7 @@
         .from("user_points_monthly")
         .select("user_id", { count:"exact", head:true })
         .eq("month", monthISO)
+        .eq("pack_key", "ALL")
         .gt("points", myPoints);
 
       if (error) throw error;
@@ -527,13 +507,9 @@
       if (error) throw error;
     }
 
-    /********************
-     * Normalization + grouping (stack = pack + ct)
-     ********************/
     function normalizeCards(rows){
       return (rows || []).map(r => {
         const pkRaw = (r.pack_key || "PLANT").toString().toUpperCase();
-        // allow future packs (FIRE etc.) without crashing
         const pk = pkRaw || "PLANT";
         const ct = Number(r.card_type_index ?? -1);
         const cat = catalogFor(pk, ct);
@@ -603,9 +579,6 @@
       return Array.from(map.values());
     }
 
-    /********************
-     * UI rendering
-     ********************/
     function renderHeader(profile, userId){
       const name = profile.display_name || profile.username || profile.email || "Moi";
       document.getElementById("me-title").textContent = name;
@@ -621,7 +594,6 @@
       publicBtn.style.display = "inline-flex";
       publicBtn.href = `player.html?u=${encodeURIComponent(userId)}`;
 
-      // edit pseudo link -> keep next
       document.getElementById("btn-edit").href = "profile.html?next=./me.html";
     }
 
@@ -712,22 +684,15 @@
       }
     }
 
-    /********************
-     * INIT
-     ********************/
     document.getElementById("modal-close").addEventListener("click", closeModal);
     document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
     const session = await requireAuth();
-    if (!session) {
-      // redirected
-    } else {
+    if (session){
       try{
         const profile = await requireUsername(session.user.id);
-        if (!profile) {
-          // redirected
-        } else {
+        if (profile){
           renderHeader(profile, session.user.id);
 
           const monthISO = fmtMonthStartISO(new Date());
@@ -743,7 +708,6 @@
           renderStats(points, rank, cards.length, vaultValue(cards));
           renderStacks(groupByStack(cards));
 
-          // toggle public
           setPublicSwitch(!!profile.is_public);
 
           const sw = document.getElementById("sw-public");
@@ -758,7 +722,6 @@
               await updateIsPublic(session.user.id, next);
             }catch(e){
               console.error(e);
-              // rollback
               setPublicSwitch(!sw.classList.contains("on"));
               alert(e?.message || "Impossible de modifier la visibilité.");
             }finally{
@@ -771,7 +734,6 @@
             if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
           });
 
-          // logout
           document.getElementById("btn-logout").addEventListener("click", async () => {
             await supabase.auth.signOut();
             window.location.href = "index.html";
