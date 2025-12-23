@@ -805,9 +805,16 @@
             </div>
 
             <div class="result-btnrow">
-              <button class="open-btn" id="result-sell">Revendre</button>
+              <div class="result-btnrow">
+  <button class="open-btn" id="result-list">Mettre en vente</button>
+  <button class="open-btn primary" id="result-open-another">Open another pack</button>
+  <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:0 14px; height:34px;">
+    Ma collection
+  </a>
+</div>
+
               <button class="open-btn primary" id="result-open-another">Open another pack</button>
-              <a class="top-link glow" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:0 14px; height:34px;">
+              <a class="top-link" href="collection.html" style="display:inline-flex; align-items:center; justify-content:center; padding:0 14px; height:34px;">
                 Ma collection
               </a>
             </div>
@@ -821,8 +828,8 @@
   <!-- Top bar -->
   <div class="top-bar">
     <div class="top-right">
-      <a class="top-link glow" href="me.html">Profil</a>
-      <a class="top-link glow" href="collection.html">Ma collection</a>
+      <a class="top-link  " href="me.html">Profil</a>
+      <a class="top-link" href="collection.html">Ma collection</a>
       <a class="top-link" href="leaderboard.html">Leaderboard</a>
 
       <!-- ✅ AUTH -->
@@ -2226,11 +2233,11 @@ mythic: {
 
       document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
 
-      const sellBtn = document.getElementById("result-sell");
-      sellBtn.disabled = false;
-      sellBtn.textContent = "Revendre · " + fmtEur(price);
-    }
-
+      const listBtn = document.getElementById("result-list");
+if (listBtn){
+  listBtn.disabled = false;
+  listBtn.textContent = "Mettre en vente · " + fmtEur(price);
+}
     function commitToCollection(){
       const { winningCt, rarityKey, imgSrc, name, tokenId, ts, boosterKey } = currentOpen;
       const entry = {
@@ -2250,22 +2257,21 @@ mythic: {
       return entry;
     }
 
-    function sellCurrentPull(){
-      if (!currentOpen) return;
-      const { winningCt, tokenId, boosterKey } = currentOpen;
-      const b = BOOSTERS[boosterKey] || BOOSTERS.plant;
-      const price = b.prices[winningCt] ?? 0;
+    function listCurrentPull(){
+  if (!currentOpen) return;
 
-      removeTokenFromCollection(tokenId);
-      creditWallet(price);
-      renderStats();
-      renderHistory();
-      setStatus(`Revendu ✅ +${fmtEur(price)}`, "ok");
+  // TODO plus tard:
+  // - insert en DB market_listings
+  // - locker la carte / marquer en vente
+  // - retirer l’item de la collection ou le tagger "listed"
 
-      const btn = document.getElementById("result-sell");
-      btn.disabled = true;
-    }
+  const { name, imgSrc, rarityKey, boosterKey } = currentOpen;
+  setStatus(`✅ ${name} mise en vente sur le marketplace (démo).`, "ok");
 
+  // Optionnel: disable le bouton pour éviter double-clic
+  const btn = document.getElementById("result-list");
+  if (btn) btn.disabled = true;
+}
     async function openPackRoulette(mode="paid"){
       if (isBusy()) return;
 
@@ -2481,7 +2487,7 @@ function setSelectedBooster(key){
       // overlay buttons
       document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
       document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
-      document.getElementById("result-sell").addEventListener("click", sellCurrentPull);
+      document.getElementById("result-list")?.addEventListener("click", listCurrentPull);
 
       document.getElementById("open-close").addEventListener("click", () => {
         if (spinning) return;
@@ -2873,6 +2879,7 @@ function setSelectedBooster(key){
 
 </body>
 </html>
+
 
 
 
