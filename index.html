@@ -223,11 +223,11 @@
       background:radial-gradient(circle at top,#22c55e,#064e3b 70%);
       box-shadow:0 0 36px rgba(34,197,94,.45);
       transition: transform .16s ease-out, box-shadow .16s ease-out;
-      min-width:0;
+      min-width:0; /* ✅ */
     }
     .card-inner{ width:100%; height:100%; border-radius:22px; overflow:hidden; }
 
-    /* ✅ 3 boosters en grid */
+    /* ✅ NEW: 3 boosters en grid (pas de scroll horizontal) */
     .booster-grid{
       display:grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -236,14 +236,18 @@
       justify-content:center;
       width:100%;
       max-width:100%;
-      overflow:hidden;
+      overflow:hidden; /* ✅ */
     }
-    @media (max-width: 980px){ .booster-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 640px){ .booster-grid{ grid-template-columns: 1fr; } }
+    @media (max-width: 980px){
+      .booster-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px){
+      .booster-grid{ grid-template-columns: 1fr; }
+    }
 
     .card-frame--sm{
       width:100%;
-      max-width:220px;
+      max-width:220px; /* ✅ tient bien à 3 */
       height:330px;
       justify-self:center;
     }
@@ -254,13 +258,15 @@
     .card-frame--sm .booster-title{ font-size:16px; }
     .card-frame--sm .booster-subtitle{ font-size:11px; }
 
-    /* Theme eau/feu */
+    /* ✅ Theme eau (sur la face du booster) */
     .booster-closed[data-theme="water"]{
       background: radial-gradient(circle at 20% 0%, #38bdf8 0, #082f49 55%);
     }
     .booster-closed[data-theme="water"]::before{
       background: radial-gradient(circle at top left, rgba(186,230,253,.22), transparent 60%);
     }
+
+    /* ✅ Theme feu (sur la face du booster) */
     .booster-closed[data-theme="fire"]{
       background: radial-gradient(circle at 20% 0%, #fb7185 0, #7f1d1d 60%);
     }
@@ -302,7 +308,7 @@
     .top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
     .top-link.glow{ border-color: rgba(165,180,252,.75); box-shadow: 0 0 14px rgba(129,140,248,.28); }
 
-    /* Auth buttons */
+    /* ✅ Auth buttons */
     #vs-logout-btn.top-link{ cursor:pointer; }
     #vs-logout-btn.top-link:hover{ border-color:#a5b4fc; box-shadow:0 0 10px rgba(129,140,248,.4); }
 
@@ -595,6 +601,7 @@
     }
     .live-sub{ font-size:11px; color:#9ca3af; }
 
+    /* 6 items visibles */
     .live-list{
       border-radius:18px;
       border:1px solid rgba(148,163,184,.14);
@@ -649,7 +656,7 @@
       gap:8px;
       min-width:0;
     }
-    .loot-user-link{
+    .loot-user{
       font-size:11px;
       font-weight:900;
       color:#f9fafb;
@@ -658,12 +665,6 @@
       text-overflow:ellipsis;
       letter-spacing:.08em;
       text-transform:uppercase;
-      text-decoration:none;
-      cursor:pointer;
-    }
-    .loot-user-link:hover{
-      text-decoration:underline;
-      opacity:.95;
     }
     .loot-pill{
       font-size:10px;
@@ -695,6 +696,23 @@
       display:flex;
       justify-content:space-between;
       gap:8px;
+    }
+
+    .loot-user-link{
+      font-size:11px;
+      font-weight:900;
+      color:#f9fafb;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      text-decoration:none;
+      cursor:pointer;
+    }
+    .loot-user-link:hover{
+      text-decoration:underline;
+      opacity:.95;
     }
   </style>
 </head>
@@ -880,8 +898,8 @@
       <div class="card-zone">
         <div class="booster-grid">
 
-          <!-- Booster PLANT -->
-          <div class="card-frame card-frame--sm" data-booster="PLANT" data-selected="true">
+          <!-- ✅ Booster PLANTE -->
+          <div class="card-frame card-frame--sm" data-booster="plant" data-selected="true">
             <div class="card-inner">
               <div class="booster-closed booster-mode-idle" data-theme="plant">
                 <div class="booster-label">
@@ -894,8 +912,8 @@
             </div>
           </div>
 
-          <!-- Booster WATER -->
-          <div class="card-frame card-frame--sm" data-booster="WATER" data-selected="false">
+          <!-- ✅ Booster EAU -->
+          <div class="card-frame card-frame--sm" data-booster="water" data-selected="false">
             <div class="card-inner">
               <div class="booster-closed booster-mode-idle" data-theme="water">
                 <div class="booster-label">
@@ -908,8 +926,8 @@
             </div>
           </div>
 
-          <!-- Booster FIRE -->
-          <div class="card-frame card-frame--sm" data-booster="FIRE" data-selected="false">
+          <!-- ✅ Booster FEU -->
+          <div class="card-frame card-frame--sm" data-booster="fire" data-selected="false">
             <div class="card-inner">
               <div class="booster-closed booster-mode-idle" data-theme="fire">
                 <div class="booster-label">
@@ -927,8 +945,244 @@
 
       <div class="drop-table">
         <div class="drop-title" id="drop-title">Cartes potentiellement obtenables</div>
-        <!-- ✅ Dynamique : rempli via boosters.js -->
-        <div class="drop-grid" id="drop-grid"></div>
+
+        <!-- ✅ DROP GRID PLANTE -->
+        <div class="drop-grid" id="drop-grid-plant">
+          <!-- EPIC -->
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Germignon" data-img="images/germignon.png" data-ct="2">
+            <div class="drop-thumb"><img src="images/germignon.png" alt="Germignon" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Germignon</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Astronelle" data-img="images/astronelle.png" data-ct="3">
+            <div class="drop-thumb"><img src="images/astronelle.png" alt="Astronelle" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Astronelle</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Majaspic" data-img="images/majaspic.png" data-ct="8">
+            <div class="drop-thumb"><img src="images/majaspic.png" alt="Majaspic" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Majaspic</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Chenipan" data-img="images/chenipan.png" data-ct="6">
+            <div class="drop-thumb"><img src="images/chenipan.png" alt="Chenipan" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Chenipan</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Phyllali" data-img="images/phyllali.png" data-ct="14">
+            <div class="drop-thumb"><img src="images/phyllali.png" alt="Phyllali" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Phyllali</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Paras" data-img="images/paras.png" data-ct="13">
+            <div class="drop-thumb"><img src="images/paras.png" alt="Paras" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Paras</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Chétiflor" data-img="images/chetiflor.png" data-ct="4">
+            <div class="drop-thumb"><img src="images/chetiflor.png" alt="Chétiflor" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Chétiflor</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Mimitoss" data-img="images/mimitoss.png" data-ct="9">
+            <div class="drop-thumb"><img src="images/mimitoss.png" alt="Mimitoss" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Mimitoss</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="EPIC" data-name="Noeufnoeuf" data-img="images/noeufnoeuf.png" data-ct="12">
+            <div class="drop-thumb"><img src="images/noeufnoeuf.png" alt="Noeufnoeuf" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Noeufnoeuf</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+
+          <!-- ULTRA -->
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Énergie Plante" data-img="images/energie_plante.png" data-ct="7">
+            <div class="drop-thumb"><img src="images/energie_plante.png" alt="Énergie Plante" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Énergie</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Aéromite" data-img="images/aeromite.png" data-ct="1">
+            <div class="drop-thumb"><img src="images/aeromite.png" alt="Aéromite" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Aéromite</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Jungko" data-img="images/jungko.png" data-ct="5">
+            <div class="drop-thumb"><img src="images/jungko.png" alt="Jungko" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Jungko</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="plant" data-rarity="ULTRA" data-name="Nidoking" data-img="images/nidoking.png" data-ct="11">
+            <div class="drop-thumb"><img src="images/nidoking.png" alt="Nidoking" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Nidoking</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+
+          <!-- LEGENDARY -->
+          <div class="drop-item" data-booster="plant" data-rarity="LEGENDARY" data-name="Florizarre" data-img="images/florizarre.png" data-ct="10">
+            <div class="drop-thumb"><img src="images/florizarre.png" alt="Florizarre" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Florizarre</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- ✅ DROP GRID EAU -->
+        <div class="drop-grid" id="drop-grid-water" style="display:none;">
+          <!-- EPIC -->
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Aquali" data-img="images/aquali.png" data-ct="100">
+            <div class="drop-thumb"><img src="images/aquali.png" alt="Aquali" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Aquali</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Énergie Eau" data-img="images/energie_eau.png" data-ct="101">
+            <div class="drop-thumb"><img src="images/energie_eau.png" alt="Énergie Eau" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Énergie</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Lumineon" data-img="images/lumineon.png" data-ct="108">
+            <div class="drop-thumb"><img src="images/lumineon.png" alt="Lumineon" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Lumineon</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Pingoléon" data-img="images/pingoleon.png" data-ct="110">
+            <div class="drop-thumb"><img src="images/pingoleon.png" alt="Pingoléon" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Pingoléon</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="EPIC" data-name="Poissirène" data-img="images/poissirene.png" data-ct="111">
+            <div class="drop-thumb"><img src="images/poissirene.png" alt="Poissirène" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Poissirène</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+
+          <!-- ULTRA -->
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Flobio" data-img="images/flobio.png" data-ct="102">
+            <div class="drop-thumb"><img src="images/flobio.png" alt="Flobio" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Flobio</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Givrali" data-img="images/givrali.png" data-ct="103">
+            <div class="drop-thumb"><img src="images/givrali.png" alt="Givrali" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Givrali</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Léviator" data-img="images/leviator.png" data-ct="104">
+            <div class="drop-thumb"><img src="images/leviator.png" alt="Léviator" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Léviator</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Ludicolo" data-img="images/ludicolo.png" data-ct="107">
+            <div class="drop-thumb"><img src="images/ludicolo.png" alt="Ludicolo" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Ludicolo</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Palkia" data-img="images/palkia.png" data-ct="109">
+            <div class="drop-thumb"><img src="images/palkia.png" alt="Palkia" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Palkia</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="ULTRA" data-name="Staross" data-img="images/staross.png" data-ct="112">
+            <div class="drop-thumb"><img src="images/staross.png" alt="Staross" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Staross</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+
+          <!-- LEGENDARY (3) -->
+          <div class="drop-item" data-booster="water" data-rarity="LEGENDARY" data-name="Lokhlass" data-img="images/lokhlass.png" data-ct="106">
+            <div class="drop-thumb"><img src="images/lokhlass.png" alt="Lokhlass" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Lokhlass</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="LEGENDARY" data-name="Léviator Obscur" data-img="images/leviator_obscur.png" data-ct="105">
+            <div class="drop-thumb"><img src="images/leviator_obscur.png" alt="Léviator Obscur" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Obscur</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+          <div class="drop-item" data-booster="water" data-rarity="LEGENDARY" data-name="Tortank" data-img="images/tortank.png" data-ct="113">
+            <div class="drop-thumb"><img src="images/tortank.png" alt="Tortank" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Tortank</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- ✅ DROP GRID FEU -->
+        <div class="drop-grid" id="drop-grid-fire" style="display:none;">
+          <!-- EPIC -->
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Feu Perçant" data-img="images/feu_percant.png" data-ct="204">
+            <div class="drop-thumb"><img src="images/feu_percant.png" alt="Feu Perçant" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Feu</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Pyrobut" data-img="images/pyrobut.png" data-ct="205">
+            <div class="drop-thumb"><img src="images/pyrobut.png" alt="Pyrobut" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Pyrobut</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Dracaufeu EX" data-img="images/dracaufeu_ex.png" data-ct="201">
+            <div class="drop-thumb"><img src="images/dracaufeu_ex.png" alt="Dracaufeu EX" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">EX</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Reptincel" data-img="images/reptincel.png" data-ct="206">
+            <div class="drop-thumb"><img src="images/reptincel.png" alt="Reptincel" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Rept.</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Scolocendre VMAX" data-img="images/scolocendre_vmax.png" data-ct="207">
+            <div class="drop-thumb"><img src="images/scolocendre_vmax.png" alt="Scolocendre VMAX" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Scolo</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Héricendre" data-img="images/hericendre.png" data-ct="208">
+            <div class="drop-thumb"><img src="images/hericendre.png" alt="Héricendre" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Héri.</div>
+            <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+          </div>
+
+          <!-- ULTRA -->
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Dracaufeu VMAX" data-img="images/dracaufeu_vmax.png" data-ct="202">
+            <div class="drop-thumb"><img src="images/dracaufeu_vmax.png" alt="Dracaufeu VMAX" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">VMAX</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Énergie Feu" data-img="images/energie_feu.png" data-ct="203">
+            <div class="drop-thumb"><img src="images/energie_feu.png" alt="Énergie Feu" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Énergie</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Feurisson" data-img="images/feurisson.png" data-ct="209">
+            <div class="drop-thumb"><img src="images/feurisson.png" alt="Feurisson" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Feuri.</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Galopa" data-img="images/galopa.png" data-ct="210">
+            <div class="drop-thumb"><img src="images/galopa.png" alt="Galopa" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Galopa</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Pyroli" data-img="images/pyroli.png" data-ct="211">
+            <div class="drop-thumb"><img src="images/pyroli.png" alt="Pyroli" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Pyroli</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Reshiram" data-img="images/reshiram.png" data-ct="212">
+            <div class="drop-thumb"><img src="images/reshiram.png" alt="Reshiram" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Reshi.</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+          <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Typhlosion" data-img="images/typhlosion.png" data-ct="213">
+            <div class="drop-thumb"><img src="images/typhlosion.png" alt="Typhlosion" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Typh.</div>
+            <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+          </div>
+
+          <!-- LEGENDARY -->
+          <div class="drop-item" data-booster="fire" data-rarity="LEGENDARY" data-name="Dracaufeu" data-img="images/dracaufeu.png" data-ct="200">
+            <div class="drop-thumb"><img src="images/dracaufeu.png" alt="Dracaufeu" loading="lazy" decoding="async" /></div>
+            <div class="drop-name">Drac.</div>
+            <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -938,6 +1192,1078 @@
   <audio id="sfx-reveal" src="sounds/card_reveal.mp3" preload="auto"></audio>
   <audio id="sfx-legendary" src="sounds/legendary_fx.mp3" preload="auto"></audio>
   <audio id="sfx-tick" src="sounds/clic_clic.mp3" preload="auto"></audio>
+  <script>
+    /********************
+     * STORAGE KEYS
+     ********************/
+    const VS_COLLECTION_KEY = "vaultspin_collection_v1";
+    const VS_TOKEN_COUNTER_KEY = "vaultspin_demo_token_counter_v1";
+    const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
+    const VS_WALLET_BALANCE_EUR_KEY = "vaultspin_wallet_balance_eur_v1";
+
+    /* ✅ Points + leaderboard (démo/local UI) */
+    const VS_USER_ID_KEY = "vaultspin_user_id_v1";
+    const VS_USER_NAME_KEY = "vaultspin_user_name_v1";
+    const VS_POINTS_KEY = "vaultspin_points_v1";
+    const VS_LB_MONTH_KEY = "vaultspin_leaderboard_month_v1";
+    const VS_LB_DATA_KEY = "vaultspin_leaderboard_data_v1";
+
+    const POINTS_PER_PACK = 25;
+    const FREE_PACK_COST_PTS = 2500;
+
+    function monthKey(d = new Date()){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      return `${y}-${m}`;
+    }
+
+    function getUserId(){
+      let id = localStorage.getItem(VS_USER_ID_KEY);
+      if (!id){
+        id = "u_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+        localStorage.setItem(VS_USER_ID_KEY, id);
+      }
+      return id;
+    }
+
+    function getUserName(){
+      let name = localStorage.getItem(VS_USER_NAME_KEY);
+      if (!name){
+        name = "Player " + (Math.floor(Math.random()*9000) + 1000);
+        localStorage.setItem(VS_USER_NAME_KEY, name);
+      }
+      return name;
+    }
+
+    function getPoints(){
+      const raw = localStorage.getItem(VS_POINTS_KEY);
+      const n = raw ? Number(raw) : 0;
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
+    function setPoints(v){
+      localStorage.setItem(VS_POINTS_KEY, String(Math.max(0, Number(v) || 0)));
+    }
+    function canFreePack(){ return getPoints() >= FREE_PACK_COST_PTS; }
+
+    function ensureLbMonth(){
+      const nowM = monthKey();
+      const storedM = localStorage.getItem(VS_LB_MONTH_KEY);
+      if (storedM !== nowM){
+        localStorage.setItem(VS_LB_MONTH_KEY, nowM);
+        localStorage.setItem(VS_LB_DATA_KEY, JSON.stringify([
+          { id:getUserId(), name:getUserName(), points:getPoints() }
+        ]));
+      }
+    }
+
+    function loadLb(){
+      try{ return JSON.parse(localStorage.getItem(VS_LB_DATA_KEY) || "[]"); }
+      catch{ return []; }
+    }
+    function saveLb(arr){ localStorage.setItem(VS_LB_DATA_KEY, JSON.stringify(arr)); }
+
+    function syncLeaderboardMe(){
+      ensureLbMonth();
+      const arr = loadLb();
+      const meId = getUserId();
+      const idx = arr.findIndex(x => x.id === meId);
+      const me = { id: meId, name: getUserName(), points: getPoints() };
+      if (idx >= 0) arr[idx] = me; else arr.push(me);
+      saveLb(arr.slice(0, 100));
+    }
+
+    function addPoints(delta){
+      setPoints(getPoints() + (Number(delta) || 0));
+      renderPoints();
+      syncLeaderboardMe();
+    }
+
+    function spendPoints(cost){
+      const pts = getPoints();
+      if (pts < cost) return false;
+      setPoints(pts - cost);
+      renderPoints();
+      syncLeaderboardMe();
+      return true;
+    }
+
+    function renderPoints(){
+      const pts = getPoints();
+      const el = document.getElementById("stat-points");
+      if (el) el.textContent = pts.toLocaleString("fr-FR");
+
+      const freeBtn = document.getElementById("free-pack-btn");
+      if (freeBtn){
+        const ok = canFreePack() && !isBusy();
+        freeBtn.disabled = !ok;
+        freeBtn.textContent = canFreePack()
+          ? `Booster gratuit — ${FREE_PACK_COST_PTS} pts`
+          : `Booster gratuit — ${FREE_PACK_COST_PTS} pts (${pts}/${FREE_PACK_COST_PTS})`;
+      }
+    }
+
+    /********************
+     * ECONOMY
+     ********************/
+    const PACK_PRICE_EUR = 24.99;
+    const EUR_TO_ETH = 1 / 3500;
+
+    function getWalletSpent(){
+      const raw = localStorage.getItem(VS_WALLET_SPENT_EUR_KEY);
+      const n = raw ? Number(raw) : 0;
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
+    function setWalletSpent(v){
+      localStorage.setItem(VS_WALLET_SPENT_EUR_KEY, String(Math.max(0, Number(v) || 0)));
+    }
+    function getWalletBalance(){
+      const raw = localStorage.getItem(VS_WALLET_BALANCE_EUR_KEY);
+      const n = raw ? Number(raw) : 0;
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
+    function setWalletBalance(v){
+      localStorage.setItem(VS_WALLET_BALANCE_EUR_KEY, String(Math.max(0, Number(v) || 0)));
+    }
+    function creditWallet(amount){
+      setWalletBalance(getWalletBalance() + (Number(amount) || 0));
+      renderWallet();
+    }
+
+    function fmtEur(n){
+      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+    function fmtEthFromEur(eur){
+      const eth = (Number(eur)||0) * EUR_TO_ETH;
+      return "≈ " + eth.toLocaleString("fr-FR", { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " ETH";
+    }
+
+    function renderWallet(){
+      const bal = getWalletBalance();
+      document.getElementById("wallet-eur").textContent = fmtEur(bal);
+      document.getElementById("wallet-eth").textContent = fmtEthFromEur(bal);
+      document.getElementById("wallet-hint").innerHTML =
+        `Balance : <b>${fmtEur(bal)}</b><br/>Spent : <b>${fmtEur(getWalletSpent())}</b><br/>Pack : <b>${fmtEur(PACK_PRICE_EUR)}</b>`;
+    }
+
+    function debitPack(){
+      const bal = getWalletBalance();
+      if (bal < PACK_PRICE_EUR){
+        setStatus("Fonds insuffisants. Ajoute +100€ dans le wallet.", "error");
+        return false;
+      }
+      setWalletBalance(bal - PACK_PRICE_EUR);
+      setWalletSpent(getWalletSpent() + PACK_PRICE_EUR);
+      renderWallet();
+      return true;
+    }
+
+    /********************
+     * ✅ BOOSTERS CONFIG (PLANT + WATER + FIRE)
+     ********************/
+    let selectedBoosterKey = "plant";
+
+    const BOOSTERS = {
+      plant: {
+        key: "plant",
+        uiName: "Booster Plante",
+        openTitle: "VAULTSPIN · OPENING · PLANTE",
+        packPriceEur: PACK_PRICE_EUR,
+
+        prices: {
+          0: 5.50, 1: 135, 2: 60, 3: 70, 4: 109, 5: 209, 6: 69, 7: 129, 8: 70, 9: 109, 10: 1350, 11: 199, 12: 109, 13: 109, 14: 77, 15: 15.50, 16: 4.00, 17: 3.00, 18: 7.00
+        },
+        images: {
+          0:"images/phyllali_PCA.png", 1:"images/aeromite.png", 2:"images/germignon.png", 3:"images/astronelle.png", 4:"images/chetiflor.png",
+          5:"images/jungko.png", 6:"images/chenipan.png", 7:"images/energie_plante.png", 8:"images/majaspic.png", 9:"images/mimitoss.png",
+          10:"images/florizarre.png", 11:"images/nidoking.png", 12:"images/noeufnoeuf.png", 13:"images/paras.png", 14:"images/phyllali.png",
+          15:"images/boskara.png", 16:"images/filentrappe.png", 17:"images/peterson.png", 18:"images/scovilain.png"
+        },
+        names: {
+          0:"Phyllali PCA", 1:"Aéromite", 2:"Germignon", 3:"Astronelle", 4:"Chétiflor", 5:"Jungko", 6:"Chenipan",
+          7:"Énergie Plante", 8:"Majaspic", 9:"Mimitoss", 10:"Florizarre", 11:"Nidoking", 12:"Noeufnoeuf", 13:"Paras", 14:"Phyllali",
+          15:"Boskara", 16:"Filentrappe", 17:"Peterson", 18:"Scovilain"
+        },
+
+        legendaryCts: [10],
+        hiddenSet: new Set([0,15,16,17,18]),
+        poolUltra: [11, 1, 7, 5],
+        poolEpic: [2, 3, 8, 6, 14, 13, 4, 9, 12],
+        hiddenWeights: [
+          { ct: 17, w: 60 },
+          { ct: 16, w: 22 },
+          { ct: 0,  w: 12 },
+          { ct: 18, w: 5 },
+          { ct: 15, w: 1 }
+        ]
+      },
+
+      water: {
+        key: "water",
+        uiName: "Booster Eau",
+        openTitle: "VAULTSPIN · OPENING · EAU",
+        packPriceEur: PACK_PRICE_EUR,
+
+        prices: {
+          100: 40.00, 101: 119.00, 102: 249.00, 103: 125.99, 104: 229.00, 105: 1049.00, 106: 499.00, 107: 200.00,
+          108: 54.00, 109: 145.99, 110: 100.00, 111: 109.00, 112: 215.00, 113: 1689.00,
+          120: 5.50, 121: 8.05, 122: 15.10, 123: 4.00
+        },
+
+        images: {
+          100:"images/aquali.png", 101:"images/energie_eau.png", 102:"images/flobio.png", 103:"images/givrali.png", 104:"images/leviator.png",
+          105:"images/leviator_obscur.png", 106:"images/lokhlass.png", 107:"images/ludicolo.png", 108:"images/lumineon.png", 109:"images/palkia.png",
+          110:"images/pingoleon.png", 111:"images/poissirene.png", 112:"images/staross.png", 113:"images/tortank.png",
+          120:"images/givrali_vstar.png", 121:"images/keldeo.png", 122:"images/leviator_vmax.png", 123:"images/tortank_PCA.png"
+        },
+
+        names: {
+          100:"Aquali", 101:"Énergie Eau", 102:"Flobio", 103:"Givrali", 104:"Léviator", 105:"Léviator Obscur", 106:"Lokhlass",
+          107:"Ludicolo", 108:"Lumineon", 109:"Palkia", 110:"Pingoléon", 111:"Poissirène", 112:"Staross", 113:"Tortank",
+          120:"Givrali VSTAR", 121:"Keldeo", 122:"Léviator VMAX", 123:"Tortank PCA"
+        },
+
+        legendaryCts: [113, 105, 106],
+        hiddenSet: new Set([120,121,122,123]),
+        poolUltra: [102,103,104,107,109,112],
+        poolEpic: [100,101,108,110,111],
+        hiddenWeights: [
+          { ct: 120, w: 60 },
+          { ct: 122, w: 22 },
+          { ct: 123, w: 12 },
+          { ct: 121, w: 6 }
+        ]
+      },
+
+      fire: {
+        key: "fire",
+        uiName: "Booster Feu",
+        openTitle: "VAULTSPIN · OPENING · FEU",
+        packPriceEur: PACK_PRICE_EUR,
+
+        // ✅ indices 200+ (pas de collision)
+        prices: {
+          200: 6299.00,  // dracaufeu
+          201: 75.00,    // dracaufeu_ex
+          202: 145.00,   // dracaufeu_vmax
+          203: 149.00,   // energie_feu
+          204: 53.00,    // feu_percant
+          205: 35.50,    // pyrobut
+          206: 78.99,    // reptincel
+          207: 60.00,    // scolocendre_vmax
+          208: 120.00,   // hericendre
+          209: 249.00,   // feurisson
+          210: 145.00,   // galopa
+          211: 239.00,   // pyroli
+          212: 200.00,   // reshiram
+          213: 199.00,   // typhlosion
+
+          // hidden
+          220: 7.50,     // galopa_cgg
+          221: 7.00      // lugulabre
+        },
+
+        images: {
+          200:"images/dracaufeu.png",
+          201:"images/dracaufeu_ex.png",
+          202:"images/dracaufeu_vmax.png",
+          203:"images/energie_feu.png",
+          204:"images/feu_percant.png",
+          205:"images/pyrobut.png",
+          206:"images/reptincel.png",
+          207:"images/scolocendre_vmax.png",
+          208:"images/hericendre.png",
+          209:"images/feurisson.png",
+          210:"images/galopa.png",
+          211:"images/pyroli.png",
+          212:"images/reshiram.png",
+          213:"images/typhlosion.png",
+          220:"images/galopa_cgg.png",
+          221:"images/lugulabre.png"
+        },
+
+        names: {
+          200:"Dracaufeu",
+          201:"Dracaufeu EX",
+          202:"Dracaufeu VMAX",
+          203:"Énergie Feu",
+          204:"Feu Perçant",
+          205:"Pyrobut",
+          206:"Reptincel",
+          207:"Scolocendre VMAX",
+          208:"Héricendre",
+          209:"Feurisson",
+          210:"Galopa",
+          211:"Pyroli",
+          212:"Reshiram",
+          213:"Typhlosion",
+          220:"Galopa CGG",
+          221:"Lugulabre"
+        },
+
+        legendaryCts: [200],
+        hiddenSet: new Set([220,221]),
+
+        // ULTRA: prix 121–300 (sauf legendary, hidden)
+        poolUltra: [202,203,209,210,211,212,213],
+        // EPIC: le reste visible < 121
+        poolEpic: [201,204,205,206,207,208],
+
+        // HIDDEN weights (même esprit que tes autres boosters)
+        hiddenWeights: [
+          { ct: 220, w: 60 }, // galopa_cgg
+          { ct: 221, w: 40 }  // lugulabre
+        ]
+      }
+    };
+
+    function getBooster(){
+      return BOOSTERS[selectedBoosterKey] || BOOSTERS.plant;
+    }
+
+    /********************
+     * RARITY (display rules)
+     ********************/
+    function rarityKeyForCt(ct){
+      const b = getBooster();
+      if (b.hiddenSet.has(ct)) return "HIDDEN";
+      if (b.legendaryCts.includes(ct)) return "LEGENDARY";
+      const price = b.prices[ct] ?? 0;
+      if (price >= 121 && price <= 300) return "ULTRA";
+      return "EPIC";
+    }
+    function rarityLabelForKey(k){
+      if (k === "ULTRA") return "Ultra";
+      if (k === "LEGENDARY") return "Legendary";
+      if (k === "HIDDEN") return "";
+      return "Epic";
+    }
+    function dotClassForRarityKey(k){
+      if (k==="LEGENDARY") return "legendary";
+      if (k==="ULTRA") return "ultra";
+      if (k==="HIDDEN") return "hidden";
+      return "";
+    }
+
+    /********************
+     * Drop logic (bucketed)
+     ********************/
+    function pickFrom(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+    function pickWeighted(pairs){
+      let total = 0;
+      for (const p of pairs) total += p.w;
+      let r = Math.random() * total;
+      for (const p of pairs){
+        r -= p.w;
+        if (r <= 0) return p.ct;
+      }
+      return pairs[pairs.length - 1].ct;
+    }
+    function pickHiddenCt(){
+      const b = getBooster();
+      return pickWeighted(b.hiddenWeights);
+    }
+    function pickCardIndex(){
+      const b = getBooster();
+      const r = Math.random();
+
+      // même logique que Plante
+      if (r < (1/5000)) return pickFrom(b.legendaryCts);
+      if (r < (1/5000) + (1/50)) return pickFrom(b.poolUltra);
+      if (r < (1/5000) + (1/50) + (1/20)) return pickFrom(b.poolEpic);
+      return pickHiddenCt();
+    }
+
+    /********************
+     * Collection helpers
+     ********************/
+    function getCollection(){
+      try{ return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
+      catch{ return []; }
+    }
+    function setCollection(arr){ localStorage.setItem(VS_COLLECTION_KEY, JSON.stringify(arr)); }
+    function nextLocalTokenId(){
+      const raw = localStorage.getItem(VS_TOKEN_COUNTER_KEY);
+      const n = raw ? Number(raw) : 1;
+      const next = Number.isFinite(n) && n > 0 ? n : 1;
+      localStorage.setItem(VS_TOKEN_COUNTER_KEY, String(next + 1));
+      return next;
+    }
+    function pushToCollection(entry){
+      const arr = getCollection();
+      arr.unshift(entry);
+      setCollection(arr);
+    }
+    function removeTokenFromCollection(tokenId){
+      const arr = getCollection();
+      const i = arr.findIndex(x => Number(x.tokenId) === Number(tokenId));
+      if (i >= 0){
+        arr.splice(i, 1);
+        setCollection(arr);
+      }
+    }
+    function formatDate(ts){
+      const d = new Date(ts);
+      return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }
+    function bestPullFromCollection(arr){
+      if (!arr.length) return null;
+      const score = (rk) => rk==="LEGENDARY" ? 3 : rk==="ULTRA" ? 2 : rk==="EPIC" ? 1 : 0;
+      let best = arr[0];
+      for (const c of arr){
+        if (score(c.rarityKey) > score(best.rarityKey)) best = c;
+      }
+      return best;
+    }
+    function vaultValueFromCollection(arr){
+      let sum = 0;
+      for (const x of arr){
+        const ct = Number(x.cardTypeIndex ?? -1);
+        if (!Number.isFinite(ct) || ct < 0) continue;
+
+        const bkey = x.boosterKey || "plant";
+        const b = BOOSTERS[bkey] || BOOSTERS.plant;
+        sum += (b.prices[ct] ?? 0);
+      }
+      return sum;
+    }
+
+    /********************
+     * UI
+     ********************/
+    const UI_STATE = { IDLE:"idle", OPENING:"opening", RESULT:"result" };
+    let uiState = UI_STATE.IDLE;
+
+    let sfxBooster=null, sfxReveal=null, sfxLegendary=null, sfxTickSrc=null;
+    let tickA=null, tickB=null, tickFlip=false;
+    let lastTickAt = 0;
+
+    function sleep(ms){ return new Promise((r)=>setTimeout(r, ms)); }
+    function isBusy(){ return uiState !== UI_STATE.IDLE; }
+
+    function setStatus(text, mode="ok"){
+      const t = document.getElementById("status-text");
+      const d = document.getElementById("status-dot");
+      t.textContent = text;
+      d.classList.remove("error","pending");
+      if (mode==="error") d.classList.add("error");
+      if (mode==="pending") d.classList.add("pending");
+    }
+
+    function playSound(el){
+      if(!el) return;
+      try{ el.pause(); el.currentTime=0; el.play().catch(()=>{}); }catch(_){}
+    }
+
+    function stopTickAudio(){
+      try{
+        if (tickA){ tickA.pause(); tickA.currentTime = 0; }
+        if (tickB){ tickB.pause(); tickB.currentTime = 0; }
+      }catch(_){}
+    }
+
+    function playTick(){
+      const now = performance.now();
+      if (now - lastTickAt < 58) return;
+      lastTickAt = now;
+      const a = tickFlip ? tickA : tickB;
+      tickFlip = !tickFlip;
+      if (!a) return;
+      try{ a.currentTime = 0; a.play().catch(()=>{}); }catch(_){}
+    }
+
+    function renderStats(){
+      const arr = getCollection();
+      const opened = arr.length;
+      const spent = getWalletSpent();
+      const last = opened ? arr[0] : null;
+      const best = opened ? bestPullFromCollection(arr) : null;
+      const vault = vaultValueFromCollection(arr);
+
+      document.getElementById("stat-opened").textContent = String(opened);
+      document.getElementById("stat-spent").textContent = spent.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
+      document.getElementById("stat-vault").textContent = vault.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
+
+      if (last){
+        document.getElementById("stat-last").textContent = "#" + last.tokenId;
+        document.getElementById("stat-last-sub").textContent = (last.rarityKey === "HIDDEN") ? "HIDDEN" : last.rarityKey;
+      } else {
+        document.getElementById("stat-last").textContent = "—";
+        document.getElementById("stat-last-sub").textContent = "—";
+      }
+
+      if (best){
+        document.getElementById("stat-best-img").src = best.img;
+        document.getElementById("stat-best-line1").textContent =
+          ((best.rarityKey === "HIDDEN") ? "HIDDEN" : best.rarityKey) + " #" + best.tokenId;
+        document.getElementById("stat-best-line2").textContent = formatDate(best.ts);
+      } else {
+        document.getElementById("stat-best-line1").textContent = "—";
+        document.getElementById("stat-best-line2").textContent = "—";
+      }
+    }
+
+    function renderHistory(){
+      const list = document.getElementById("history-list");
+      const arr = getCollection().slice(0, 12);
+      list.innerHTML = "";
+
+      if (!arr.length){
+        const empty = document.createElement("div");
+        empty.style.fontSize = "12px";
+        empty.style.color = "#9ca3af";
+        empty.textContent = "Aucun pack ouvert pour l’instant.";
+        list.appendChild(empty);
+        return;
+      }
+
+      for (const c of arr){
+        const row = document.createElement("div");
+        row.className = "hist-item";
+
+        const dot = document.createElement("div");
+        dot.className = "hist-dot " + dotClassForRarityKey(c.rarityKey);
+
+        const main = document.createElement("div");
+        main.className = "hist-main";
+
+        const l1 = document.createElement("div");
+        l1.className = "hist-line1";
+        const label = (c.rarityKey === "HIDDEN") ? "HIDDEN" : c.rarityKey;
+        l1.innerHTML = `<span>#${c.tokenId}</span><span class="pill-mini">${label}</span>`;
+
+        const l2 = document.createElement("div");
+        l2.className = "hist-line2";
+        l2.textContent = formatDate(c.ts);
+
+        main.appendChild(l1);
+        main.appendChild(l2);
+        row.appendChild(dot);
+        row.appendChild(main);
+        list.appendChild(row);
+      }
+    }
+
+    function openOverlay(){
+      const o = document.getElementById("open-overlay");
+      o.classList.add("on");
+      o.setAttribute("aria-hidden","false");
+    }
+    function closeOverlay(){
+      const o = document.getElementById("open-overlay");
+      o.classList.remove("on");
+      o.setAttribute("aria-hidden","true");
+    }
+    function showReel(){
+      document.getElementById("reel-section").classList.remove("hidden");
+      document.getElementById("result-section").classList.remove("on");
+      document.getElementById("open-close").style.display = "none";
+      document.getElementById("open-skip").style.display = "inline-flex";
+      document.getElementById("open-hint").textContent = "Opening…";
+    }
+    function showResult(){
+      document.getElementById("reel-section").classList.add("hidden");
+      document.getElementById("result-section").classList.add("on");
+      document.getElementById("open-skip").style.display = "none";
+      document.getElementById("open-close").style.display = "inline-flex";
+    }
+
+    /********************
+     * Reel logic
+     ********************/
+    const REEL_TOTAL_ITEMS = 60;
+    let spinning = false;
+    let stopIndex = 0;
+    let currentOpen = null;
+    let rafId = null;
+    let lastIndexUnderCursor = -1;
+
+    function buildReelItems(winningCt){
+      const arr = [];
+      for (let i=0;i<REEL_TOTAL_ITEMS;i++) arr.push(pickCardIndex());
+      stopIndex = Math.max(20, REEL_TOTAL_ITEMS - 10);
+      arr[stopIndex] = winningCt;
+      return arr;
+    }
+
+    function escapeHtml(s){
+      return String(s || "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[c]));
+    }
+
+    function renderReel(reelItems){
+      const b = getBooster();
+      const track = document.getElementById("reel-track");
+      track.innerHTML = "";
+      track.classList.remove("spinning");
+      track.style.transition = "";
+      track.style.transform = "translateX(0px)";
+      void track.offsetHeight;
+
+      for (let i=0;i<reelItems.length;i++){
+        const ct = reelItems[i];
+        const rk = rarityKeyForCt(ct);
+        const el = document.createElement("div");
+        el.className = "reel-item";
+        el.setAttribute("data-i", String(i));
+        el.innerHTML = `
+          <div class="reel-thumb">
+            <img src="${b.images[ct]}" alt="${escapeHtml(b.names[ct] || "Card")}" loading="lazy" decoding="async"/>
+          </div>
+          <div class="reel-meta">
+            <div class="reel-name">${escapeHtml(b.names[ct] || "Card")}</div>
+            <div class="reel-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "" : rk}</div>
+          </div>
+        `;
+        track.appendChild(el);
+      }
+    }
+
+    function getStepPx(){
+      const track = document.getElementById("reel-track");
+      const first = track.firstElementChild;
+      if (!first) return 180;
+      const w = first.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(track).gap || "12") || 12;
+      return w + gap;
+    }
+
+    function getTranslateX(el){
+      const tr = getComputedStyle(el).transform;
+      if (!tr || tr === "none") return 0;
+      const m = tr.match(/matrix\(([^)]+)\)/);
+      if (!m) return 0;
+      const parts = m[1].split(",").map(x => parseFloat(x.trim()));
+      return Number.isFinite(parts[4]) ? parts[4] : 0;
+    }
+
+    function startTickLoop(){
+      const track = document.getElementById("reel-track");
+      const viewport = document.getElementById("reel-viewport");
+      lastIndexUnderCursor = -1;
+
+      const loop = () => {
+        if (!spinning) return;
+        const x = getTranslateX(track);
+        const step = getStepPx();
+        const vw = viewport.getBoundingClientRect().width;
+        const cursorX = vw / 2;
+        const offset = -x;
+        const idx = Math.floor((offset + cursorX) / step);
+        if (idx !== lastIndexUnderCursor){
+          lastIndexUnderCursor = idx;
+          playTick();
+        }
+        rafId = requestAnimationFrame(loop);
+      };
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function stopTickLoop(){
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+
+    async function spinToStop(){
+      spinning = true;
+      setStatus("Ouverture…", "pending");
+      stopTickAudio();
+      playSound(sfxBooster);
+
+      const track = document.getElementById("reel-track");
+      const viewport = document.getElementById("reel-viewport");
+      track.classList.remove("spinning");
+      track.style.transition = "";
+      track.style.transform = "translateX(0px)";
+      void track.offsetHeight;
+
+      const step = getStepPx();
+      const vw = viewport.getBoundingClientRect().width;
+      const cursorX = vw / 2;
+
+      const targetCenter = stopIndex * step + (step / 2);
+      const targetTranslate = targetCenter - cursorX;
+      const jitter = (Math.random()*6) - 3;
+      const finalX = -(targetTranslate + jitter);
+
+      startTickLoop();
+      track.classList.add("spinning");
+      requestAnimationFrame(() => {
+        track.style.transform = `translateX(${finalX}px)`;
+      });
+
+      await new Promise((resolve) => {
+        track.addEventListener("transitionend", resolve, { once:true });
+      });
+
+      spinning = false;
+      stopTickLoop();
+    }
+
+    function skipSpinNow(){
+      if (!spinning) return;
+      const track = document.getElementById("reel-track");
+      const viewport = document.getElementById("reel-viewport");
+
+      track.classList.remove("spinning");
+      const step = getStepPx();
+      const vw = viewport.getBoundingClientRect().width;
+      const cursorX = vw / 2;
+
+      const targetCenter = stopIndex * step + (step / 2);
+      const targetTranslate = targetCenter - cursorX;
+      const finalX = -(targetTranslate);
+
+      track.style.transition = "transform 420ms cubic-bezier(.16,.84,.2,1)";
+      track.style.transform = `translateX(${finalX}px)`;
+    }
+
+    function fillResultUI(){
+      const b = getBooster();
+      const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
+      const price = b.prices[winningCt] ?? 0;
+
+      document.getElementById("result-img").src = imgSrc;
+      document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
+
+      const isHidden = b.hiddenSet.has(winningCt);
+      const desc = isHidden
+        ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
+        : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
+
+      document.getElementById("result-desc").textContent = desc;
+
+      const pill = document.getElementById("result-pill");
+      if (isHidden){
+        pill.style.display = "none";
+      } else {
+        pill.style.display = "inline-flex";
+        pill.textContent = rarityKey;
+        pill.className = "result-pill " + rarityKey.toLowerCase();
+      }
+
+      document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
+
+      const sellBtn = document.getElementById("result-sell");
+      sellBtn.disabled = false;
+      sellBtn.textContent = "Revendre · " + fmtEur(price);
+    }
+
+    function commitToCollection(){
+      const { winningCt, rarityKey, imgSrc, name, tokenId, ts, boosterKey } = currentOpen;
+      const entry = {
+        tokenId,
+        ts,
+        boosterKey,
+        priceEur: PACK_PRICE_EUR,
+        rarityKey,
+        rarityLabel: rarityLabelForKey(rarityKey),
+        cardTypeIndex: winningCt,
+        img: imgSrc,
+        name
+      };
+      pushToCollection(entry);
+      renderStats();
+      renderHistory();
+      return entry;
+    }
+
+    function sellCurrentPull(){
+      if (!currentOpen) return;
+      const { winningCt, tokenId, boosterKey } = currentOpen;
+      const b = BOOSTERS[boosterKey] || BOOSTERS.plant;
+      const price = b.prices[winningCt] ?? 0;
+
+      removeTokenFromCollection(tokenId);
+      creditWallet(price);
+      renderStats();
+      renderHistory();
+      setStatus(`Revendu ✅ +${fmtEur(price)}`, "ok");
+
+      const btn = document.getElementById("result-sell");
+      btn.disabled = true;
+    }
+
+    async function openPackRoulette(mode="paid"){
+      if (isBusy()) return;
+
+      if (mode === "paid"){
+        if (!debitPack()) return;
+      } else {
+        try{
+          if (window.vsSpendPointsServer){
+            const res = await window.vsSpendPointsServer(FREE_PACK_COST_PTS);
+            if (!res?.ok){
+              setStatus(`Points insuffisants (${res?.points || 0}/${FREE_PACK_COST_PTS}).`, "error");
+              return;
+            }
+            localStorage.setItem(VS_POINTS_KEY, String(res.points));
+            renderPoints();
+          } else {
+            if (!spendPoints(FREE_PACK_COST_PTS)){
+              setStatus("Points insuffisants pour un booster gratuit.", "error");
+              return;
+            }
+          }
+        }catch(e){
+          if (!spendPoints(FREE_PACK_COST_PTS)){
+            setStatus("Points insuffisants pour un booster gratuit.", "error");
+            return;
+          }
+        }
+      }
+
+      uiState = UI_STATE.OPENING;
+      const mainBtn = document.getElementById("open-pack-btn");
+      mainBtn.disabled = true;
+      renderPoints();
+
+      openOverlay();
+      showReel();
+
+      const b = getBooster();
+      const openTitle = document.getElementById("open-title");
+      if (openTitle) openTitle.textContent = b.openTitle;
+
+      const winningCt = pickCardIndex();
+      const rarityKey = rarityKeyForCt(winningCt);
+      const imgSrc = b.images[winningCt] ?? "images/germignon.png";
+      const name = b.names[winningCt] || "Card";
+      const tokenId = nextLocalTokenId();
+      const ts = Date.now();
+
+      currentOpen = { boosterKey: b.key, winningCt, rarityKey, imgSrc, name, tokenId, ts };
+
+      const reelItems = buildReelItems(winningCt);
+      renderReel(reelItems);
+
+      await sleep(70);
+      await spinToStop();
+
+      playSound(sfxReveal);
+      if (rarityKey === "LEGENDARY") playSound(sfxLegendary);
+
+      commitToCollection();
+
+      try{
+        if (window.vsSaveCardToDb){
+          const price = b.prices[winningCt] ?? 0;
+          await window.vsSaveCardToDb({
+            token_id: tokenId,
+            card_type_index: winningCt,
+            rarity_key: rarityKey,
+            image_url: imgSrc,
+            card_name: name,
+            estimated_value_eur: price,
+            opened_at: new Date(ts).toISOString()
+          });
+        }
+      }catch(err){
+        console.warn("DB save failed:", err);
+        setStatus("Pack ouvert ✅ (DB en retard / erreur)", "pending");
+      }
+
+      fillResultUI();
+
+      if (!window.vsSaveCardToDb){
+        addPoints(POINTS_PER_PACK);
+      }
+
+      uiState = UI_STATE.RESULT;
+      showResult();
+      setStatus("Pack ouvert ✅", "ok");
+
+      mainBtn.disabled = false;
+      renderPoints();
+    }
+
+    async function flyThenOpenAnother(){
+      const imgwrap = document.getElementById("result-imgwrap");
+      imgwrap.classList.add("fly-out");
+      await sleep(850);
+      imgwrap.classList.remove("fly-out");
+      uiState = UI_STATE.IDLE;
+      renderPoints();
+      await openPackRoulette("paid");
+    }
+
+    function openCollectionFiltered(cardTypeIndex){
+      window.location.href = "collection.html?ct=" + encodeURIComponent(String(cardTypeIndex));
+    }
+
+    function resetAllData(){
+      localStorage.removeItem(VS_COLLECTION_KEY);
+      localStorage.removeItem(VS_TOKEN_COUNTER_KEY);
+      localStorage.removeItem(VS_WALLET_SPENT_EUR_KEY);
+      localStorage.removeItem(VS_WALLET_BALANCE_EUR_KEY);
+      localStorage.removeItem(VS_POINTS_KEY);
+      localStorage.removeItem(VS_LB_DATA_KEY);
+      localStorage.removeItem(VS_LB_MONTH_KEY);
+
+      setStatus("Reset ✅", "ok");
+      renderWallet();
+      renderStats();
+      renderHistory();
+      syncLeaderboardMe();
+      renderPoints();
+    }
+
+    /********************
+     * Hover preview
+     ********************/
+    function setPreview({ img, name, rarity }){
+      const box = document.getElementById("preview-float");
+      document.getElementById("preview-img").src = img || "";
+      document.getElementById("preview-name").textContent = name || "—";
+      const tag = document.getElementById("preview-tag");
+      tag.textContent = rarity || "EPIC";
+      tag.className = "pf-tag " + String(rarity || "EPIC").toLowerCase();
+      box.classList.add("on");
+      box.setAttribute("aria-hidden","false");
+    }
+    function clearPreview(){
+      const box = document.getElementById("preview-float");
+      box.classList.remove("on");
+      box.setAttribute("aria-hidden","true");
+    }
+
+    /********************
+     * ✅ Booster selection UI
+     ********************/
+    function setSelectedBooster(key){
+      selectedBoosterKey = (key === "water" || key === "fire") ? key : "plant";
+
+      // sélection visuelle
+      document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
+        el.setAttribute("data-selected", String(el.getAttribute("data-booster") === selectedBoosterKey));
+      });
+
+      // switch drop grid
+      const gPlant = document.getElementById("drop-grid-plant");
+      const gWater = document.getElementById("drop-grid-water");
+      const gFire  = document.getElementById("drop-grid-fire");
+
+      if (gPlant) gPlant.style.display = (selectedBoosterKey === "plant") ? "" : "none";
+      if (gWater) gWater.style.display = (selectedBoosterKey === "water") ? "" : "none";
+      if (gFire)  gFire.style.display  = (selectedBoosterKey === "fire")  ? "" : "none";
+
+      // bouton open label
+      const b = getBooster();
+      const btn = document.getElementById("open-pack-btn");
+      if (btn){
+        btn.textContent = `Open ${b.uiName} — ${b.packPriceEur.toFixed(2).replace(".", ",")} €`;
+      }
+
+      setStatus(`Sélectionné : ${b.uiName}`, "ok");
+    }
+
+    /********************
+     * Init
+     ********************/
+    document.addEventListener("DOMContentLoaded", () => {
+      sfxBooster = document.getElementById("sfx-booster");
+      sfxReveal = document.getElementById("sfx-reveal");
+      sfxLegendary = document.getElementById("sfx-legendary");
+      sfxTickSrc = document.getElementById("sfx-tick");
+
+      try{
+        const src = sfxTickSrc ? sfxTickSrc.getAttribute("src") : null;
+        if (src){
+          tickA = new Audio(src);
+          tickB = new Audio(src);
+          tickA.preload = "auto";
+          tickB.preload = "auto";
+          tickA.volume = 0.55;
+          tickB.volume = 0.55;
+        }
+      }catch(_){}
+
+      getUserId();
+      getUserName();
+      syncLeaderboardMe();
+
+      renderWallet();
+      renderStats();
+      renderHistory();
+      renderPoints();
+
+      // default booster
+      setSelectedBooster("plant");
+
+      // ✅ expose pour module (sync server points)
+      window.renderPoints = renderPoints;
+
+      // open buttons
+      document.getElementById("open-pack-btn").addEventListener("click", () => openPackRoulette("paid"));
+      document.getElementById("free-pack-btn").addEventListener("click", () => openPackRoulette("free"));
+
+      // overlay buttons
+      document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
+      document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
+      document.getElementById("result-sell").addEventListener("click", sellCurrentPull);
+
+      document.getElementById("open-close").addEventListener("click", () => {
+        if (spinning) return;
+        closeOverlay();
+        uiState = UI_STATE.IDLE;
+        renderPoints();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        const overlay = document.getElementById("open-overlay");
+        if (overlay.classList.contains("on") && !spinning && uiState === UI_STATE.RESULT){
+          closeOverlay();
+          uiState = UI_STATE.IDLE;
+          renderPoints();
+        }
+      });
+
+      // wallet
+      document.getElementById("wallet-topup-100").addEventListener("click", () => {
+        creditWallet(100);
+        setStatus("+100€ ajoutés ✅", "ok");
+      });
+
+      document.getElementById("reset-data").addEventListener("click", resetAllData);
+
+      document.getElementById("clear-history").addEventListener("click", () => {
+        localStorage.removeItem(VS_COLLECTION_KEY);
+        setStatus("History cleared ✅", "ok");
+        renderStats();
+        renderHistory();
+      });
+
+      // ✅ Booster click selection
+      document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
+        el.style.cursor = "pointer";
+        el.addEventListener("click", () => {
+          const key = el.getAttribute("data-booster");
+          setSelectedBooster(key);
+        });
+      });
+
+      // Hover preview + click filter (sur les 3 grids)
+      document.querySelectorAll(".drop-item").forEach((el) => {
+        const img = el.getAttribute("data-img");
+        const name = el.getAttribute("data-name");
+        const rarity = el.getAttribute("data-rarity");
+        const ct = el.getAttribute("data-ct");
+        let timer = null;
+
+        el.addEventListener("mouseenter", () => {
+          timer = setTimeout(() => setPreview({ img, name, rarity }), 90);
+        });
+        el.addEventListener("mouseleave", () => {
+          if (timer) clearTimeout(timer);
+          clearPreview();
+        });
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          clearPreview();
+          openCollectionFiltered(ct);
+        });
+      });
+    });
+  </script>
 
   <!-- Hidden Pull FX discret -->
   <style>
@@ -961,156 +2287,18 @@
     }
   </style>
 
-  <!-- =========================================================
-       ✅ APP LOGIC (MODULE)
-       - Uses: js/boosters.js (UI list) + js/boosterEngine.js (animation)
-       - Server truth: RPC vs_open_pack(pack_key, mode)
-       - Points: vs_get_points / vs_add_points / vs_spend_points
-     ========================================================= -->
+  <!-- ✅ AUTH + DB SAVE (Supabase) + ✅ POINTS RPC -->
   <script type="module">
     import { supabase } from "./js/supabaseClient.js";
-    import { BOOSTERS, boosterByKey, buildCardIndex } from "./js/boosters.js";
-    import { BoosterEngine } from "./js/boosterEngine.js";
 
-    /********************
-     * Constants
-     ********************/
-    const VS_POINTS_KEY = "vaultspin_points_v1"; // UI cache
-    const POINTS_PER_PACK = 25;
-    const FREE_PACK_COST_PTS = 2500;
-
-    /********************
-     * Small helpers
-     ********************/
-    function fmtEur(n){
-      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
-    }
-    function escapeHtml(s){
-      return String(s || "").replace(/[&<>"']/g, (c) => ({
-        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
-      }[c]));
-    }
-
-    /********************
-     * Status
-     ********************/
-    function setStatus(text, mode="ok"){
-      const t = document.getElementById("status-text");
-      const d = document.getElementById("status-dot");
-      if (!t || !d) return;
-      t.textContent = text;
-      d.classList.remove("error","pending");
-      if (mode==="error") d.classList.add("error");
-      if (mode==="pending") d.classList.add("pending");
-    }
-
-    /********************
-     * Wallet demo (paid packs)
-     ********************/
-    const VS_WALLET_SPENT_EUR_KEY = "vaultspin_wallet_spent_eur_v1";
-    const VS_WALLET_BALANCE_EUR_KEY = "vaultspin_wallet_balance_eur_v1";
-    const PACK_PRICE_EUR = 24.99;
-    const EUR_TO_ETH = 1 / 3500;
-
-    function getWalletSpent(){
-      const raw = localStorage.getItem(VS_WALLET_SPENT_EUR_KEY);
-      const n = raw ? Number(raw) : 0;
-      return Number.isFinite(n) ? Math.max(0, n) : 0;
-    }
-    function setWalletSpent(v){ localStorage.setItem(VS_WALLET_SPENT_EUR_KEY, String(Math.max(0, Number(v) || 0))); }
-    function getWalletBalance(){
-      const raw = localStorage.getItem(VS_WALLET_BALANCE_EUR_KEY);
-      const n = raw ? Number(raw) : 0;
-      return Number.isFinite(n) ? Math.max(0, n) : 0;
-    }
-    function setWalletBalance(v){ localStorage.setItem(VS_WALLET_BALANCE_EUR_KEY, String(Math.max(0, Number(v) || 0))); }
-
-    function fmtEthFromEur(eur){
-      const eth = (Number(eur)||0) * EUR_TO_ETH;
-      return "≈ " + eth.toLocaleString("fr-FR", { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + " ETH";
-    }
-    function renderWallet(){
-      const bal = getWalletBalance();
-      document.getElementById("wallet-eur").textContent = fmtEur(bal);
-      document.getElementById("wallet-eth").textContent = fmtEthFromEur(bal);
-      document.getElementById("wallet-hint").innerHTML =
-        `Balance : <b>${fmtEur(bal)}</b><br/>Spent : <b>${fmtEur(getWalletSpent())}</b><br/>Pack : <b>${fmtEur(PACK_PRICE_EUR)}</b>`;
-    }
-    function creditWallet(amount){
-      setWalletBalance(getWalletBalance() + (Number(amount) || 0));
-      renderWallet();
-    }
-    function debitPack(){
-      const bal = getWalletBalance();
-      if (bal < PACK_PRICE_EUR){
-        setStatus("Fonds insuffisants. Ajoute +100€ dans le wallet.", "error");
-        return false;
-      }
-      setWalletBalance(bal - PACK_PRICE_EUR);
-      setWalletSpent(getWalletSpent() + PACK_PRICE_EUR);
-      renderWallet();
-      return true;
-    }
-
-    /********************
-     * Points (server authoritative)
-     ********************/
-    async function vsGetPoints(){
-      const { data, error } = await supabase.rpc("vs_get_points", {});
-      if (error) throw error;
-      return Number(data || 0);
-    }
-    async function vsAddPoints(delta){
-      const { data, error } = await supabase.rpc("vs_add_points", { p_delta: delta });
-      if (error) throw error;
-      return Number(data || 0);
-    }
-    async function vsSpendPoints(cost){
-      const { data, error } = await supabase.rpc("vs_spend_points", { p_cost: cost });
-      if (error) throw error;
-      const row = Array.isArray(data) ? data[0] : data;
-      return { ok: !!row?.ok, points: Number(row?.points || 0) };
-    }
-
-    async function syncPointsToLocalStorage(){
-      try{
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) return;
-        const pts = await vsGetPoints();
-        localStorage.setItem(VS_POINTS_KEY, String(pts));
-        renderPoints();
-      }catch(e){
-        console.warn("syncPointsToLocalStorage failed:", e);
-      }
-    }
-
-    function getPointsLocal(){
-      const raw = localStorage.getItem(VS_POINTS_KEY);
-      const n = raw ? Number(raw) : 0;
-      return Number.isFinite(n) ? Math.max(0, n) : 0;
-    }
-    function renderPoints(){
-      const pts = getPointsLocal();
-      const el = document.getElementById("stat-points");
-      if (el) el.textContent = pts.toLocaleString("fr-FR");
-
-      const freeBtn = document.getElementById("free-pack-btn");
-      if (freeBtn){
-        const isBusy = window.__vs_engine_busy__ === true;
-        const ok = pts >= FREE_PACK_COST_PTS && !isBusy;
-        freeBtn.disabled = !ok;
-        freeBtn.textContent = (pts >= FREE_PACK_COST_PTS)
-          ? `Booster gratuit — ${FREE_PACK_COST_PTS} pts`
-          : `Booster gratuit — ${FREE_PACK_COST_PTS} pts (${pts}/${FREE_PACK_COST_PTS})`;
-      }
-    }
-
-    /********************
-     * Auth UI
-     ********************/
     const loginBtn = document.getElementById("vs-login-btn");
     const logoutBtn = document.getElementById("vs-logout-btn");
     const emailEl = document.getElementById("vs-user-email");
+    const paidBtn = document.getElementById("open-pack-btn");
+    const freeBtn = document.getElementById("free-pack-btn");
+
+    const POINTS_PER_PACK = 25;
+    const FREE_PACK_COST_PTS = 2500;
 
     function setAuthed(label){
       if (emailEl){
@@ -1164,364 +2352,114 @@
     }
 
     /********************
-     * Drop grid rendering (UI)
+     * ✅ POINTS RPC (server authoritative)
      ********************/
-    function rarityFromPrice(price){
-      const p = Number(price || 0);
-      if (p >= 1000) return "LEGENDARY";
-      if (p >= 121) return "ULTRA";
-      if (p >= 20) return "EPIC";
-      return "HIDDEN";
-    }
-
-    function renderDropGrid(packKey){
-      const b = boosterByKey(packKey);
-      const grid = document.getElementById("drop-grid");
-      const title = document.getElementById("drop-title");
-      if (!b || !grid) return;
-
-      if (title) title.textContent = `Cartes potentiellement obtenables · ${b.uiName}`;
-      grid.innerHTML = "";
-
-      for (const c of (b.cards || [])){
-        const rk = rarityFromPrice(c.price);
-        const el = document.createElement("div");
-        el.className = "drop-item";
-        el.setAttribute("data-booster", String(packKey));
-        el.setAttribute("data-rarity", rk);
-        el.setAttribute("data-name", c.name);
-        el.setAttribute("data-img", c.img);
-        el.setAttribute("data-id", c.id);
-
-        el.innerHTML = `
-          <div class="drop-thumb"><img src="${c.img}" alt="${escapeHtml(c.name)}" loading="lazy" decoding="async" /></div>
-          <div class="drop-name">${escapeHtml(c.name)}</div>
-          <div class="drop-meta">
-            <span class="drop-tag ${rk.toLowerCase()}">${rk === "HIDDEN" ? "" : rk}</span>
-          </div>
-        `;
-
-        // hover preview
-        let timer = null;
-        el.addEventListener("mouseenter", () => { timer = setTimeout(() => setPreview({ img: c.img, name: c.name, rarity: rk }), 90); });
-        el.addEventListener("mouseleave", () => { if (timer) clearTimeout(timer); clearPreview(); });
-
-        // click -> collection filter
-        el.addEventListener("click", (e) => {
-          e.preventDefault();
-          clearPreview();
-          window.location.href = "collection.html?id=" + encodeURIComponent(c.id);
-        });
-
-        grid.appendChild(el);
-      }
-    }
-
-    /********************
-     * Hover preview
-     ********************/
-    function setPreview({ img, name, rarity }){
-      const box = document.getElementById("preview-float");
-      document.getElementById("preview-img").src = img || "";
-      document.getElementById("preview-name").textContent = name || "—";
-      const tag = document.getElementById("preview-tag");
-      tag.textContent = rarity || "EPIC";
-      tag.className = "pf-tag " + String(rarity || "EPIC").toLowerCase();
-      box.classList.add("on");
-      box.setAttribute("aria-hidden","false");
-    }
-    function clearPreview(){
-      const box = document.getElementById("preview-float");
-      box.classList.remove("on");
-      box.setAttribute("aria-hidden","true");
-    }
-
-    /********************
-     * Hook: open pack RPC (server authoritative)
-     ********************/
-    async function openPackRpc(packKey, mode){
-      // mode: 'paid'|'free' as expected by RPC
-      const { data, error } = await supabase.rpc("vs_open_pack", { p_pack_key: packKey, p_mode: mode });
+    async function vsGetPoints(){
+      const { data, error } = await supabase.rpc("vs_get_points", {});
       if (error) throw error;
-      return data; // jsonb -> object
+      return Number(data || 0);
+    }
+    async function vsAddPoints(delta){
+      const { data, error } = await supabase.rpc("vs_add_points", { p_delta: delta });
+      if (error) throw error;
+      return Number(data || 0);
+    }
+    async function vsSpendPoints(cost){
+      const { data, error } = await supabase.rpc("vs_spend_points", { p_cost: cost });
+      if (error) throw error;
+      const row = Array.isArray(data) ? data[0] : data;
+      return { ok: !!row?.ok, points: Number(row?.points || 0) };
     }
 
-    /********************
-     * Engine setup
-     ********************/
-    const cardIndex = buildCardIndex();
-    let selectedPackKey = "PLANT";
-    let engine = null;
-
-    function setSelectedPack(packKey){
-      const k = String(packKey || "").toUpperCase();
-      selectedPackKey = (k === "WATER" || k === "FIRE") ? k : "PLANT";
-
-      // selection visuelle
-      document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
-        el.setAttribute("data-selected", String(el.getAttribute("data-booster") === selectedPackKey));
-      });
-
-      // bouton open label
-      const b = boosterByKey(selectedPackKey);
-      const btn = document.getElementById("open-pack-btn");
-      if (btn && b){
-        btn.textContent = `Open ${b.uiName} — ${b.packPriceEur.toFixed(2).replace(".", ",")} €`;
-      }
-
-      // update open title
-      const openTitle = document.getElementById("open-title");
-      if (openTitle && b){
-        openTitle.textContent = `VAULTSPIN · OPENING · ${b.uiName.toUpperCase()}`;
-      }
-
-      // update grid
-      renderDropGrid(selectedPackKey);
-
-      // update engine booster
-      if (engine && b){
-        engine.setBooster(b);
-      }
-
-      setStatus(`Sélectionné : ${b?.uiName || selectedPackKey}`, "ok");
-    }
-
-    /********************
-     * Local history + stats (kept for MVP)
-     ********************/
-    const VS_COLLECTION_KEY = "vaultspin_collection_v3";
-    const VS_WALLET_SPENT_KEY = VS_WALLET_SPENT_EUR_KEY;
-
-    function getCollection(){
-      try{ return JSON.parse(localStorage.getItem(VS_COLLECTION_KEY) || "[]"); }
-      catch{ return []; }
-    }
-    function formatDate(ts){
-      const d = new Date(ts);
-      return d.toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"2-digit", hour:"2-digit", minute:"2-digit" });
-    }
-    function bestPullFromCollection(arr){
-      if (!arr.length) return null;
-      const score = (rk) => rk==="LEGENDARY" ? 3 : rk==="ULTRA" ? 2 : rk==="EPIC" ? 1 : 0;
-      let best = arr[0];
-      for (const c of arr){
-        if (score(c.rarity_key || c.rarityKey) > score(best.rarity_key || best.rarityKey)) best = c;
-      }
-      return best;
-    }
-    function vaultValueFromCollection(arr){
-      let sum = 0;
-      for (const x of arr){
-        sum += Number(x.valueEur || x.estimated_value_eur || 0);
-      }
-      return sum;
-    }
-    function renderStats(){
-      const arr = getCollection();
-      const opened = arr.length;
-      const spent = getWalletSpent();
-      const last = opened ? arr[0] : null;
-      const best = opened ? bestPullFromCollection(arr) : null;
-      const vault = vaultValueFromCollection(arr);
-
-      document.getElementById("stat-opened").textContent = String(opened);
-      document.getElementById("stat-spent").textContent = spent.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
-      document.getElementById("stat-vault").textContent = vault.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + "€";
-
-      if (last){
-        document.getElementById("stat-last").textContent = (last.card_name || last.name || "—");
-        document.getElementById("stat-last-sub").textContent = (last.rarity_key || last.rarityKey || "—");
-      } else {
-        document.getElementById("stat-last").textContent = "—";
-        document.getElementById("stat-last-sub").textContent = "—";
-      }
-
-      if (best){
-        document.getElementById("stat-best-img").src = best.img || best.image_url || "images/germignon.png";
-        document.getElementById("stat-best-line1").textContent =
-          (best.card_name || best.name || "—") + " · " + (best.rarity_key || best.rarityKey || "—");
-        document.getElementById("stat-best-line2").textContent = formatDate(best.ts || best.opened_at || Date.now());
-      } else {
-        document.getElementById("stat-best-line1").textContent = "—";
-        document.getElementById("stat-best-line2").textContent = "—";
-      }
-    }
-    function dotClassForRarityKey(k){
-      const rk = String(k || "").toUpperCase();
-      if (rk==="LEGENDARY") return "legendary";
-      if (rk==="ULTRA") return "ultra";
-      if (rk==="HIDDEN") return "hidden";
-      return "";
-    }
-    function renderHistory(){
-      const list = document.getElementById("history-list");
-      const arr = getCollection().slice(0, 12);
-      list.innerHTML = "";
-
-      if (!arr.length){
-        const empty = document.createElement("div");
-        empty.style.fontSize = "12px";
-        empty.style.color = "#9ca3af";
-        empty.textContent = "Aucun pack ouvert pour l’instant.";
-        list.appendChild(empty);
-        return;
-      }
-
-      for (const c of arr){
-        const row = document.createElement("div");
-        row.className = "hist-item";
-
-        const dot = document.createElement("div");
-        dot.className = "hist-dot " + dotClassForRarityKey(c.rarity_key || c.rarityKey);
-
-        const main = document.createElement("div");
-        main.className = "hist-main";
-
-        const l1 = document.createElement("div");
-        l1.className = "hist-line1";
-        const label = String(c.rarity_key || c.rarityKey || "EPIC").toUpperCase();
-        l1.innerHTML = `<span>${escapeHtml(c.card_name || c.name || "—")}</span><span class="pill-mini">${escapeHtml(label)}</span>`;
-
-        const l2 = document.createElement("div");
-        l2.className = "hist-line2";
-        l2.textContent = formatDate(c.ts || c.opened_at || Date.now());
-
-        main.appendChild(l1);
-        main.appendChild(l2);
-        row.appendChild(dot);
-        row.appendChild(main);
-        list.appendChild(row);
+    async function syncPointsToLocalStorage(){
+      try{
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+        const pts = await vsGetPoints();
+        localStorage.setItem("vaultspin_points_v1", String(pts));
+        if (window.renderPoints) window.renderPoints();
+      }catch(e){
+        console.warn("syncPointsToLocalStorage failed:", e);
       }
     }
 
-    /********************
-     * Reset
-     ********************/
-    function resetAllData(){
-      localStorage.removeItem(VS_COLLECTION_KEY);
-      localStorage.removeItem(VS_WALLET_SPENT_EUR_KEY);
-      localStorage.removeItem(VS_WALLET_BALANCE_EUR_KEY);
-      localStorage.removeItem(VS_POINTS_KEY);
+    window.vsSpendPointsServer = async (cost) => {
+      return await vsSpendPoints(cost);
+    };
 
-      setStatus("Reset ✅", "ok");
-      renderWallet();
-      renderStats();
-      renderHistory();
-      renderPoints();
-    }
-
-    /********************
-     * Init
-     ********************/
-    document.addEventListener("DOMContentLoaded", async () => {
-      // wallet UI
-      renderWallet();
-      document.getElementById("wallet-topup-100").addEventListener("click", () => {
-        creditWallet(100);
-        setStatus("+100€ ajoutés ✅", "ok");
-      });
-      document.getElementById("reset-data").addEventListener("click", resetAllData);
-
-      // history clear
-      document.getElementById("clear-history").addEventListener("click", () => {
-        localStorage.removeItem(VS_COLLECTION_KEY);
-        setStatus("History cleared ✅", "ok");
-        renderStats();
-        renderHistory();
-      });
-
-      // auth initial state
+    window.vsSaveCardToDb = async (card) => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user){
-        await setAuthedFromSession(session);
+      if (!session?.user) throw new Error("Not authenticated");
+
+      const payload = {
+        user_id: session.user.id,
+        token_id: card.token_id ?? null,
+        card_type_index: card.card_type_index,
+        rarity_key: card.rarity_key ?? null,
+        image_url: card.image_url ?? null,
+        card_name: card.card_name ?? null,
+        estimated_value_eur: card.estimated_value_eur ?? 0,
+        opened_at: card.opened_at ?? new Date().toISOString(),
+        chain_id: null,
+        contract_address: null,
+        onchain_token_id: null
+      };
+
+      const { error } = await supabase
+        .from("user_cards")
+        .insert(payload);
+
+      if (error) throw error;
+
+      try{
+        const newPts = await vsAddPoints(POINTS_PER_PACK);
+        localStorage.setItem("vaultspin_points_v1", String(newPts));
+        if (window.renderPoints) window.renderPoints();
+      }catch(e){
+        console.warn("vsAddPoints failed:", e);
+      }
+      return true;
+    };
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user){
+      await setAuthedFromSession(session);
+      await syncPointsToLocalStorage();
+    } else {
+      setNotAuthed();
+    }
+
+    supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      if (newSession?.user){
+        await setAuthedFromSession(newSession);
         await syncPointsToLocalStorage();
       } else {
         setNotAuthed();
       }
-      supabase.auth.onAuthStateChange(async (_event, newSession) => {
-        if (newSession?.user){
-          await setAuthedFromSession(newSession);
-          await syncPointsToLocalStorage();
-        } else {
-          setNotAuthed();
-        }
-      });
-      logoutBtn?.addEventListener("click", async () => { await supabase.auth.signOut(); });
-
-      // engine
-      engine = new BoosterEngine({
-        booster: boosterByKey(selectedPackKey),
-        cardIndex,
-        hooks: {
-          openPackRpc: async (packKey, mode) => {
-            const s = await requireAuthOrRedirect();
-            if (!s) throw new Error("Not authenticated");
-
-            if (mode === "paid"){
-              if (!debitPack()) throw new Error("Fonds insuffisants");
-            }
-
-            window.__vs_engine_busy__ = true;
-            renderPoints();
-            const res = await openPackRpc(packKey, mode);
-
-            // sync points (ALL) returned by RPC
-            if (typeof res?.points_all === "number"){
-              localStorage.setItem(VS_POINTS_KEY, String(res.points_all));
-              renderPoints();
-            } else {
-              // fallback: fetch
-              await syncPointsToLocalStorage();
-            }
-
-            // refresh local stats/history from engine local history
-            renderStats();
-            renderHistory();
-            window.__vs_engine_busy__ = false;
-            renderPoints();
-            return res;
-          },
-          onCollectionChanged: () => {
-            renderStats();
-            renderHistory();
-          }
-        }
-      });
-      engine.initAudio();
-
-      // overlay controls
-      document.getElementById("open-skip").addEventListener("click", () => { engine.skipSpinNow?.(); });
-      document.getElementById("open-close").addEventListener("click", () => { engine.closeOverlay?.(); window.__vs_engine_busy__ = false; renderPoints(); });
-      document.getElementById("result-open-another").addEventListener("click", async () => { await engine.openPack({ mode: "paid" }); });
-      document.getElementById("result-sell").addEventListener("click", () => {
-        // MVP: sale not connected to server (kept as demo placeholder)
-        setStatus("Revendre: à brancher marketplace ✅", "ok");
-      });
-
-      // open buttons (paid/free)
-      document.getElementById("open-pack-btn").addEventListener("click", async () => {
-        try{ await engine.openPack({ mode:"paid" }); }catch(e){ console.warn(e); }
-      });
-      document.getElementById("free-pack-btn").addEventListener("click", async () => {
-        try{ await engine.openPack({ mode:"free" }); }catch(e){ console.warn(e); }
-      });
-
-      // booster click selection
-      document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
-        el.style.cursor = "pointer";
-        el.addEventListener("click", () => {
-          const key = el.getAttribute("data-booster");
-          setSelectedPack(key);
-        });
-      });
-
-      // initial render
-      renderStats();
-      renderHistory();
-      renderDropGrid(selectedPackKey);
-      renderPoints();
-      setSelectedPack("PLANT");
     });
+
+    logoutBtn?.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+    });
+
+    paidBtn?.addEventListener("click", async (e) => {
+      const s = await requireAuthOrRedirect();
+      if (!s){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+    }, true);
+
+    freeBtn?.addEventListener("click", async (e) => {
+      const s = await requireAuthOrRedirect();
+      if (!s){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+    }, true);
+
   </script>
 
   <!-- ✅ LIVE LOOTS (colonne gauche) -->
