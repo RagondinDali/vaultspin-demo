@@ -50,13 +50,13 @@
     }
 
     .page{
-      width:100%;
-      max-width: min(1200px, calc(100vw - 32px));
-      padding:96px 16px 40px;
-      display:flex;
-      flex-direction:column;
-      gap:24px;
-    }
+  width:100%;
+  max-width: min(1200px, calc(100vw - 32px));
+  padding:72px 16px 28px; /* ✅ remonte l’UI */
+  display:flex;
+  flex-direction:column;
+  gap:18px; /* ✅ un peu plus compact */
+}
 
     /* ✅ Desktop: 3 colonnes (live + left + right) */
     @media (min-width: 900px){
@@ -2590,3 +2590,4 @@
 
 </body>
 </html>
+
