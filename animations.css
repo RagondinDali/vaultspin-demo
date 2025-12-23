@@ -1,8 +1,8 @@
 /* animations.css
    VaultSpin booster card styles + animations
-   ✅ Thème PLANT / WATER / FIRE
-   ✅ “Baby violet” look (accent global violet pastel) + compat 3 boosters en grid
-   ✅ Compatible avec index.html (booster-closed / booster-label / booster-mode-idle / card-frame[data-selected])
+   ✅ Thème PLANT / WATER / FIRE / MYTHIC
+   ✅ PAS de glow lumineux (ni hover, ni selected)
+   ✅ Compatible index.html: booster-closed / booster-label / booster-mode-idle / card-frame[data-selected]
 */
 
 /* ========== Base booster face ========== */
@@ -16,54 +16,62 @@
   align-items:center;
   justify-content:center;
 
-  /* fallback: baby violet */
-  background: radial-gradient(circle at 20% 0%, #c4b5fd 0, #4c1d95 62%);
+  /* fallback: mythic */
+  background: radial-gradient(circle at 20% 0%, #c4b5fd 0, #2a145f 66%);
 }
 
-/* soft gloss layer */
+/* soft gloss layer (discret) */
 .booster-closed::before{
   content:"";
   position:absolute;
   inset:-10%;
-  background: radial-gradient(circle at top left, rgba(233,213,255,.30), transparent 62%);
+  background: radial-gradient(circle at top left, rgba(233,213,255,.18), transparent 64%);
   transform: rotate(-12deg);
   pointer-events:none;
 }
 
-/* vignette / depth */
+/* vignette / depth (discret) */
 .booster-closed::after{
   content:"";
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), transparent 55%),
-    linear-gradient(to bottom, rgba(2,6,23,.00), rgba(2,6,23,.42));
+    radial-gradient(circle at 50% 30%, rgba(255,255,255,.08), transparent 55%),
+    linear-gradient(to bottom, rgba(2,6,23,.00), rgba(2,6,23,.46));
   pointer-events:none;
 }
 
 /* ========== Theme variants ========== */
 /* Plant */
 .booster-closed[data-theme="plant"]{
-  background: radial-gradient(circle at 20% 0%, #86efac 0, #064e3b 60%);
+  background: radial-gradient(circle at 20% 0%, #86efac 0, #064e3b 62%);
 }
 .booster-closed[data-theme="plant"]::before{
-  background: radial-gradient(circle at top left, rgba(187,247,208,.24), transparent 62%);
+  background: radial-gradient(circle at top left, rgba(187,247,208,.18), transparent 64%);
 }
 
 /* Water */
 .booster-closed[data-theme="water"]{
-  background: radial-gradient(circle at 20% 0%, #93c5fd 0, #082f49 62%);
+  background: radial-gradient(circle at 20% 0%, #93c5fd 0, #082f49 66%);
 }
 .booster-closed[data-theme="water"]::before{
-  background: radial-gradient(circle at top left, rgba(191,219,254,.24), transparent 62%);
+  background: radial-gradient(circle at top left, rgba(191,219,254,.18), transparent 64%);
 }
 
 /* Fire */
 .booster-closed[data-theme="fire"]{
-  background: radial-gradient(circle at 20% 0%, #fda4af 0, #7f1d1d 66%);
+  background: radial-gradient(circle at 20% 0%, #fda4af 0, #7f1d1d 70%);
 }
 .booster-closed[data-theme="fire"]::before{
-  background: radial-gradient(circle at top left, rgba(254,202,202,.22), transparent 62%);
+  background: radial-gradient(circle at top left, rgba(254,202,202,.16), transparent 64%);
+}
+
+/* Mythic (violet) */
+.booster-closed[data-theme="mythic"]{
+  background: radial-gradient(circle at 20% 0%, #c4b5fd 0, #2a145f 70%);
+}
+.booster-closed[data-theme="mythic"]::before{
+  background: radial-gradient(circle at top left, rgba(233,213,255,.18), transparent 64%);
 }
 
 /* ========== Label block ========== */
@@ -80,7 +88,7 @@
   padding:14px 10px;
 }
 
-/* top icon */
+/* top icon (PAS de glow) */
 .booster-leaf-icon{
   width:64px;
   height:64px;
@@ -94,11 +102,11 @@
 
   background: rgba(2,6,23,.22);
   border: 1px solid rgba(226,232,240,.18);
-  box-shadow: 0 0 22px rgba(2,6,23,.22);
+  box-shadow: none;               /* ✅ no glow */
   backdrop-filter: blur(10px);
 }
 
-/* small chip */
+/* small chip (PAS de glow) */
 .booster-chip{
   display:inline-flex;
   align-items:center;
@@ -114,7 +122,7 @@
 
   background: rgba(2,6,23,.26);
   border: 1px solid rgba(226,232,240,.18);
-  box-shadow: 0 0 16px rgba(2,6,23,.16) inset;
+  box-shadow: none;               /* ✅ no glow */
   backdrop-filter: blur(10px);
 }
 
@@ -133,18 +141,12 @@
   font-size:12px;
   color:#e2e8f0;
   opacity:.92;
+  line-height:1.2;
 }
 
-/* ========== Idle animation ========== */
+/* ========== Idle animation (OK) ========== */
 .booster-mode-idle{
   animation: boosterIdleFloat 3.4s ease-in-out infinite;
-}
-
-/* subtle shimmer band */
-.booster-mode-idle::marker{ content:""; } /* noop for safety */
-
-.booster-mode-idle .booster-chip{
-  animation: chipGlow 2.8s ease-in-out infinite;
 }
 
 @keyframes boosterIdleFloat{
@@ -153,26 +155,19 @@
   100% { transform: translateY(0px); }
 }
 
-@keyframes chipGlow{
-  0%   { box-shadow: 0 0 16px rgba(2,6,23,.16) inset, 0 0 0 rgba(255,255,255,0); }
-  50%  { box-shadow: 0 0 16px rgba(2,6,23,.16) inset, 0 0 16px rgba(233,213,255,.12); }
-  100% { box-shadow: 0 0 16px rgba(2,6,23,.16) inset, 0 0 0 rgba(255,255,255,0); }
-}
-
-/* ========== Hover micro-interactions (optional) ========== */
+/* ========== Hover micro-interactions (SANS glow) ========== */
 .card-frame:hover .booster-closed{
-  filter: saturate(1.06) contrast(1.03);
+  filter: saturate(1.04) contrast(1.02);
 }
 .card-frame:hover .booster-leaf-icon{
-  box-shadow: 0 0 28px rgba(2,6,23,.30);
   transform: translateY(-1px);
-  transition: transform .16s ease-out, box-shadow .16s ease-out;
+  transition: transform .16s ease-out;
 }
 .card-frame .booster-leaf-icon{
-  transition: transform .16s ease-out, box-shadow .16s ease-out;
+  transition: transform .16s ease-out;
 }
 
-/* ========== “Scanlines” texture overlay (very subtle) ========== */
+/* ========== “Scanlines” texture overlay (très discret) ========== */
 .booster-closed .booster-label::before{
   content:"";
   position:absolute;
@@ -185,34 +180,25 @@
       rgba(255,255,255,0) 3px,
       rgba(255,255,255,0) 7px
     );
-  opacity:.06;
+  opacity:.05;
   pointer-events:none;
   z-index:-1;
   transform: rotate(-1deg);
 }
 
-/* ========== Selection highlight (HTML data-selected) ========== */
-.card-frame[data-selected="true"] .booster-closed::after{
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,.12), transparent 55%),
-    linear-gradient(to bottom, rgba(2,6,23,.00), rgba(2,6,23,.42));
+/* ========== Selection highlight (SANS halo/glow) ========== */
+/* On garde un effet très léger (pas lumineux) : juste un peu plus de contraste */
+.card-frame[data-selected="true"] .booster-closed{
+  filter: saturate(1.02) contrast(1.02);
 }
 
-/* Baby violet selection ring */
+/* Optionnel : bordure du chip un peu plus claire (pas de glow) */
 .card-frame[data-selected="true"] .booster-chip{
-  border-color: rgba(196,181,253,.70);
-}
-
-/* Optional: baby violet halo on selected icon */
-.card-frame[data-selected="true"] .booster-leaf-icon{
-  box-shadow:
-    0 0 22px rgba(2,6,23,.22),
-    0 0 18px rgba(196,181,253,.22);
+  border-color: rgba(226,232,240,.35);
 }
 
 /* ========== Reduced motion ========== */
 @media (prefers-reduced-motion: reduce){
   .booster-mode-idle{ animation:none !important; }
-  .booster-mode-idle .booster-chip{ animation:none !important; }
   .card-frame:hover .booster-leaf-icon{ transform:none !important; }
 }
