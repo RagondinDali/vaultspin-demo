@@ -231,20 +231,36 @@
 .booster-grid{
   display:grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 1fr;
-  gap:14px;
-  align-items:stretch;
-  justify-content:center;
+  gap:16px;
+  align-items:center;
+  justify-items:center;
   width:100%;
   max-width:100%;
   overflow:hidden;
-  padding:8px;
 }
 
-/* ✅ Mythique placé "entre" Plante et Eau (ligne du bas, colonne du milieu) */
-.booster-mythic-slot{
-  grid-column: 2;
+/* Mobile/tablette: tu peux garder tes breakpoints si tu veux */
+@media (max-width: 980px){
+  .booster-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+@media (max-width: 640px){
+  .booster-grid{ grid-template-columns: 1fr; }
+}
+
+/* Placement desktop (>= 981px) */
+@media (min-width: 981px){
+  .card-frame[data-booster="plant"]{ grid-column: 1; grid-row: 1; }
+  .card-frame[data-booster="water"]{ grid-column: 2; grid-row: 1; }
+  .card-frame[data-booster="fire"] { grid-column: 3; grid-row: 1; }
+
+  /* Mythique “entre vert et bleu” => colonne 2 mais décalé à gauche */
+  .card-frame[data-booster="mythic"]{
+    grid-column: 2;
+    grid-row: 2;
+    transform: translateX(-50%); /* ajuste: -40% à -60% selon ton rendu */
+  }
+}
+
 
 /* responsive */
 @media (max-width: 980px){
@@ -2859,6 +2875,7 @@ function setSelectedBooster(key){
 
 </body>
 </html>
+
 
 
 
