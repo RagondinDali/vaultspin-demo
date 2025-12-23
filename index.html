@@ -215,46 +215,58 @@
   position:relative;
   overflow:hidden;
 }
-    .card-frame{
-      position:relative;
-      width:260px; height:380px;
-      border-radius:24px;
-      padding:2px;
-      background:radial-gradient(circle at top,#22c55e,#064e3b 70%);
-      box-shadow:0 0 36px rgba(34,197,94,.45);
-      transition: transform .16s ease-out, box-shadow .16s ease-out;
-      min-width:0; /* ✅ */
-    }
+.card-frame{
+  position:relative;
+  width:260px; height:380px;
+  border-radius:24px;
+  padding:2px;
+  background: rgba(2,6,23,.55);           /* ✅ plus de glow vert */
+  border:1px solid rgba(148,163,184,.18);  /* ✅ simple */
+  box-shadow:none;                          /* ✅ no glow */
+  transition:transform .14s ease-out, border-color .14s ease-out, background .14s ease-out;
+  min-width:0;
+}
     .card-inner{ width:100%; height:100%; border-radius:22px; overflow:hidden; }
 
-    /* ✅ NEW: 3 boosters en grid (pas de scroll horizontal) */
-    .booster-grid{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:16px;
-      align-items:center;
-      justify-content:center;
-      width:100%;
-      max-width:100%;
-      overflow:hidden; /* ✅ */
-    }
-    @media (max-width: 980px){
-      .booster-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (max-width: 640px){
-      .booster-grid{ grid-template-columns: 1fr; }
-    }
+.booster-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap:14px;
+  align-items:stretch;
+  justify-content:center;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  padding:8px;
+}
 
-    .card-frame--sm{
-      width:100%;
-      max-width:220px; /* ✅ tient bien à 3 */
-      height:330px;
-      justify-self:center;
-    }
-    .card-frame[data-selected="true"]{
-      box-shadow: 0 0 44px rgba(255,255,255,.10), 0 0 26px rgba(165,180,252,.22);
-      transform: translateY(-2px);
-    }
+/* ✅ Mythique placé "entre" Plante et Eau (ligne du bas, colonne du milieu) */
+.booster-mythic-slot{
+  grid-column: 2;
+}
+
+/* responsive */
+@media (max-width: 980px){
+  .booster-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .booster-mythic-slot{ grid-column: auto; }
+}
+@media (max-width: 640px){
+  .booster-grid{ grid-template-columns: 1fr; }
+}
+
+.card-frame--sm{
+  width:100%;
+  max-width:220px;
+  height:320px;     /* ✅ plus petit */
+  justify-self:center;
+}
+.card-frame[data-selected="true"]{
+  border-color: rgba(165,180,252,.70);
+  background: rgba(15,23,42,.65);
+  transform: translateY(-1px);
+  box-shadow:none; /* ✅ toujours no glow */
+}
     .card-frame--sm .booster-title{ font-size:16px; }
     .card-frame--sm .booster-subtitle{ font-size:11px; }
 
@@ -273,6 +285,13 @@
     .booster-closed[data-theme="fire"]::before{
       background: radial-gradient(circle at top left, rgba(254,202,202,.20), transparent 60%);
     }
+/* ✅ Theme mythique (violet) */
+.booster-closed[data-theme="mythic"]{
+  background: radial-gradient(circle at 20% 0%, #a855f7 0, #2e1065 65%);
+}
+.booster-closed[data-theme="mythic"]::before{
+  background: radial-gradient(circle at top left, rgba(233,213,255,.18), transparent 60%);
+}
 
     /* Top bar */
     .top-bar{
@@ -926,6 +945,20 @@
             </div>
           </div>
 
+          <!-- ✅ Booster MYTHIQUE (violet) -->
+<div class="card-frame card-frame--sm booster-mythic-slot" data-booster="mythic" data-selected="false">
+  <div class="card-inner">
+    <div class="booster-closed booster-mode-idle" data-theme="mythic">
+      <div class="booster-label">
+        <div class="booster-leaf-icon">🟣</div>
+        <div class="booster-chip">VaultSpin Pack</div>
+        <div class="booster-title">Booster Mythique</div>
+        <div class="booster-subtitle">1 carte à révéler</div>
+      </div>
+    </div>
+  </div>
+</div>
+
           <!-- ✅ Booster FEU -->
           <div class="card-frame card-frame--sm" data-booster="fire" data-selected="false">
             <div class="card-inner">
@@ -1109,7 +1142,7 @@
           <!-- EPIC -->
           <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Feu Perçant" data-img="images/feu_percant.png" data-ct="204">
             <div class="drop-thumb"><img src="images/feu_percant.png" alt="Feu Perçant" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Feu</div>
+            <div class="drop-name">Feu Perçant</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Pyrobut" data-img="images/pyrobut.png" data-ct="205">
@@ -1119,29 +1152,29 @@
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Dracaufeu EX" data-img="images/dracaufeu_ex.png" data-ct="201">
             <div class="drop-thumb"><img src="images/dracaufeu_ex.png" alt="Dracaufeu EX" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">EX</div>
+            <div class="drop-name">Dracaufeu EX</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Reptincel" data-img="images/reptincel.png" data-ct="206">
             <div class="drop-thumb"><img src="images/reptincel.png" alt="Reptincel" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Rept.</div>
+            <div class="drop-name">Reptincel</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Scolocendre VMAX" data-img="images/scolocendre_vmax.png" data-ct="207">
             <div class="drop-thumb"><img src="images/scolocendre_vmax.png" alt="Scolocendre VMAX" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Scolo</div>
+            <div class="drop-name">Scolocendre VMAX</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="EPIC" data-name="Héricendre" data-img="images/hericendre.png" data-ct="208">
             <div class="drop-thumb"><img src="images/hericendre.png" alt="Héricendre" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Héri.</div>
+            <div class="drop-name">Héricendre</div>
             <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
           </div>
 
           <!-- ULTRA -->
           <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Dracaufeu VMAX" data-img="images/dracaufeu_vmax.png" data-ct="202">
             <div class="drop-thumb"><img src="images/dracaufeu_vmax.png" alt="Dracaufeu VMAX" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">VMAX</div>
+            <div class="drop-name">Dracaufeu VMAX</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Énergie Feu" data-img="images/energie_feu.png" data-ct="203">
@@ -1151,7 +1184,7 @@
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Feurisson" data-img="images/feurisson.png" data-ct="209">
             <div class="drop-thumb"><img src="images/feurisson.png" alt="Feurisson" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Feuri.</div>
+            <div class="drop-name">Feurisson</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Galopa" data-img="images/galopa.png" data-ct="210">
@@ -1166,22 +1199,114 @@
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Reshiram" data-img="images/reshiram.png" data-ct="212">
             <div class="drop-thumb"><img src="images/reshiram.png" alt="Reshiram" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Reshi.</div>
+            <div class="drop-name">Reshiram</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
           <div class="drop-item" data-booster="fire" data-rarity="ULTRA" data-name="Typhlosion" data-img="images/typhlosion.png" data-ct="213">
             <div class="drop-thumb"><img src="images/typhlosion.png" alt="Typhlosion" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Typh.</div>
+            <div class="drop-name">Typhlosion</div>
             <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
           </div>
 
           <!-- LEGENDARY -->
           <div class="drop-item" data-booster="fire" data-rarity="LEGENDARY" data-name="Dracaufeu" data-img="images/dracaufeu.png" data-ct="200">
             <div class="drop-thumb"><img src="images/dracaufeu.png" alt="Dracaufeu" loading="lazy" decoding="async" /></div>
-            <div class="drop-name">Drac.</div>
+            <div class="drop-name">Dracaufeu</div>
             <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
           </div>
         </div>
+<!-- ✅ DROP GRID MYTHIQUE -->
+<div class="drop-grid" id="drop-grid-mythic" style="display:none;">
+
+  <!-- EPIC (<= 120€) -->
+  <div class="drop-item" data-booster="mythic" data-rarity="EPIC" data-name="Dialga" data-img="images/dialga.png" data-ct="300">
+    <div class="drop-thumb"><img src="images/dialga.png" alt="Dialga" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Dialga</div>
+    <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="EPIC" data-name="Dracaufeu EX (PSA)" data-img="images/dracaufeu_ex_PSA.png" data-ct="301">
+    <div class="drop-thumb"><img src="images/dracaufeu_ex_PSA.png" alt="Dracaufeu EX PSA" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Dracaufeu EX (PSA)</div>
+    <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="EPIC" data-name="Dracolosse" data-img="images/dracolosse.png" data-ct="302">
+    <div class="drop-thumb"><img src="images/dracolosse.png" alt="Dracolosse" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Dracolosse</div>
+    <div class="drop-meta"><span class="drop-tag epic">EPIC</span></div>
+  </div>
+
+  <!-- ULTRA (121–300€) -->
+  <div class="drop-item" data-booster="mythic" data-rarity="ULTRA" data-name="Arceus" data-img="images/arceus.png" data-ct="303">
+    <div class="drop-thumb"><img src="images/arceus.png" alt="Arceus" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Arceus</div>
+    <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="ULTRA" data-name="Evoli" data-img="images/evoli.png" data-ct="304">
+    <div class="drop-thumb"><img src="images/evoli.png" alt="Evoli" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Evoli</div>
+    <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="ULTRA" data-name="Gardevoir" data-img="images/gardevoir.png" data-ct="305">
+    <div class="drop-thumb"><img src="images/gardevoir.png" alt="Gardevoir" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Gardevoir</div>
+    <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="ULTRA" data-name="Mew" data-img="images/mew.png" data-ct="306">
+    <div class="drop-thumb"><img src="images/mew.png" alt="Mew" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Mew</div>
+    <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="ULTRA" data-name="Mewtwo" data-img="images/mewtwo.png" data-ct="307">
+    <div class="drop-thumb"><img src="images/mewtwo.png" alt="Mewtwo" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Mewtwo</div>
+    <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="ULTRA" data-name="Giratina" data-img="images/giratina.png" data-ct="309">
+    <div class="drop-thumb"><img src="images/giratina.png" alt="Giratina" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Giratina</div>
+    <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="ULTRA" data-name="Mewtwo Town" data-img="images/mewtwo_town.png" data-ct="310">
+    <div class="drop-thumb"><img src="images/mewtwo_town.png" alt="Mewtwo Town" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Mewtwo Town</div>
+    <div class="drop-meta"><span class="drop-tag ultra">ULTRA</span></div>
+  </div>
+
+  <!-- LEGENDARY -->
+  <div class="drop-item" data-booster="mythic" data-rarity="LEGENDARY" data-name="Mewtwo GX Signed" data-img="images/mewtwo_gx_signed.png" data-ct="308">
+    <div class="drop-thumb"><img src="images/mewtwo_gx_signed.png" alt="Mewtwo GX Signed" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Mewtwo GX Signed</div>
+    <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+  </div>
+
+  <!-- (Optionnel) GROS LOOTS en legendary aussi si tu veux -->
+  <div class="drop-item" data-booster="mythic" data-rarity="LEGENDARY" data-name="Sulfura" data-img="images/sulfura.png" data-ct="311">
+    <div class="drop-thumb"><img src="images/sulfura.png" alt="Sulfura" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Sulfura</div>
+    <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="LEGENDARY" data-name="Pikachu" data-img="images/pikachu.png" data-ct="312">
+    <div class="drop-thumb"><img src="images/pikachu.png" alt="Pikachu" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Pikachu</div>
+    <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+  </div>
+
+  <div class="drop-item" data-booster="mythic" data-rarity="LEGENDARY" data-name="Pikachu EX" data-img="images/pikachu_ex.png" data-ct="313">
+    <div class="drop-thumb"><img src="images/pikachu_ex.png" alt="Pikachu EX" loading="lazy" decoding="async" /></div>
+    <div class="drop-name">Pikachu EX</div>
+    <div class="drop-meta"><span class="drop-tag legendary">LEGENDARY</span></div>
+  </div>
+
+</div>
 
       </div>
     </div>
@@ -1514,6 +1639,151 @@
           { ct: 221, w: 40 }  // lugulabre
         ]
       }
+      ,
+mythic: {
+  key: "mythic",
+  uiName: "Booster Mythique",
+  openTitle: "VAULTSPIN · OPENING · MYTHIQUE",
+  packPriceEur: PACK_PRICE_EUR,
+
+  prices: {
+    300: 91.00,     // dialga
+    301: 30.00,     // dracaufeu_ex_PSA
+    302: 59.00,     // dracolosse
+    303: 179.99,    // arceus
+    304: 119.00,    // evoli
+    305: 112.00,    // gardevoir
+    306: 165.00,    // mew
+    307: 154.99,    // mewtwo
+    308: 6949.00,   // mewtwo_gx_signed
+    309: 166.00,    // giratina
+    310: 100.00,    // mewtwo_town
+    311: 599.00,    // sulfura
+    312: 469.00,    // pikachu
+    313: 449.00,    // pikachu_ex
+
+    /* HIDDEN */
+    320: 14.50, 321: 3.00, 322: 12.00, 323: 15.00, 324: 15.50, 325: 10.50,
+    326: 6.00,  327: 7.50, 328: 2.50, 329: 4.00, 330: 13.50, 331: 7.50,
+    332: 9.50,  333: 10.10,334: 6.50, 335: 6.50, 336: 7.00, 337: 6.50,
+    338: 17.10,339: 12.50,340: 15.50,341: 6.00, 342: 15.50,343: 4.50,
+    344: 7.50, 345: 26.50,346: 11.50
+  },
+
+  images: {
+    300:"images/dialga.png",
+    301:"images/dracaufeu_ex_PSA.png",
+    302:"images/dracolosse.png",
+    303:"images/arceus.png",
+    304:"images/evoli.png",
+    305:"images/gardevoir.png",
+    306:"images/mew.png",
+    307:"images/mewtwo.png",
+    308:"images/mewtwo_gx_signed.png",
+    309:"images/giratina.png",
+    310:"images/mewtwo_town.png",
+    311:"images/sulfura.png",
+    312:"images/pikachu.png",
+    313:"images/pikachu_ex.png",
+
+    320:"images/dracaufeu_ex_PCA.png",
+    321:"images/dracaufeu_ex_PCA_300pv.png",
+    322:"images/dracolosse_PCA.png",
+    323:"images/drattak_ex.png",
+    324:"images/ethernatos_PCA.png",
+    325:"images/fouinar.png",
+    326:"images/gouroutan.png",
+    327:"images/hurle_queue.png",
+    328:"images/limonde.png",
+    329:"images/magnezone_vmax.png",
+    330:"images/melofee.png",
+    331:"images/meltan.png",
+    332:"images/mentali_PCA.png",
+    333:"images/miraidon.png",
+    334:"images/moumouton.png",
+    335:"images/muplodocus.png",
+    336:"images/nymphali_PCA.png",
+    337:"images/parecool.png",
+    338:"images/pikachu_cgg.png",
+    339:"images/pikachu_v.png",
+    340:"images/pikachu_vmax.png",
+    341:"images/ronflex.png",
+    342:"images/shifours_poing_final.png",
+    343:"images/zacian_ex.png",
+    344:"images/zamazenta.png",
+    345:"images/zoroark.png",
+    346:"images/zorua.png"
+  },
+
+  names: {
+    300:"Dialga",
+    301:"Dracaufeu EX (PSA)",
+    302:"Dracolosse",
+    303:"Arceus",
+    304:"Evoli",
+    305:"Gardevoir",
+    306:"Mew",
+    307:"Mewtwo",
+    308:"Mewtwo GX Signed",
+    309:"Giratina",
+    310:"Mewtwo Town",
+    311:"Sulfura",
+    312:"Pikachu",
+    313:"Pikachu EX",
+
+    320:"Dracaufeu EX PCA",
+    321:"Dracaufeu EX PCA 300PV",
+    322:"Dracolosse PCA",
+    323:"Drattak EX",
+    324:"Ethernatos PCA",
+    325:"Fouinar",
+    326:"Gouroutan",
+    327:"Hurle-Queue",
+    328:"Limonde",
+    329:"Magnezone VMAX",
+    330:"Mélofée",
+    331:"Meltan",
+    332:"Mentali PCA",
+    333:"Miraidon",
+    334:"Moumouton",
+    335:"Muplodocus",
+    336:"Nymphali PCA",
+    337:"Parekool",
+    338:"Pikachu CGG",
+    339:"Pikachu V",
+    340:"Pikachu VMAX",
+    341:"Ronflex",
+    342:"Shifours Poing Final",
+    343:"Zacian EX",
+    344:"Zamazenta",
+    345:"Zoroark",
+    346:"Zorua"
+  },
+
+  legendaryCts: [308,311,312,313],        // ✅ comme tu veux (tu peux réduire à [308] si 1 seul)
+  hiddenSet: new Set([
+    320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346
+  ]),
+
+  // ULTRA = gros visibles (hors legendary)
+  poolUltra: [303,304,305,306,307,309],
+  // EPIC = visibles <=120
+  poolEpic:  [300,301,302,310],
+
+  hiddenWeights: [
+    { ct: 321, w: 70 },
+    { ct: 320, w: 35 },
+    { ct: 322, w: 28 },
+    { ct: 323, w: 24 },
+    { ct: 329, w: 22 },
+    { ct: 338, w: 18 },
+    { ct: 340, w: 16 },
+    { ct: 343, w: 14 },
+    { ct: 345, w: 10 },
+    { ct: 346, w: 8  },
+    { ct: 328, w: 90 } // ✅ un “trash common” très fréquent
+  ]
+}
     };
 
     function getBooster(){
@@ -2128,32 +2398,31 @@
     /********************
      * ✅ Booster selection UI
      ********************/
-    function setSelectedBooster(key){
-      selectedBoosterKey = (key === "water" || key === "fire") ? key : "plant";
+function setSelectedBooster(key){
+  selectedBoosterKey = (key === "water" || key === "fire" || key === "mythic") ? key : "plant";
 
-      // sélection visuelle
-      document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
-        el.setAttribute("data-selected", String(el.getAttribute("data-booster") === selectedBoosterKey));
-      });
+  document.querySelectorAll(".card-frame[data-booster]").forEach((el) => {
+    el.setAttribute("data-selected", String(el.getAttribute("data-booster") === selectedBoosterKey));
+  });
 
-      // switch drop grid
-      const gPlant = document.getElementById("drop-grid-plant");
-      const gWater = document.getElementById("drop-grid-water");
-      const gFire  = document.getElementById("drop-grid-fire");
+  const gPlant  = document.getElementById("drop-grid-plant");
+  const gWater  = document.getElementById("drop-grid-water");
+  const gFire   = document.getElementById("drop-grid-fire");
+  const gMythic = document.getElementById("drop-grid-mythic");
 
-      if (gPlant) gPlant.style.display = (selectedBoosterKey === "plant") ? "" : "none";
-      if (gWater) gWater.style.display = (selectedBoosterKey === "water") ? "" : "none";
-      if (gFire)  gFire.style.display  = (selectedBoosterKey === "fire")  ? "" : "none";
+  if (gPlant)  gPlant.style.display  = (selectedBoosterKey === "plant")  ? "" : "none";
+  if (gWater)  gWater.style.display  = (selectedBoosterKey === "water")  ? "" : "none";
+  if (gFire)   gFire.style.display   = (selectedBoosterKey === "fire")   ? "" : "none";
+  if (gMythic) gMythic.style.display = (selectedBoosterKey === "mythic") ? "" : "none";
 
-      // bouton open label
-      const b = getBooster();
-      const btn = document.getElementById("open-pack-btn");
-      if (btn){
-        btn.textContent = `Open ${b.uiName} — ${b.packPriceEur.toFixed(2).replace(".", ",")} €`;
-      }
+  const b = getBooster();
+  const btn = document.getElementById("open-pack-btn");
+  if (btn){
+    btn.textContent = `Open ${b.uiName} — ${b.packPriceEur.toFixed(2).replace(".", ",")} €`;
+  }
 
-      setStatus(`Sélectionné : ${b.uiName}`, "ok");
-    }
+  setStatus(`Sélectionné : ${b.uiName}`, "ok");
+}
 
     /********************
      * Init
@@ -2590,5 +2859,6 @@
 
 </body>
 </html>
+
 
 
