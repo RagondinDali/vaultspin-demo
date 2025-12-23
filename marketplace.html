@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>VaultSpin – Marketplace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{
+      min-height:100vh;
+      background: radial-gradient(circle at top, #101827, #020617 60%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:#e5e7eb;
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      padding:90px 16px 50px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    /* Top bar */
+    .top-bar{
+      position:fixed;
+      top:16px;
+      left:50%;
+      transform:translateX(-50%);
+      width:100%;
+      max-width:1200px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:0 16px;
+      z-index:30;
+      pointer-events:none;
+    }
+    .top-left,.top-right{
+      pointer-events:auto;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .top-logo{
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:#9ca3af;
+    }
+    .pill{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(15,23,42,.55);
+      padding:8px 12px;
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#e5e7eb;
+      cursor:default;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      max-width: min(440px, 88vw);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .btn{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(15,23,42,.55);
+      padding:9px 12px;
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#e5e7eb;
+      cursor:pointer;
+      transition: box-shadow .15s ease-out, transform .15s ease-out, border-color .15s ease-out, opacity .15s ease-out;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(165,180,252,.7);
+      box-shadow: 0 0 12px rgba(129,140,248,.25);
+    }
+    .btn.primary{
+      border:none;
+      background: radial-gradient(circle at top left, #a855f7, #4f46e5);
+      box-shadow: 0 0 18px rgba(168,85,247,.35);
+    }
+    .btn.primary:hover{
+      box-shadow: 0 0 22px rgba(168,85,247,.55);
+    }
+
+    .top-link{
+      font-size:12px;
+      padding:6px 10px;
+      height:34px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.45);
+      color:#e5e7eb;
+      text-decoration:none;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      background:rgba(15,23,42,.85);
+    }
+    .top-link:hover{
+      border-color:#a5b4fc;
+      box-shadow:0 0 10px rgba(129,140,248,.4);
+    }
+
+    /* Panels */
+    .panel{
+      background: radial-gradient(circle at top left, #020617, #020617 70%);
+      border-radius:26px;
+      border: 1px solid rgba(148,163,184,.20);
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .title-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    h1{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:#f9fafb;
+    }
+    .sub{
+      font-size:13px;
+      color:#9ca3af;
+      line-height:1.4;
+      max-width:820px;
+      margin-top:4px;
+    }
+
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      padding-top:4px;
+    }
+    .input{
+      width:min(520px, 100%);
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.40);
+      padding:10px 12px;
+      color:#e5e7eb;
+      outline:none;
+      font-size:13px;
+    }
+    select{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.40);
+      padding:10px 12px;
+      color:#e5e7eb;
+      outline:none;
+      font-size:13px;
+    }
+
+    .stats-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .stat{
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,.14);
+      background: rgba(2,6,23,.28);
+      padding:12px;
+      min-width:200px;
+      flex:1;
+    }
+    .stat .k{
+      font-size:10px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:#9ca3af;
+    }
+    .stat .v{
+      margin-top:6px;
+      font-size:18px;
+      font-weight:900;
+      color:#f9fafb;
+    }
+    .stat .s{
+      margin-top:3px;
+      font-size:12px;
+      color:#9ca3af;
+    }
+
+    /* Listings grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:12px;
+    }
+    @media (max-width: 1060px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    @media (max-width: 820px){ .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 520px){ .grid{ grid-template-columns: 1fr; } }
+
+    .item{
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,.18);
+      background: rgba(15,23,42,.28);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      transition: transform .15s ease-out, box-shadow .15s ease-out, border-color .15s ease-out;
+      cursor:default;
+      user-select:none;
+      min-height: 360px;
+    }
+    .item:hover{
+      transform: translateY(-2px);
+      border-color: rgba(165,180,252,.55);
+      box-shadow: 0 0 16px rgba(129,140,248,.18);
+    }
+
+    .thumb{
+      width:100%;
+      aspect-ratio: 3 / 4;
+      background: rgba(2,6,23,.55);
+      border-bottom:1px solid rgba(148,163,184,.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      padding:14px;
+      display:block;
+    }
+
+    .meta{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;
+    }
+    .name{
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:900;
+      color:#f9fafb;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .line{
+      font-size:12px;
+      color:#9ca3af;
+      line-height:1.35;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .price{
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.06em;
+      color:#e5e7eb;
+    }
+
+    .tags{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .tag{
+      font-size:10px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-weight:900;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.16);
+      background: rgba(2,6,23,.35);
+      white-space:nowrap;
+      color:#e5e7eb;
+    }
+    .tag.epic{ color:#38bdf8; }
+    .tag.ultra{ color:#a855f7; }
+    .tag.legendary{ color:#f97316; }
+    .tag.hidden{ color:#9ca3af; }
+    .tag.pack{
+      border-color: rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      color:#e5e7eb;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:auto;
+    }
+    .action{
+      flex:1;
+      min-width: 140px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(15,23,42,.55);
+      padding:10px 12px;
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#e5e7eb;
+      cursor:pointer;
+      transition: transform .15s ease-out, border-color .15s ease-out, box-shadow .15s ease-out, opacity .15s ease-out;
+    }
+    .action:hover{
+      transform: translateY(-1px);
+      border-color: rgba(165,180,252,.7);
+      box-shadow: 0 0 12px rgba(129,140,248,.20);
+    }
+    .action.primary{
+      border:none;
+      background: radial-gradient(circle at top left, #a855f7, #4f46e5);
+      box-shadow: 0 0 18px rgba(168,85,247,.25);
+    }
+    .action.primary:hover{
+      box-shadow: 0 0 22px rgba(168,85,247,.42);
+    }
+    .action.danger{
+      border-color: rgba(248,113,113,.35);
+    }
+    .action.danger:hover{
+      border-color: rgba(248,113,113,.75);
+      box-shadow: 0 0 12px rgba(248,113,113,.18);
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.40);
+      padding:8px 12px;
+      font-size:11px;
+      color:#e5e7eb;
+      max-width:100%;
+    }
+    .chip a{ color:#a5b4fc; text-decoration: underline; }
+    .chip a:hover{ color:#c4b5fd; }
+
+    /* Modal preview */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:80;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      padding:16px;
+    }
+    .modal.on{ display:flex; }
+    .modal-card{
+      width: min(520px, 92vw);
+      border-radius:24px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(2,6,23,.86);
+      box-shadow: 0 0 34px rgba(0,0,0,.5);
+      padding:14px;
+      position:relative;
+      animation: popIn 140ms ease-out;
+    }
+    @keyframes popIn{ from{ transform:scale(.985); opacity:0; } to{ transform:scale(1); opacity:1; } }
+
+    .modal-close{
+      position:absolute;
+      right:10px;
+      top:10px;
+      border:1px solid rgba(148,163,184,.20);
+      background: rgba(15,23,42,.55);
+      color:#e5e7eb;
+      border-radius:999px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .modal-close:hover{
+      border-color: rgba(165,180,252,.7);
+      box-shadow: 0 0 10px rgba(129,140,248,.25);
+    }
+    .modal-img{
+      width:100%;
+      aspect-ratio:3/4;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(148,163,184,.22);
+      background: rgba(2,6,23,.55);
+    }
+    .modal-img img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      object-position:center;
+      display:block;
+      padding:12px;
+      background: transparent;
+    }
+    .modal-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .modal-name{
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:900;
+      color:#e5e7eb;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .modal-sub{
+      margin-top:8px;
+      font-size:12px;
+      color:#9ca3af;
+      line-height:1.45;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-left">
+      <div class="top-logo">VAULTSPIN · MARKETPLACE</div>
+      <div class="pill" id="net-pill">—</div>
+    </div>
+    <div class="top-right">
+      <a class="top-link" href="index.html">Packs</a>
+      <a class="top-link" href="collection.html">Ma collection</a>
+      <a class="top-link" href="leaderboard.html">Leaderboard</a>
+
+      <span id="vs-user-email" class="top-link" style="display:none; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
+      <a id="vs-login-btn" class="top-link" href="login.html">Connexion</a>
+      <button class="btn" id="vs-logout-btn" style="display:none;">Déconnexion</button>
+
+      <span class="pill" id="wallet-pill">Wallet: —</span>
+      <button class="btn" id="wallet-topup-100">Top-up 100</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-img"><img id="modal-img" src="" alt="Preview" /></div>
+      <div class="modal-meta">
+        <div class="modal-name" id="modal-name">—</div>
+        <div class="tag" id="modal-tag" style="display:none;">—</div>
+      </div>
+      <div class="modal-sub" id="modal-sub">—</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <div class="title-row">
+        <div>
+          <h1>Marketplace</h1>
+          <div class="sub">
+            Marché interne (démo). Tu peux <b>acheter</b> des cartes d’autres joueurs et <b>retirer</b> tes annonces.
+            <br/>
+            Si tes RPC existent déjà : <b>vs_buy_listing</b>, <b>vs_cancel_listing</b>, ça marche “comme en prod”.
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <button class="btn" id="refresh">Refresh</button>
+          <button class="btn primary" id="only-mine">Mes annonces</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <input class="input" id="search" placeholder="Search (name / pack / rarity / seller / price)..." />
+
+        <select id="pack">
+          <option value="ALL">Pack: All</option>
+          <option value="PLANT">Pack: PLANT</option>
+          <option value="WATER">Pack: WATER</option>
+          <option value="FIRE">Pack: FIRE</option>
+          <option value="MYTHIC">Pack: MYTHIC</option>
+        </select>
+
+        <select id="rarity">
+          <option value="ALL">Rarity: All</option>
+          <option value="LEGENDARY">Rarity: LEGENDARY</option>
+          <option value="ULTRA">Rarity: ULTRA</option>
+          <option value="EPIC">Rarity: EPIC</option>
+          <option value="HIDDEN">Rarity: HIDDEN</option>
+        </select>
+
+        <select id="sort">
+          <option value="new_desc">Sort: newest</option>
+          <option value="price_asc">Sort: price ↑</option>
+          <option value="price_desc">Sort: price ↓</option>
+        </select>
+
+        <button class="btn" id="clear">Clear</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="k">Active listings</div>
+          <div class="v" id="stat-total">0</div>
+          <div class="s">Annonces visibles</div>
+        </div>
+        <div class="stat">
+          <div class="k">Floor</div>
+          <div class="v" id="stat-floor">—</div>
+          <div class="s">Prix minimum</div>
+        </div>
+        <div class="stat">
+          <div class="k">Volume (visible)</div>
+          <div class="v" id="stat-vol">—</div>
+          <div class="s">Somme des prix</div>
+        </div>
+        <div class="stat">
+          <div class="k">Mode</div>
+          <div class="v" id="stat-mode">ALL</div>
+          <div class="s">ALL / Mes annonces</div>
+        </div>
+      </div>
+
+      <div class="chip" id="hint">
+        ℹ️ Astuce : clique une carte pour preview. Achats = “fictifs” si tu n’as pas la RPC buy.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="chip" id="empty" style="display:none;">
+        Aucun listing. Va sur <a href="index.html">Packs</a> pour ouvrir, puis mets en vente.
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from "./js/supabaseClient.js";
+
+    // -----------------------------
+    // Wallet (démo local)
+    // -----------------------------
+    const VS_WALLET_KEY = "vaultspin_wallet_eur_v1";
+    function getWallet(){
+      const n = Number(localStorage.getItem(VS_WALLET_KEY) || "0");
+      return Number.isFinite(n) ? n : 0;
+    }
+    function setWallet(v){
+      localStorage.setItem(VS_WALLET_KEY, String(Number(v) || 0));
+      renderWallet();
+    }
+    function fmtEur(n){
+      return (Number(n) || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+    function renderWallet(){
+      document.getElementById("wallet-pill").textContent = "Wallet: " + fmtEur(getWallet());
+    }
+
+    // -----------------------------
+    // State
+    // -----------------------------
+    let SESSION = null;
+    let MODE_ONLY_MINE = false;
+    let LISTINGS = []; // normalized
+    let PROFILES = new Map(); // id -> label
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    const RARITY_ORDER = ["HIDDEN","EPIC","ULTRA","LEGENDARY"];
+    function rarityRank(k){
+      const kk = (k || "").toUpperCase();
+      const i = RARITY_ORDER.indexOf(kk);
+      return i === -1 ? 0 : i;
+    }
+    function rarityClass(k){
+      const kk = (k || "").toUpperCase();
+      if (kk === "LEGENDARY") return "legendary";
+      if (kk === "ULTRA") return "ultra";
+      if (kk === "EPIC") return "epic";
+      if (kk === "HIDDEN") return "hidden";
+      return "";
+    }
+    function escapeHtml(s){
+      return String(s || "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+      }[c]));
+    }
+    function escapeAttr(s){
+      return String(s || "").replace(/"/g, "&quot;");
+    }
+
+    function setNetPill(text){
+      document.getElementById("net-pill").textContent = text;
+    }
+
+    // -----------------------------
+    // Modal
+    // -----------------------------
+    function openModal({ img, name, tag, sub }){
+      document.getElementById("modal-img").src = img || "";
+      document.getElementById("modal-name").textContent = name || "—";
+      const t = document.getElementById("modal-tag");
+      if (tag){
+        t.style.display = "inline-flex";
+        t.textContent = tag;
+      } else {
+        t.style.display = "none";
+        t.textContent = "";
+      }
+      document.getElementById("modal-sub").innerHTML = sub || "—";
+
+      const m = document.getElementById("modal");
+      m.classList.add("on");
+      m.setAttribute("aria-hidden","false");
+    }
+    function closeModal(){
+      const m = document.getElementById("modal");
+      m.classList.remove("on");
+      m.setAttribute("aria-hidden","true");
+    }
+
+    // -----------------------------
+    // Auth UI
+    // -----------------------------
+    const loginBtn  = document.getElementById("vs-login-btn");
+    const logoutBtn = document.getElementById("vs-logout-btn");
+    const emailEl   = document.getElementById("vs-user-email");
+
+    function setAuthed(label){
+      emailEl.style.display = "inline-flex";
+      emailEl.textContent = label || "Connecté";
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline-flex";
+    }
+    function setNotAuthed(){
+      emailEl.style.display = "none";
+      emailEl.textContent = "—";
+      loginBtn.style.display = "inline-flex";
+      logoutBtn.style.display = "none";
+    }
+
+    async function setAuthedFromSession(session){
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("username, display_name")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      const label = (!error && data)
+        ? (data.display_name || data.username || session.user.email || "Connecté")
+        : (session.user.email || "Connecté");
+
+      setAuthed(label);
+    }
+
+    // -----------------------------
+    // Data fetch
+    // Assumptions: table market_listings exists with at least:
+    //  id, seller_id, card_id, price_eur, status, created_at
+    // and you store card data either in listing row OR join via user_cards
+    // -----------------------------
+    async function fetchProfiles(ids){
+      const uniq = Array.from(new Set((ids || []).filter(Boolean)));
+      if (!uniq.length) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, username, display_name, email")
+        .in("id", uniq)
+        .limit(5000);
+
+      if (error) return;
+
+      for (const p of (data || [])){
+        const label = p.display_name || p.username || p.email || p.id;
+        PROFILES.set(p.id, label);
+      }
+    }
+
+    function normalizeListingRow(row){
+      // We try to support both:
+      // 1) listing includes card snapshot fields
+      // 2) listing joins user_cards via foreign key (nested)
+      const uc = row.user_cards || row.card || null;
+
+      const pack_key = (row.pack_key || uc?.pack_key || "").toUpperCase();
+      const rarity_key = (row.rarity_key || uc?.rarity_key || "").toUpperCase();
+
+      return {
+        id: Number(row.id),
+        seller_id: row.seller_id,
+        card_id: row.card_id != null ? Number(row.card_id) : null,
+        price_eur: Number(row.price_eur ?? row.price ?? 0) || 0,
+        status: (row.status || "ACTIVE").toUpperCase(),
+        created_at: row.created_at || row.listed_at || null,
+
+        pack_key,
+        rarity_key,
+        card_type_index: Number(row.card_type_index ?? uc?.card_type_index ?? -1),
+        card_name: row.card_name || uc?.card_name || ("Card #" + (Number(row.card_type_index ?? uc?.card_type_index ?? -1))),
+        image_url: row.image_url || uc?.image_url || "",
+        estimated_value_eur: Number(row.estimated_value_eur ?? uc?.estimated_value_eur ?? 0) || 0,
+      };
+    }
+
+    async function fetchListings(){
+      setNetPill("Loading…");
+
+      // We select listing + join user_cards (if your schema supports it):
+      // market_listings.card_id -> user_cards.id
+      // If you named relation differently, change "user_cards" below.
+      let q = supabase
+        .from("market_listings")
+        .select(`
+          id, seller_id, card_id, price_eur, status, created_at,
+          user_cards:card_id (
+            id, pack_key, card_type_index, rarity_key, image_url, card_name, estimated_value_eur
+          )
+        `)
+        .eq("status", "ACTIVE")
+        .order("created_at", { ascending:false })
+        .limit(5000);
+
+      if (MODE_ONLY_MINE && SESSION?.user?.id){
+        q = q.eq("seller_id", SESSION.user.id);
+      }
+
+      const { data, error } = await q;
+
+      if (error){
+        setNetPill("Erreur: market_listings indispo");
+        console.error(error);
+        LISTINGS = [];
+        render();
+        return;
+      }
+
+      const rows = data || [];
+      LISTINGS = rows.map(normalizeListingRow);
+
+      await fetchProfiles(LISTINGS.map(x => x.seller_id));
+
+      setNetPill("✅ Connecté à Supabase · Listings: " + LISTINGS.length);
+      render();
+    }
+
+    // -----------------------------
+    // Actions
+    // RPC names expected:
+    //  - vs_buy_listing(p_listing_id)
+    //  - vs_cancel_listing(p_listing_id)
+    // If yours differ, rename below.
+    // -----------------------------
+    async function buyListing(listing){
+      if (!SESSION?.user){
+        alert("Connecte-toi pour acheter.");
+        return;
+      }
+
+      const price = Number(listing.price_eur || 0) || 0;
+      const cur = getWallet();
+      if (cur < price){
+        alert("Wallet insuffisant (démo). Top-up puis réessaie.");
+        return;
+      }
+
+      // Try RPC first (recommended)
+      const { error } = await supabase.rpc("vs_buy_listing", { p_listing_id: listing.id });
+      if (error){
+        // fallback: purely local “fictif”
+        // (on simule le débit wallet et on refresh)
+        console.warn("vs_buy_listing missing or failed:", error);
+        setWallet(cur - price);
+        alert("Achat simulé (RPC vs_buy_listing manquante ou refusée).");
+        await fetchListings();
+        return;
+      }
+
+      // debit wallet local (since your payments are fictif)
+      setWallet(cur - price);
+      alert("Achat effectué ✅");
+      await fetchListings();
+    }
+
+    async function cancelListing(listing){
+      if (!SESSION?.user){
+        alert("Connecte-toi.");
+        return;
+      }
+      if (listing.seller_id !== SESSION.user.id){
+        alert("Tu ne peux retirer que TES annonces.");
+        return;
+      }
+
+      const { error } = await supabase.rpc("vs_cancel_listing", { p_listing_id: listing.id });
+      if (error){
+        console.warn("vs_cancel_listing missing or failed:", error);
+        alert("Erreur cancel (RPC vs_cancel_listing manquante ou refusée).");
+        return;
+      }
+      alert("Annonce retirée ✅");
+      await fetchListings();
+    }
+
+    // -----------------------------
+    // Rendering
+    // -----------------------------
+    function applyFilters(items){
+      const search = (document.getElementById("search").value || "").trim().toLowerCase();
+      const pack = (document.getElementById("pack").value || "ALL").toUpperCase();
+      const rarity = (document.getElementById("rarity").value || "ALL").toUpperCase();
+      const sort = document.getElementById("sort").value;
+
+      let out = items.slice();
+
+      if (pack !== "ALL") out = out.filter(x => (x.pack_key || "").toUpperCase() === pack);
+      if (rarity !== "ALL") out = out.filter(x => (x.rarity_key || "").toUpperCase() === rarity);
+
+      if (search){
+        out = out.filter(x => {
+          const seller = PROFILES.get(x.seller_id) || x.seller_id || "";
+          const hay = [
+            x.card_name, x.pack_key, x.rarity_key, seller,
+            String(x.price_eur || 0),
+            String(x.card_type_index || "")
+          ].join(" ").toLowerCase();
+          return hay.includes(search);
+        });
+      }
+
+      if (sort === "price_asc") out.sort((a,b) => (a.price_eur - b.price_eur) || (rarityRank(b.rarity_key) - rarityRank(a.rarity_key)));
+      else if (sort === "price_desc") out.sort((a,b) => (b.price_eur - a.price_eur) || (rarityRank(b.rarity_key) - rarityRank(a.rarity_key)));
+      else out.sort((a,b) => (new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+
+      return out;
+    }
+
+    function renderStats(visible){
+      document.getElementById("stat-total").textContent = String(visible.length);
+
+      if (!visible.length){
+        document.getElementById("stat-floor").textContent = "—";
+        document.getElementById("stat-vol").textContent = "—";
+        return;
+      }
+
+      let floor = Infinity;
+      let sum = 0;
+      for (const x of visible){
+        const p = Number(x.price_eur || 0) || 0;
+        sum += p;
+        if (p < floor) floor = p;
+      }
+      document.getElementById("stat-floor").textContent = fmtEur(floor === Infinity ? 0 : floor);
+      document.getElementById("stat-vol").textContent = fmtEur(sum);
+      document.getElementById("stat-mode").textContent = MODE_ONLY_MINE ? "MINE" : "ALL";
+    }
+
+    function render(){
+      const grid = document.getElementById("grid");
+      const empty = document.getElementById("empty");
+
+      const visible = applyFilters(LISTINGS);
+      renderStats(visible);
+
+      grid.innerHTML = "";
+      empty.style.display = (visible.length === 0) ? "inline-flex" : "none";
+
+      for (const x of visible){
+        const seller = PROFILES.get(x.seller_id) || (x.seller_id ? String(x.seller_id).slice(0,8) + "…" : "—");
+
+        const card = document.createElement("div");
+        card.className = "item";
+
+        card.innerHTML = `
+          <div class="thumb">
+            <img src="${escapeAttr(x.image_url)}" alt="${escapeAttr(x.card_name)}"/>
+          </div>
+
+          <div class="meta">
+            <div class="name">${escapeHtml(x.card_name || "—")}</div>
+
+            <div class="tags">
+              <span class="tag pack">${escapeHtml(x.pack_key || "—")}</span>
+              ${x.rarity_key ? `<span class="tag ${rarityClass(x.rarity_key)}">${escapeHtml(x.rarity_key)}</span>` : ``}
+            </div>
+
+            <div class="line">
+              <span>Seller</span>
+              <span>${escapeHtml(seller)}</span>
+            </div>
+
+            <div class="line">
+              <span>ct</span>
+              <span>${Number.isFinite(x.card_type_index) ? x.card_type_index : "—"}</span>
+            </div>
+
+            <div class="line">
+              <span class="price">${fmtEur(x.price_eur)}</span>
+              <span style="color:#9ca3af;">Est.: ${fmtEur(x.estimated_value_eur)}</span>
+            </div>
+
+            <div class="actions">
+              <button class="action" data-act="preview">Preview</button>
+              ${
+                (SESSION?.user?.id && x.seller_id === SESSION.user.id)
+                  ? `<button class="action danger" data-act="cancel">Retirer</button>`
+                  : `<button class="action primary" data-act="buy">Acheter</button>`
+              }
+            </div>
+          </div>
+        `;
+
+        // actions
+        card.querySelector('[data-act="preview"]').addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          openModal({
+            img: x.image_url,
+            name: `${x.card_name} (${x.pack_key} · ct ${x.card_type_index})`,
+            tag: x.rarity_key,
+            sub: `
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+                <span class="tag">Listing #${x.id}</span>
+                <span class="tag">Price: ${fmtEur(x.price_eur)}</span>
+                <span class="tag">Seller: ${escapeHtml(seller)}</span>
+              </div>
+              <div style="margin-top:10px;">
+                <span style="color:#cbd5e1;">Valeur estimée :</span> <b>${fmtEur(x.estimated_value_eur)}</b>
+              </div>
+            `
+          });
+        });
+
+        const buyBtn = card.querySelector('[data-act="buy"]');
+        if (buyBtn){
+          buyBtn.addEventListener("click", async (e) => {
+            e.preventDefault(); e.stopPropagation();
+            await buyListing(x);
+          });
+        }
+
+        const cancelBtn = card.querySelector('[data-act="cancel"]');
+        if (cancelBtn){
+          cancelBtn.addEventListener("click", async (e) => {
+            e.preventDefault(); e.stopPropagation();
+            await cancelListing(x);
+          });
+        }
+
+        // click card = preview
+        card.addEventListener("click", () => {
+          openModal({
+            img: x.image_url,
+            name: `${x.card_name} (${x.pack_key} · ct ${x.card_type_index})`,
+            tag: x.rarity_key,
+            sub: `Listing #${x.id} · Price: <b>${fmtEur(x.price_eur)}</b> · Seller: <b>${escapeHtml(seller)}</b>`
+          });
+        });
+
+        grid.appendChild(card);
+      }
+    }
+
+    // -----------------------------
+    // UI events
+    // -----------------------------
+    function bindUI(){
+      document.getElementById("modal-close").addEventListener("click", closeModal);
+      document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+      document.getElementById("search").addEventListener("input", render);
+      document.getElementById("pack").addEventListener("change", render);
+      document.getElementById("rarity").addEventListener("change", render);
+      document.getElementById("sort").addEventListener("change", render);
+
+      document.getElementById("clear").addEventListener("click", () => {
+        document.getElementById("search").value = "";
+        document.getElementById("pack").value = "ALL";
+        document.getElementById("rarity").value = "ALL";
+        document.getElementById("sort").value = "new_desc";
+        render();
+      });
+
+      document.getElementById("refresh").addEventListener("click", fetchListings);
+
+      document.getElementById("only-mine").addEventListener("click", async () => {
+        MODE_ONLY_MINE = !MODE_ONLY_MINE;
+        document.getElementById("only-mine").textContent = MODE_ONLY_MINE ? "ALL annonces" : "Mes annonces";
+        await fetchListings();
+      });
+
+      document.getElementById("wallet-topup-100").addEventListener("click", () => {
+        setWallet(getWallet() + 100);
+        alert("+100 (démo) ✅");
+      });
+
+      logoutBtn?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+      });
+    }
+
+    // -----------------------------
+    // INIT
+    // -----------------------------
+    document.addEventListener("DOMContentLoaded", async () => {
+      bindUI();
+      renderWallet();
+
+      const { data: { session } } = await supabase.auth.getSession();
+      SESSION = session;
+
+      if (SESSION?.user){
+        await setAuthedFromSession(SESSION);
+      } else {
+        setNotAuthed();
+      }
+
+      supabase.auth.onAuthStateChange(async (_event, newSession) => {
+        SESSION = newSession;
+        if (SESSION?.user){
+          await setAuthedFromSession(SESSION);
+        } else {
+          setNotAuthed();
+        }
+        await fetchListings();
+      });
+
+      await fetchListings();
+    });
+  </script>
+</body>
+</html>
