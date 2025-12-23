@@ -2207,37 +2207,39 @@ mythic: {
       track.style.transform = `translateX(${finalX}px)`;
     }
 
-    function fillResultUI(){
-      const b = getBooster();
-      const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
-      const price = b.prices[winningCt] ?? 0;
+ function fillResultUI(){
+  const b = getBooster();
+  const { rarityKey, imgSrc, name, tokenId, ts, winningCt } = currentOpen;
+  const price = b.prices[winningCt] ?? 0;
 
-      document.getElementById("result-img").src = imgSrc;
-      document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
+  document.getElementById("result-img").src = imgSrc;
+  document.getElementById("result-name").textContent = `${name} — #${tokenId}`;
 
-      const isHidden = b.hiddenSet.has(winningCt);
-      const desc = isHidden
-        ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
-        : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
+  const isHidden = b.hiddenSet.has(winningCt);
+  const desc = isHidden
+    ? `${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`
+    : `${rarityLabelForKey(rarityKey)} · ${formatDate(ts)}\nValeur estimée : ${fmtEur(price)}`;
 
-      document.getElementById("result-desc").textContent = desc;
+  document.getElementById("result-desc").textContent = desc;
 
-      const pill = document.getElementById("result-pill");
-      if (isHidden){
-        pill.style.display = "none";
-      } else {
-        pill.style.display = "inline-flex";
-        pill.textContent = rarityKey;
-        pill.className = "result-pill " + rarityKey.toLowerCase();
-      }
+  const pill = document.getElementById("result-pill");
+  if (isHidden){
+    pill.style.display = "none";
+  } else {
+    pill.style.display = "inline-flex";
+    pill.textContent = rarityKey;
+    pill.className = "result-pill " + rarityKey.toLowerCase();
+  }
 
-      document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
+  document.getElementById("result-profit").textContent = "Valeur : " + fmtEur(price);
 
-      const listBtn = document.getElementById("result-list");
-if (listBtn){
-  listBtn.disabled = false;
-  listBtn.textContent = "Mettre en vente · " + fmtEur(price);
-}
+  const listBtn = document.getElementById("result-list");
+  if (listBtn){
+    listBtn.disabled = false;
+    listBtn.textContent = "Mettre en vente · " + fmtEur(price);
+  }
+} // ✅ ICI l’accolade manquante
+
     function commitToCollection(){
       const { winningCt, rarityKey, imgSrc, name, tokenId, ts, boosterKey } = currentOpen;
       const entry = {
@@ -2879,6 +2881,7 @@ function setSelectedBooster(key){
 
 </body>
 </html>
+
 
 
 
