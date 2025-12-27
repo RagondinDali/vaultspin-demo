@@ -1336,6 +1336,19 @@
   <audio id="sfx-legendary" src="sounds/legendary_fx.mp3" preload="auto"></audio>
   <audio id="sfx-tick" src="sounds/clic_clic.mp3" preload="auto"></audio>
   <script>
+
+  function byId(id){
+  const el = document.getElementById(id);
+  if (!el) console.warn(`[UI] Missing element #${id}`);
+  return el;
+}
+
+function onClick(id, handler, options){
+  const el = byId(id);
+  if (!el) return;
+  el.addEventListener("click", handler, options);
+}
+</script>
     /********************
      * STORAGE KEYS
      ********************/
@@ -2296,7 +2309,7 @@ function listCurrentPull(){
 
   if (!ok){
     setStatus("Déjà listée sur le marketplace.", "pending");
-    const btn = document.getElementById("result-sell");
+    const btn = document.getElementById("result-list");
     if (btn) btn.disabled = true;
     return;
   }
@@ -2307,7 +2320,7 @@ function listCurrentPull(){
 
   setStatus(`Carte listée ✅ (${fmtEur(price)})`, "ok");
 
-  const btn = document.getElementById("result-sell");
+  const btn = document.getElementById("result-list");
   if (btn){
     btn.disabled = true;
     btn.textContent = "Listée ✅";
@@ -2528,7 +2541,7 @@ function setSelectedBooster(key){
       // overlay buttons
       document.getElementById("open-skip").addEventListener("click", () => { skipSpinNow(); });
       document.getElementById("result-open-another").addEventListener("click", async () => { await flyThenOpenAnother(); });
-      document.getElementById("result-sell").addEventListener("click", listCurrentPull);
+      document.getElementById("result-list")?.addEventListener("click", listCurrentPull);
 
       document.getElementById("open-close").addEventListener("click", () => {
         if (spinning) return;
@@ -2920,6 +2933,7 @@ function setSelectedBooster(key){
 
 </body>
 </html>
+
 
 
 
